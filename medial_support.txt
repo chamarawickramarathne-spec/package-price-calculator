@@ -1,0 +1,120 @@
+==============================================================================
+Package Price Calculator - Marketing & Promotional Support File
+Version: 1.0.0 (Android) | Hire Artist Studio | (C) 2026
+==============================================================================
+
+1. APPLICATION TITLE
+==============================================================================
+Package Price Calculator
+
+2. SHORT DESCRIPTION
+==============================================================================
+A fast, friendly photography pricing tool for Android that lets photographers
+build complete service package prices in seconds - labor, gear costs, templates
+and ready-to-share PDF quotes.
+
+3. LONG DESCRIPTION
+==============================================================================
+Package Price Calculator is a mobile-first pricing app designed for
+photographers, videographers and creative studios who are tired of guessing
+prices or juggling messy spreadsheets.
+
+The app walks you through a simple 4-step flow:
+
+- Labor: Set your rates for photography, retouching, editing and other
+  creative work.
+- Gear: Pick the equipment you will use from real-world gear categories. Each
+  piece of equipment carries a value, and you can set quantities, so total
+  gear costs are calculated automatically and transparently.
+- Templates: Apply complete pre-built service packages (with Labor + Gear
+  already configured) to save time and keep pricing consistent.
+- Final: Review the complete breakdown, then generate a professional PDF quote
+  you can share directly with your client.
+
+Everything you build is saved automatically on your device. Category and
+equipment data are synced from a secure cloud backend, so the catalog stays
+accurate and up to date.
+
+Main features and benefits:
+- Accurate, transparent quotes: every number is visible and editable.
+- Labor + Gear costing in one place - no more separate calculators.
+- Ready-to-use templates for repeat offers and consistent pricing.
+- Professional PDF generation for client-ready proposals.
+- Offline-friendly local saving of your in-progress packages.
+- A clean, distraction-free mobile experience built for photographers
+  on the move.
+
+Package Price Calculator solves the pricing headaches of creative
+professionals: undercharging on busy shoots, forgotten equipment costs, and
+hours spent reformatting quotes. It gives you a clear, professional number,
+every time.
+
+4. FACEBOOK PROMOTIONAL TEXT
+==============================================================================
+Are you a photographer or creative studio still pricing your packages from
+memory? Meet Package Price Calculator - the Android app that builds complete
+service quotes in seconds.
+
+- Add your Labor rates
+- Select your Gear (with real values and quantities)
+- Choose a ready-made Template or start fresh
+- Generate a polished PDF quote your clients will love
+
+Every number is transparent and fully editable, so you always know exactly
+what you are charging and why. No spreadsheets. No guesswork. Just clear,
+professional pricing.
+
+Free to try - build your first package today and see the difference.
+#PackagePriceCalculator #PhotographyBusiness #PricingTool
+
+5. SOCIAL MEDIA TAGS
+==============================================================================
+1. #PhotographyPricing
+2. #PhotographerTools
+3. #PricingCalculator
+4. #PhotographyBusiness
+5. #CreativeStudio
+6. #PhotographyTips
+7. #PhotoBusinessTips
+8. #ClientQuotes
+9. #FreelancePhotographer
+10. #Videographer
+11. #PhotographyGuide
+12. #PackagePriceCalculator
+
+6. AI IMAGE PROMPTS (5 promotional images)
+==============================================================================
+Prompt 1 - Hero app mockup:
+Show a modern Android smartphone displaying the Package Price Calculator app
+in the final price review screen. The screen shows a clean breakdown of Labor
+hours and Gear items with a bold total price. The phone sits on a light wooden
+studio desk next to a professional camera, soft daylight from a window.
+Photorealistic, high detail, colour palette of deep navy blue and teal.
+
+Prompt 2 - Photographer at work:
+A professional photographer adjusting a camera on a tripod inside a bright
+studio with softboxes and backdrops. In the corner of the image, a subtle
+floating user interface element shows a package price breakdown with a
+checkmark. Warm, inviting, confident mood. Photorealistic advertising style.
+
+Prompt 3 - Coach / mentor theme:
+A creative studio owner holding a phone up toward a client across a desk,
+consulting on a photography package. On the phone screen, slightly visible,
+is a service quote with labor and gear sections. Trusting professional
+atmosphere, natural light. Photorealistic, editorial style.
+
+Prompt 4 - PDF proposal concept:
+A printed professional photography proposal sitting on a table surrounded by
+camera gear: lenses, memory cards and a softbox. The proposal clearly shows
+a package price table. Overhead angle, soft shadows, premium look.
+
+Prompt 5 - Mobile outline marketing graphic:
+A clean minimal vector-style illustration of a smartphone with the Package
+Price Calculator app, surrounded by floating icons: a camera, a price tag,
+an hourglass for labor time, and a gear icon. Flat modern design, navy blue
+and teal accents on a light background, social-media friendly composition.
+
+==============================================================================
+(C) 2026 Hire Artist Studio. All marketing content generated for the current
+application version 1.0.0. Regenerate on every release.
+==============================================================================

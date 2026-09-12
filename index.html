@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lens Calculator - Hire Artist Studio</title>
+    <!-- Force fresh CSS load -->
+    <link rel="stylesheet" href="css/style.css?v=2.1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="app-wrapper">
+        <!-- App Side Drawer -->
+        <div id="app-drawer" class="app-drawer-overlay">
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <div class="drawer-brand">
+                        <img src="images/logo.png" alt="Logo" class="drawer-logo">
+                        <span>Hire Artist Ecosystem</span>
+                    </div>
+                    <button id="close-drawer-btn" class="drawer-close">&times;</button>
+                </div>
+                <div class="drawer-body">
+                    <p class="drawer-section-title">Our Photography Suite</p>
+                    <div class="drawer-items">
+                        <a href="https://lensmanager.hireartist.studio" target="_blank" class="drawer-item">
+                            <div class="item-icon lens-bg">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                            </div>
+                            <div class="item-text">
+                                <span class="item-title">Photography Manager</span>
+                                <span class="item-subtitle">Booking & Portfolio Management </span>
+                            </div>
+                        </a>
+                        <a href="https://workshop.hireartist.studio" target="_blank" class="drawer-item">
+                            <div class="item-icon workshop-bg">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                            </div>
+                            <div class="item-text">
+                                <span class="item-title">Workshop Manager</span>
+                                <span class="item-subtitle">Education Platform</span>
+                            </div>
+                        </a>
+                        <div class="drawer-item active">
+                            <div class="item-icon calc-bg">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            </div>
+                            <div class="item-text">
+                                <span class="item-title">Price Calculator</span>
+                                <span class="item-subtitle">Current Tool</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="drawer-footer">
+                    <p>© 2025 Hire Artist Studio</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premium Branding Header -->
+        <header class="app-header">
+            <div class="container">
+                <div class="header-content">
+                    <button id="drawer-trigger-btn" class="drawer-trigger" aria-label="Open Menu">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                    </button>
+                    <div class="header-brand">
+                        <img src="images/logo.png" alt="Logo" class="app-logo">
+                        <div class="brand-text">
+                            <h1 class="app-title">Package Price Calculator</h1>
+                            <p class="app-subtitle">Hire Artist Studio</p>
+                        </div>
+                    </div>
+                    <div style="width: 40px;"></div> <!-- Spacer for balance -->
+                </div>
+            </div>
+        </header>
+
+        <!-- Stepped Flow Navigation -->
+        <nav class="step-nav">
+            <div class="step-indicator active" data-step="1" id="ind-1">
+                <span class="step-icon">1</span>
+                <span class="step-text">Setup</span>
+            </div>
+            <div class="step-indicator" data-step="2" id="ind-2">
+                <span class="step-icon">2</span>
+                <span class="step-text">Gear</span>
+            </div>
+            <div class="step-indicator" data-step="3" id="ind-3">
+                <span class="step-icon">3</span>
+                <span class="step-text">Labor</span>
+            </div>
+            <div class="step-indicator" data-step="4" id="ind-4">
+                <span class="step-icon">4</span>
+                <span class="step-text">Final</span>
+            </div>
+        </nav>
+
+        <main class="container">
+            <!-- STEP 1: INITIAL SETUP -->
+            <section class="section active" id="step-1">
+                <div class="section-header">
+                    <h2 class="section-title">Start with a Template</h2>
+                    <p class="section-description">Select a predefined package to prepopulate your configuration</p>
+                </div>
+
+                <div class="template-selection">
+                    <div class="form-group">
+                        <label class="form-label" for="template-select">Choose Package Type</label>
+                        <select id="template-select" class="form-select">
+                            <option value="">-- Custom (Start Blank) --</option>
+                        </select>
+                    </div>
+                    <button id="apply-template-btn" class="btn btn-secondary" disabled>Apply Selection</button>
+                </div>
+
+                <div class="step-actions">
+                    <button class="btn btn-primary btn-next-tab" data-next="2">Start Pricing Gear</button>
+                    <button id="open-user-guide-btn" class="btn btn-secondary">Help Guide</button>
+                </div>
+            </section>
+
+            <!-- STEP 2: EQUIPMENT GEAR -->
+            <section class="section" id="step-2">
+                <div class="section-header">
+                    <h2 class="section-title">Select Your Gear</h2>
+                    <p class="section-description">Pick the required equipment for this specific session</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Filter by Category</label>
+                    <div id="category-checkboxes" class="checkbox-grid"></div>
+                </div>
+                
+                <div id="equipment-dropdowns"></div>
+
+                <div class="selection-summary">
+                    <h3 class="subsection-title">Equipment List</h3>
+                    <div id="selected-equipment-list">
+                        <p class="empty-state">No gear selected</p>
+                    </div>
+                    <div class="total-row" style="margin-top:1rem; padding-top:1rem; border-top:1px solid #eee; display:flex; justify-content:space-between; font-weight:700;">
+                        <span>Gear Subtotal:</span>
+                        <span id="equipment-total">LKR 0.00</span>
+                    </div>
+                </div>
+
+                <div class="step-actions">
+                    <button class="btn btn-secondary prev-step" data-prev="1">Back</button>
+                    <button id="open-add-new-btn" class="btn btn-secondary">Add New Item</button>
+                    <button class="btn btn-primary next-step" data-next="3">Calculate Labor</button>
+                </div>
+            </section>
+
+            <!-- STEP 3: LABOR & PROFIT -->
+            <section class="section" id="step-3">
+                <div class="section-header">
+                    <h2 class="section-title">Labor & Profits</h2>
+                    <p class="section-description">Define your time and business margin</p>
+                </div>
+
+                <div class="labor-inputs">
+                    <div class="form-group">
+                        <label class="form-label">Event Hours</label>
+                        <input type="number" id="labor-hours" class="form-input" value="2" step="0.5" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Hourly Rate (LKR)</label>
+                        <input type="number" id="hourly-rate" class="form-input" value="1000" min="0">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="form-label">Extra Gear Cost (LKR)</label>
+                        <input type="number" id="extra-gear-cost" class="form-input" value="0" min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Transportation Cost (LKR)</label>
+                        <input type="number" id="transportation-cost" class="form-input" value="0" min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Assistant Pay (LKR)</label>
+                        <input type="number" id="assistant-pay" class="form-input" value="0" min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Editing / Retouching Cost (LKR)</label>
+                        <input type="number" id="editing-cost" class="form-input" value="0" min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Additional Cost (LKR)</label>
+                        <input type="number" id="additional-cost" class="form-input" value="0" min="0" placeholder="0">
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="form-label">Desired Profit (%)</label>
+                        <input type="number" id="margin-percentage" class="form-input" value="10" min="0">
+                    </div>
+                </div>
+
+                <div class="step-actions">
+                    <button class="btn btn-secondary prev-step" data-prev="2">Back</button>
+                    <button class="btn btn-primary next-step" data-next="4">View Breakdown</button>
+                </div>
+            </section>
+
+            <!-- STEP 4: FINAL BREAKDOWN -->
+            <section class="section" id="step-4">
+                <div class="section-header">
+                    <h2 class="section-title">Final Package Summary</h2>
+                    <p class="section-description">Review costs and generate your quotation</p>
+                </div>
+
+                <div id="final-breakdown-container"></div>
+
+                <div class="quotation-meta" style="margin-top:2rem;">
+                    <div class="form-group">
+                        <label class="form-label">Project Name</label>
+                        <input type="text" id="package-name" class="form-input" placeholder="e.g. Wedding Event">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Client (Optional)</label>
+                        <input type="text" id="client-name" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Project Notes</label>
+                        <textarea id="package-notes" class="form-input" style="height:80px; padding:10px;"></textarea>
+                    </div>
+
+                </div>
+
+                <div class="step-actions">
+                    <button class="btn btn-secondary prev-step" data-prev="3">Edit Costs</button>
+                    <button id="download-package-pdf-btn" class="btn btn-secondary">Package Details</button>
+                    <button id="download-pdf-btn" class="btn btn-success">Download PDF</button>
+                    <button id="reset-btn" class="btn btn-secondary">Start New</button>
+                </div>
+
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <p>&copy; 2025 Hire Artist Studio. Professional Pricing System.</p>
+        </footer>
+
+        <!-- Floating Summary Bar (Island Style) -->
+        <div class="sticky-summary">
+            <div class="summary-island">
+                <div class="summary-stat-item">
+                    <span class="label">Total Price</span>
+                    <span id="sticky-total" class="value">LKR 0.00</span>
+                </div>
+                <button class="btn btn-primary" id="mobile-next-btn">Next Step</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="user-guide-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="user-guide-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="user-guide-title">පරිශීලක අත්පොත (User Guide)</h2>
+                <button class="modal-close" id="close-guide-modal-btn" aria-label="Close User Guide" tabindex="0">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="user-guide-content">
+                    <p><strong>මෙම ඇප් එක භාවිතා කරන ආකාරය පියවරෙන් පියවර මෙන්න:</strong></p>
+                    
+                    <div class="guide-step">
+                        <h3>පියවර 01: Template එකක් තෝරා ගැනීම (Choose a Template)</h3>
+                        <p>ඔබට 'Birthday Shoot', 'Wedding Shoot' වැනි කලින් සකස් කළ පැකේජ වර්ගයක් තෝරාගත හැක. නැතහොත් 'Custom Package' තෝරා මුල සිටම ඔබේ පැකේජය නිර්මාණය කළ හැක.</p>
+                    </div>
+
+                    <div class="guide-step">
+                        <h3>පියවර 02: උපකරණ එකතු කිරීම (Equipment Selection)</h3>
+                        <p>ඔබ භාවිතා කරන කැමරා (Camera Body), ලෙන්ස් (Lenses), ලයිට් (Lighting) සහ අනෙකුත් උපකරණ තෝරාගන්න. මෙහිදී එක් එක් උපකරණයේ වටිනාකම අනුව ස්වයංක්‍රීයව පිරිවැය ගණනය වේ.</p>
+                    </div>
+
+                    <div class="guide-step">
+                        <h3>පියවර 03: ශිල්පියාගේ ගාස්තුව (Photographer Cost)</h3>
+                        <p>ඔබ වැඩ කරන පැය ගණන (Event Hours) සහ පැයකට ඔබ අය කරන මුදල (Hourly Rate) ඇතුළත් කරන්න.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-equipment-modal" class="modal">
+        <div class="modal-content gear-modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <div class="gear-modal-title-wrap">
+                    <div class="gear-modal-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <h2 class="modal-title" id="modal-title">Add New Gear</h2>
+                </div>
+                <button id="close-gear-modal-x" class="modal-close" aria-label="Close">&times;</button>
+            </div>
+
+            <!-- Section 1: Category -->
+            <div class="gear-form-section">
+                <div class="gear-section-heading">
+                    <span class="gear-step-dot">1</span>
+                    <span>Select Category</span>
+                </div>
+                <div id="new-equipment-category" class="pill-radio-group"></div>
+            </div>
+
+            <!-- Section 2: Gear Type -->
+            <div class="gear-form-section">
+                <div class="gear-section-heading">
+                    <span class="gear-step-dot">2</span>
+                    <span>Select Type</span>
+                </div>
+                <div id="new-equipment-type" class="pill-radio-group"></div>
+            </div>
+
+            <!-- Section 3: Details + Actions inline -->
+            <div class="gear-form-section gear-form-section--last">
+                <div class="gear-section-heading">
+                    <span class="gear-step-dot">3</span>
+                    <span>Gear Details</span>
+                </div>
+                <div class="gear-details-grid">
+                    <div class="form-group">
+                        <label class="form-label">Name <span class="field-required">*</span></label>
+                        <input type="text" id="new-equipment-name" class="form-input" placeholder="e.g. Canon EF 50mm">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Model / Brand <span class="field-required">*</span></label>
+                        <input type="text" id="new-equipment-model" class="form-input" placeholder="e.g. Sony / Canon / Nikon / GODOX">
+                    </div>
+                </div>
+                <!-- Price + Buttons inline row -->
+                <div class="gear-price-action-row">
+                    <div class="gear-price-field">
+                        <label class="form-label">Rental Price (LKR) <span class="field-required">*</span></label>
+                        <div class="price-input-wrap">
+                            <span class="price-prefix">LKR</span>
+                            <input type="number" id="new-equipment-value" class="form-input price-input" placeholder="0" min="0">
+                        </div>
+                    </div>
+                    <div class="gear-action-btns">
+                        <button id="add-equipment-btn" class="btn btn-primary">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                            Save
+                        </button>
+                        <button id="close-modal-btn" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="toast" class="toast"><span id="toast-message"></span></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Force fresh JS load -->
+    <script src="js/app.js?v=4.4"></script>
+</body>
+</html>

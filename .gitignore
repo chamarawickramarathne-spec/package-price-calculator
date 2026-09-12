@@ -1,0 +1,44 @@
+# ============ Secrets & credentials ============
+credentials.txt
+.env
+.env.*
+!.env.example
+temp_users.sql
+
+# ============ Node / Expo / React Native ============
+node_modules/
+.expo/
+.expo-shared/
+dist/
+web-build/
+.expo-env.d.ts
+*.tsbuildinfo
+
+# ============ Android build outputs ============
+android/app/build/
+android/build/
+android/.gradle/
+android/.idea/
+android/local.properties
+build/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# ============ Logs ============
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# ============ OS junk ============
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# ============ Editors ============
+.vscode/
+.idea/
+*.swp

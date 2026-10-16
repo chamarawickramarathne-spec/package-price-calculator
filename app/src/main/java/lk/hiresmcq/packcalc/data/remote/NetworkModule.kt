@@ -51,4 +51,42 @@ object NetworkModule {
 
         return retrofit.create(SupabaseApi::class.java)
     }
+
+    fun createGitHubApi(debugLogging: Boolean): GitHubApi {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.github.com/")
+            .client(buildUpdateClient(debugLogging))
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+            .build()
+
+        return retrofit.create(GitHubApi::class.java)
+    }
+
+    fun createUpdateClient(debugLogging: Boolean): OkHttpClient = buildUpdateClient(debugLogging)
+
+    private fun buildUpdateClient(debugLogging: Boolean): OkHttpClient {
+        val headers = okhttp3.Interceptor { chain ->
+            chain.proceed(
+                chain.request().newBuilder()
+                    .addHeader("Accept", "application/vnd.github+json")
+                    .addHeader("User-Agent", "PackagePriceCalculator-Android")
+                    .build(),
+            )
+        }
+
+        val clientBuilder = OkHttpClient.Builder()
+            .addInterceptor(headers)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+
+        if (debugLogging) {
+            val logging = HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BASIC
+            }
+            clientBuilder.addInterceptor(logging)
+        }
+
+        return clientBuilder.build()
+    }
 }

@@ -1,6 +1,6 @@
 ================================================================================
 MEDIA SUPPORT — Package Price Calculator
-Hire Artist Studio (hiresmcq)  |  Version 1.0.2  |  Generated 2026-10-16
+Hire Artist Studio (hiresmcq)  |  Version 1.0.3  |  Generated 2026-10-16
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -34,11 +34,13 @@ Main features:
   then the final total — updated as you type.
 - Templates: save your usual gear + labor + margin as a template and start any
   new quote from it in one tap.
-- Equipment catalog: add, edit and delete your gear with values, categories and
-  types, so your prices always use current rates.
+- Equipment catalog: keep your gear — with values, categories and types — in one
+  place, so your prices always use current rates.
 - Saved packages: every quote is stored so you can reopen, review and edit it.
 - Taxonomies: organise gear by category and type for quick filtering.
 - Clean LKR currency formatting (Rs. 12,345.00) and precise decimal maths.
+- In-app updates: the app checks for a newer version and can download and install
+  it for you in a couple of taps.
 
 Main benefits:
 - Quote a client before you leave the venue.

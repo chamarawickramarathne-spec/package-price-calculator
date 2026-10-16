@@ -185,6 +185,46 @@ Date: 2026-10-16
   package or template.
 - The `EQUIPMENT_EDIT` and `TEMPLATE_EDIT` navigation routes were removed.
 
+### Modification 005
+
+Date: 2026-10-16
+
+### Changes
+- Added an **in-app auto-update** system. On launch the app queries the GitHub
+  Releases API for the latest release, compares it with the installed version,
+  and — when newer — offers to download and install the APK.
+- New components: `domain/Version.kt` (semver parse/compare),
+  `data/model/GitHubModels.kt`, `data/remote/GitHubApi.kt`,
+  `data/remote/ApkDownloader.kt` (streamed download + progress),
+  `data/repo/UpdateRepository.kt`, `util/ApkInstaller.kt` (FileProvider +
+  `ACTION_VIEW` + unknown-sources permission), and
+  `ui/update/{UpdateViewModel,UpdateDialog}.kt`.
+- `AndroidManifest.xml`: added `REQUEST_INSTALL_PACKAGES` and a `FileProvider`
+  (`${applicationId}.fileprovider`, paths in `res/xml/file_paths.xml`).
+- `NetworkModule`: added a separate GitHub Retrofit client (base
+  `https://api.github.com/`, required `User-Agent`/`Accept` headers) and a
+  plain `OkHttpClient` factory for downloads.
+- `AppNav`: instantiates `UpdateViewModel` (Activity-scoped) and renders
+  `UpdateDialog` over the nav host.
+- Bumped `versionCode` 3 → 4 and `versionName` 1.0.2 → 1.0.3.
+- Added `VersionTest` (6 tests); total unit tests now 11.
+
+### Files / Components
+- `domain/Version.kt`, `data/model/GitHubModels.kt`, `data/remote/{GitHubApi,ApkDownloader,NetworkModule}.kt`
+- `data/repo/UpdateRepository.kt`, `util/ApkInstaller.kt`, `ui/update/{UpdateViewModel,UpdateDialog}.kt`
+- `di/AppContainer.kt`, `ui/navigation/AppNav.kt`, `AndroidManifest.xml`, `res/xml/file_paths.xml`
+- `app/build.gradle.kts`, `app/src/test/java/.../domain/VersionTest.kt`
+
+### Important Notes
+- Update source: public GitHub repo `chamarawickramarathne-spec/package-price-calculator`,
+  asset name kept stable at `Package-Price-Calculator.apk` (no version in the
+  filename, per the update rule). Target version parsed from the release tag.
+- A failed **update check** is non-fatal: it maps to `CheckFailed` and shows no
+  dialog, so a flaky network never blocks the app. Download/install failures
+  ARE surfaced (`Failed` dialog).
+- Android requires the user to allow "install unknown apps" for this app;
+  when not granted, the dialog routes to `ACTION_MANAGE_UNKNOWN_APP_SOURCES`.
+
 ---
 
 ## Remaining Work (Tracked in AGENTS_PLAN.md)

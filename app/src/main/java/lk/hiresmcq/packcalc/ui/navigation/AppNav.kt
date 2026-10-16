@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -42,6 +43,8 @@ import lk.hiresmcq.packcalc.ui.templates.TemplateEditorScreen
 import lk.hiresmcq.packcalc.ui.templates.TemplateEditorViewModel
 import lk.hiresmcq.packcalc.ui.templates.TemplateListViewModel
 import lk.hiresmcq.packcalc.ui.templates.TemplatesScreen
+import lk.hiresmcq.packcalc.ui.update.UpdateDialog
+import lk.hiresmcq.packcalc.ui.update.UpdateViewModel
 
 private data class BottomTab(val route: String, val label: String, val icon: ImageVector)
 
@@ -55,6 +58,13 @@ private val bottomTabs = listOf(
 fun AppNav() {
     val navController = rememberNavController()
     val container = appContainer()
+    val appContext = LocalContext.current.applicationContext
+
+    val updateViewModel: UpdateViewModel = viewModel(
+        factory = SimpleVmFactory(container) {
+            UpdateViewModel(it.updateRepository, it.apkDownloader, appContext)
+        },
+    )
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -169,6 +179,8 @@ fun AppNav() {
                 CalculatorDestination(navController, container, CalculatorMode.FromTemplate(templateId))
             }
         }
+
+        UpdateDialog(updateViewModel)
     }
 }
 

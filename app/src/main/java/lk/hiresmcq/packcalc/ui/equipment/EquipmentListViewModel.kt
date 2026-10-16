@@ -25,9 +25,6 @@ class EquipmentListViewModel(
     private val _state = MutableStateFlow<LoadState<EquipmentListData>>(LoadState.Loading)
     val state: StateFlow<LoadState<EquipmentListData>> = _state.asStateFlow()
 
-    private val _snackbar = MutableStateFlow<String?>(null)
-    val snackbar: StateFlow<String?> = _snackbar.asStateFlow()
-
     init {
         load()
     }
@@ -55,19 +52,4 @@ class EquipmentListViewModel(
         }
     }
 
-    fun delete(equipment: EquipmentDto) {
-        val id = equipment.id ?: return
-        viewModelScope.launch {
-            repository.deleteEquipment(id)
-                .onSuccess {
-                    _snackbar.value = "${equipment.name} deleted"
-                    load()
-                }
-                .onFailure { _snackbar.value = it.message }
-        }
-    }
-
-    fun consumeSnackbar() {
-        _snackbar.value = null
-    }
 }

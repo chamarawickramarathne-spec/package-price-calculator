@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import lk.hiresmcq.packcalc.ui.LoadState
-import lk.hiresmcq.packcalc.ui.components.ConfirmDialog
 import lk.hiresmcq.packcalc.ui.components.DecimalField
 import lk.hiresmcq.packcalc.ui.components.ErrorBox
 import lk.hiresmcq.packcalc.ui.components.LabeledTextField
@@ -55,7 +53,6 @@ fun EquipmentEditorScreen(
     val saved by viewModel.saved.collectAsStateWithLifecycle()
     val snackbarMessage by viewModel.snackbar.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    var confirmDelete by remember { mutableStateOf(false) }
 
     LaunchedEffect(saved) {
         if (saved) onBack()
@@ -70,21 +67,10 @@ fun EquipmentEditorScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (viewModel.isEditing) "Edit equipment" else "New equipment") },
+                title = { Text("New equipment") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    if (viewModel.isEditing) {
-                        IconButton(onClick = { confirmDelete = true }) {
-                            Icon(
-                                Icons.Filled.Delete,
-                                contentDescription = "Delete equipment",
-                                tint = MaterialTheme.colorScheme.error,
-                            )
-                        }
                     }
                 },
             )
@@ -171,20 +157,6 @@ fun EquipmentEditorScreen(
                 }
             }
         }
-    }
-
-    if (confirmDelete) {
-        ConfirmDialog(
-            title = "Delete equipment?",
-            message = "This will permanently remove the item and drop it from any packages or templates that use it.",
-            confirmLabel = "Delete",
-            destructive = true,
-            onConfirm = {
-                confirmDelete = false
-                viewModel.delete()
-            },
-            onDismiss = { confirmDelete = false },
-        )
     }
 }
 

@@ -61,8 +61,11 @@ Implementation plan and task tracker for the native Android rewrite
 - [x] GitHub release `v1.0.0` published with the universal APK attached.
 - [x] Hotfix 1.0.1: corrected Supabase URL typo (project ref was missing `q`);
       rebuilt + republished the APK.
+- [x] Fix 1.0.2: blank "New Package" screen (nested `composable()` in AppNav);
+      removed edit/delete options for equipment, templates, categories & types.
 
 ### Pending
+- [ ] In-app auto-update (check GitHub Releases, download APK, launch installer).
 - [ ] Apply live DB SQL in Supabase SQL Editor (schema + seed, then RLS) —
       the app connects but tables currently return 0 rows to anon.
 - [ ] Supabase Auth for per-user package ownership (hardening).

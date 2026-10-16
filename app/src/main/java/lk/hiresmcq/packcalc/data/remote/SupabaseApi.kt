@@ -61,9 +61,6 @@ interface SupabaseApi {
     @PATCH("category_types")
     suspend fun updateCategory(@Query("id") idFilter: String, @Body body: CategoryDto): List<CategoryDto>
 
-    @DELETE("category_types")
-    suspend fun deleteCategory(@Query("id") idFilter: String)
-
     // ---- equipment_types ----
     @Headers("Prefer: return=representation")
     @POST("equipment_types")
@@ -76,9 +73,6 @@ interface SupabaseApi {
         @Body body: EquipmentTypeDto,
     ): List<EquipmentTypeDto>
 
-    @DELETE("equipment_types")
-    suspend fun deleteEquipmentType(@Query("id") idFilter: String)
-
     // ---- equipment_details ----
     @Headers("Prefer: return=representation")
     @POST("equipment_details")
@@ -90,9 +84,6 @@ interface SupabaseApi {
         @Query("id") idFilter: String,
         @Body body: EquipmentDto,
     ): List<EquipmentDto>
-
-    @DELETE("equipment_details")
-    suspend fun deleteEquipment(@Query("id") idFilter: String)
 
     // ---- packages ----
     @Headers("Prefer: return=representation")
@@ -129,9 +120,6 @@ interface SupabaseApi {
         @Query("id") idFilter: String,
         @Body body: TemplateDto,
     ): List<TemplateDto>
-
-    @DELETE("templates")
-    suspend fun deleteTemplate(@Query("id") idFilter: String)
 
     @Headers("Prefer: return=representation")
     @POST("template_equipment")

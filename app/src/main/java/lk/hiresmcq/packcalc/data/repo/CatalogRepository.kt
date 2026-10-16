@@ -25,10 +25,6 @@ class CatalogRepository(private val api: SupabaseApi) {
         )
     }
 
-    suspend fun loadEquipmentById(id: Int): Result<EquipmentDto> = safeApiCall {
-        api.getEquipment(order = "id.asc", isActive = null, id = "eq.$id").first()
-    }
-
     suspend fun saveEquipment(dto: EquipmentDto): Result<EquipmentDto> = safeApiCall {
         val id = dto.id
         if (id == null) {
@@ -36,10 +32,6 @@ class CatalogRepository(private val api: SupabaseApi) {
         } else {
             api.updateEquipment("eq.$id", dto).first()
         }
-    }
-
-    suspend fun deleteEquipment(id: Int): Result<Unit> = safeApiCall {
-        api.deleteEquipment("eq.$id")
     }
 
     suspend fun saveCategory(dto: CategoryDto): Result<CategoryDto> = safeApiCall {
@@ -51,10 +43,6 @@ class CatalogRepository(private val api: SupabaseApi) {
         }
     }
 
-    suspend fun deleteCategory(id: Int): Result<Unit> = safeApiCall {
-        api.deleteCategory("eq.$id")
-    }
-
     suspend fun saveType(dto: EquipmentTypeDto): Result<EquipmentTypeDto> = safeApiCall {
         val id = dto.id
         if (id == null) {
@@ -62,9 +50,5 @@ class CatalogRepository(private val api: SupabaseApi) {
         } else {
             api.updateEquipmentType("eq.$id", dto).first()
         }
-    }
-
-    suspend fun deleteType(id: Int): Result<Unit> = safeApiCall {
-        api.deleteEquipmentType("eq.$id")
     }
 }

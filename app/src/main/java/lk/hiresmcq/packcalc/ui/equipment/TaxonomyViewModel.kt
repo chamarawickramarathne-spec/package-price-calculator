@@ -66,17 +66,6 @@ class TaxonomyViewModel(
         }
     }
 
-    fun deleteCategory(id: Int) {
-        viewModelScope.launch {
-            repository.deleteCategory(id)
-                .onSuccess {
-                    _snackbar.value = "Category deleted"
-                    load()
-                }
-                .onFailure { _snackbar.value = it.message }
-        }
-    }
-
     fun saveType(id: Int?, type: String) {
         viewModelScope.launch {
             repository.saveType(
@@ -84,17 +73,6 @@ class TaxonomyViewModel(
             )
                 .onSuccess {
                     _snackbar.value = "Type saved"
-                    load()
-                }
-                .onFailure { _snackbar.value = it.message }
-        }
-    }
-
-    fun deleteType(id: Int) {
-        viewModelScope.launch {
-            repository.deleteType(id)
-                .onSuccess {
-                    _snackbar.value = "Type deleted"
                     load()
                 }
                 .onFailure { _snackbar.value = it.message }

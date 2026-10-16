@@ -11,18 +11,14 @@ object Dest {
     const val CALCULATOR_TEMPLATE = "calculator/template/{templateId}"
 
     const val TEMPLATE_NEW = "template/new"
-    const val TEMPLATE_EDIT = "template/edit/{templateId}"
 
     const val EQUIPMENT_NEW = "equipment/new"
-    const val EQUIPMENT_EDIT = "equipment/edit/{equipmentId}"
 
     const val TAXONOMY = "taxonomy"
 
     fun packageDetail(id: Int) = "packages/$id"
     fun calculatorEdit(id: Int) = "calculator/edit/$id"
     fun calculatorFromTemplate(id: Int) = "calculator/template/$id"
-    fun templateEdit(id: Int) = "template/edit/$id"
-    fun equipmentEdit(id: Int) = "equipment/edit/$id"
 
     val bottomTabs = listOf(PACKAGES, TEMPLATES, EQUIPMENT)
 }

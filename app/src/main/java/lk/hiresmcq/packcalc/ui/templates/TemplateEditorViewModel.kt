@@ -21,7 +21,6 @@ import java.math.BigDecimal
 data class TemplateEditorData(
     val categories: List<CategoryDto>,
     val activeEquipment: List<EquipmentDto>,
-    val existingId: Int?,
 )
 
 data class TemplateForm(
@@ -36,10 +35,7 @@ data class TemplateForm(
 class TemplateEditorViewModel(
     private val templateRepository: TemplateRepository,
     private val catalogRepository: CatalogRepository,
-    private val templateId: Int?,
 ) : ViewModel() {
-
-    val isEditing: Boolean = templateId != null
 
     private val _state = MutableStateFlow<LoadState<TemplateEditorData>>(LoadState.Loading)
     val state: StateFlow<LoadState<TemplateEditorData>> = _state.asStateFlow()
@@ -83,42 +79,7 @@ class TemplateEditorViewModel(
                 TemplateEditorData(
                     categories = categoryList,
                     activeEquipment = activeEquipment,
-                    existingId = templateId,
                 ),
-            )
-            if (templateId != null) {
-                loadExisting(templateId, equipmentList.mapNotNull { it.id?.let { id -> id to it } }.toMap())
-            }
-        }
-    }
-
-    private suspend fun loadExisting(id: Int, equipmentById: Map<Int, EquipmentDto>) {
-        val result = templateRepository.loadTemplate(id)
-        val template = result.getOrNull()
-        if (template == null) {
-            _snackbar.value = result.exceptionOrNull()?.message ?: "Template not found"
-            return
-        }
-        _form.value = TemplateForm(
-            name = template.name,
-            description = template.description.orEmpty(),
-            laborHoursText = NumberInput.toDisplay(template.laborHours),
-            hourlyRateText = NumberInput.toDisplay(template.hourlyRate),
-            marginText = NumberInput.toDisplay(template.marginPercentage),
-        )
-        val linesResult = templateRepository.loadTemplateLines(id)
-        val stored = linesResult.getOrNull()
-        if (stored == null) {
-            _snackbar.value = linesResult.exceptionOrNull()?.message ?: "Failed to load template items"
-            return
-        }
-        _lines.value = stored.map { line ->
-            val equipment = equipmentById[line.equipmentId]
-            EquipmentLine(
-                equipmentId = line.equipmentId,
-                name = equipment?.name ?: "Unknown item",
-                unitValue = BigDecimal.valueOf(equipment?.value ?: 0.0),
-                quantity = line.quantity ?: 1,
             )
         }
     }
@@ -167,7 +128,7 @@ class TemplateEditorViewModel(
             return
         }
         val dto = TemplateDto(
-            id = templateId,
+            id = null,
             name = currentForm.name.trim(),
             description = currentForm.description.trim().ifBlank { null },
             laborHours = NumberInput.toBigDecimal(currentForm.laborHoursText).toDouble(),
@@ -177,7 +138,7 @@ class TemplateEditorViewModel(
         )
         val lineDtos = _lines.value.map { line ->
             TemplateEquipmentDto(
-                templateId = templateId ?: 0,
+                templateId = 0,
                 equipmentId = line.equipmentId,
                 quantity = line.quantity,
             )

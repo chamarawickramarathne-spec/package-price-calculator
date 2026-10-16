@@ -33,12 +33,10 @@ data class EquipmentFormState(
 data class EquipmentEditorData(
     val categories: List<CategoryDto>,
     val types: List<EquipmentTypeDto>,
-    val existingId: Int?,
 )
 
 class EquipmentEditorViewModel(
     private val repository: CatalogRepository,
-    private val equipmentId: Int?,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<LoadState<EquipmentEditorData>>(LoadState.Loading)
@@ -55,8 +53,6 @@ class EquipmentEditorViewModel(
 
     private val _saved = MutableStateFlow(false)
     val saved: StateFlow<Boolean> = _saved.asStateFlow()
-
-    val isEditing: Boolean = equipmentId != null
 
     init {
         load()
@@ -78,35 +74,12 @@ class EquipmentEditorViewModel(
                 return@launch
             }
 
-            var existing: EquipmentDto? = null
-            if (equipmentId != null) {
-                val result = repository.loadEquipmentById(equipmentId)
-                existing = result.getOrNull()
-                if (existing == null) {
-                    _state.value = LoadState.Error(
-                        result.exceptionOrNull()?.message ?: "Equipment not found",
-                    )
-                    return@launch
-                }
-            }
-
             _state.value = LoadState.Ready(
                 EquipmentEditorData(
                     categories = categoryList,
                     types = typeList,
-                    existingId = existing?.id,
                 ),
             )
-            if (existing != null) {
-                _form.value = EquipmentFormState(
-                    name = existing.name,
-                    model = existing.model,
-                    valueText = NumberInput.toDisplay(existing.value),
-                    categoryId = existing.categoryId,
-                    typeId = existing.type,
-                    isActive = (existing.isActive ?: 1) == 1,
-                )
-            }
         }
     }
 
@@ -125,7 +98,7 @@ class EquipmentEditorViewModel(
             return
         }
         val dto = EquipmentDto(
-            id = equipmentId,
+            id = null,
             categoryId = current.categoryId!!,
             type = current.typeId!!,
             model = current.model.trim(),
@@ -139,22 +112,6 @@ class EquipmentEditorViewModel(
         _saving.value = true
         viewModelScope.launch {
             repository.saveEquipment(dto)
-                .onSuccess {
-                    _saving.value = false
-                    _saved.value = true
-                }
-                .onFailure {
-                    _saving.value = false
-                    _snackbar.value = it.message
-                }
-        }
-    }
-
-    fun delete() {
-        val id = equipmentId ?: return
-        _saving.value = true
-        viewModelScope.launch {
-            repository.deleteEquipment(id)
                 .onSuccess {
                     _saving.value = false
                     _saved.value = true

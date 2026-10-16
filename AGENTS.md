@@ -151,6 +151,40 @@ Date: 2026-10-16
   1. `sql/hiresmcq_lens_calculator_postgres.sql` (schema + data)
   2. `sql/migrations/001_rls_policies.sql` (interim anon full-CRUD policies)
 
+### Modification 004
+
+Date: 2026-10-16
+
+### Changes
+- Fixed the blank/white "New Package" screen. Root cause in `ui/navigation/AppNav.kt`:
+  the calculator route helper called `composable(...)` **inside** the content
+  lambda of an already-registered `composable(...)`. Registering a destination
+  during composition renders nothing → empty screen. Replaced the nested
+  `NavGraphBuilder.calculatorDestination` with a plain `@Composable
+  CalculatorDestination(...)` invoked from the New / Edit / From-Template routes.
+- Removed the **edit and delete** options for equipment catalog items, templates,
+  and categories / equipment types. These lists are now view + add only
+  (`+` still available; templates keep "Use template").
+- Made the Equipment and Template editors create-only (removed the edit-load
+  path and the editor delete action).
+- Removed the now-unused repository methods (`deleteEquipment`, `deleteCategory`,
+  `deleteType`, `deleteTemplate`, `loadEquipmentById`) and the corresponding
+  `DELETE` endpoints in `SupabaseApi`.
+- Bumped `versionCode` 2 → 3 and `versionName` 1.0.1 → 1.0.2.
+
+### Files / Components
+- `ui/navigation/AppNav.kt`, `ui/navigation/Dest.kt`
+- `ui/equipment/{EquipmentScreen,EquipmentListViewModel,EquipmentEditorScreen,EquipmentEditorViewModel,TaxonomyScreen,TaxonomyViewModel}.kt`
+- `ui/templates/{TemplatesScreen,TemplateListViewModel,TemplateEditorScreen,TemplateEditorViewModel}.kt`
+- `data/repo/{CatalogRepository,TemplateRepository}.kt`, `data/remote/SupabaseApi.kt`
+- `app/build.gradle.kts`
+
+### Important Notes
+- Retained by request: deleting/editing **saved packages** (packages history),
+  and the in-editor "remove equipment line" buttons used while composing a new
+  package or template.
+- The `EQUIPMENT_EDIT` and `TEMPLATE_EDIT` navigation routes were removed.
+
 ---
 
 ## Remaining Work (Tracked in AGENTS_PLAN.md)

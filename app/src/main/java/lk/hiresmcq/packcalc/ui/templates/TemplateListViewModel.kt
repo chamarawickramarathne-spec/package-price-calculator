@@ -30,9 +30,6 @@ class TemplateListViewModel(
     private val _state = MutableStateFlow<LoadState<List<TemplateDisplay>>>(LoadState.Loading)
     val state: StateFlow<LoadState<List<TemplateDisplay>>> = _state.asStateFlow()
 
-    private val _snackbar = MutableStateFlow<String?>(null)
-    val snackbar: StateFlow<String?> = _snackbar.asStateFlow()
-
     init {
         load()
     }
@@ -95,19 +92,4 @@ class TemplateListViewModel(
         )
     }
 
-    fun delete(template: TemplateDto) {
-        val id = template.id ?: return
-        viewModelScope.launch {
-            templateRepository.deleteTemplate(id)
-                .onSuccess {
-                    _snackbar.value = "Template deleted"
-                    load()
-                }
-                .onFailure { _snackbar.value = it.message }
-        }
-    }
-
-    fun consumeSnackbar() {
-        _snackbar.value = null
-    }
 }

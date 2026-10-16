@@ -3,7 +3,6 @@ package lk.hiresmcq.packcalc.ui.equipment
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,8 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -36,12 +33,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import lk.hiresmcq.packcalc.ui.LoadState
-import lk.hiresmcq.packcalc.ui.components.ConfirmDialog
 import lk.hiresmcq.packcalc.ui.components.ErrorBox
 import lk.hiresmcq.packcalc.ui.components.LabeledTextField
 import lk.hiresmcq.packcalc.ui.components.LoadingBox
@@ -59,7 +54,6 @@ fun TaxonomyScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var tabIndex by remember { mutableIntStateOf(0) }
     var editorTarget by remember { mutableStateOf<EditTarget?>(null) }
-    var deleteTarget by remember { mutableStateOf<EditTarget?>(null) }
 
     LaunchedEffect(snackbarMessage) {
         snackbarMessage?.let {
@@ -108,16 +102,6 @@ fun TaxonomyScreen(
                             TaxonomyRow(
                                 title = category.name,
                                 subtitle = category.description.orEmpty(),
-                                onEdit = {
-                                    editorTarget = EditTarget(
-                                        category.id,
-                                        category.name,
-                                        category.description.orEmpty(),
-                                    )
-                                },
-                                onDelete = {
-                                    deleteTarget = EditTarget(category.id, category.name)
-                                },
                             )
                             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         }
@@ -128,8 +112,6 @@ fun TaxonomyScreen(
                             TaxonomyRow(
                                 title = type.type,
                                 subtitle = "",
-                                onEdit = { editorTarget = EditTarget(type.id, type.type) },
-                                onDelete = { deleteTarget = EditTarget(type.id, type.type) },
                             )
                             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         }
@@ -142,8 +124,8 @@ fun TaxonomyScreen(
     editorTarget?.let { target ->
         TaxonomyEditDialog(
             title = when {
-                tabIndex == 1 -> if (target.id == null) "New type" else "Edit type"
-                else -> if (target.id == null) "New category" else "Edit category"
+                tabIndex == 1 -> "New type"
+                else -> "New category"
             },
             showDescription = tabIndex == 0,
             initialName = target.name,
@@ -159,56 +141,24 @@ fun TaxonomyScreen(
             },
         )
     }
-
-    deleteTarget?.let { target ->
-        ConfirmDialog(
-            title = "Delete?",
-            message = "Deleting \"${target.name}\" also removes every equipment item that belongs to it. This cannot be undone.",
-            confirmLabel = "Delete",
-            destructive = true,
-            onConfirm = {
-                val id = target.id
-                if (id != null) {
-                    if (tabIndex == 0) viewModel.deleteCategory(id) else viewModel.deleteType(id)
-                }
-                deleteTarget = null
-            },
-            onDismiss = { deleteTarget = null },
-        )
-    }
 }
 
 @Composable
 private fun TaxonomyRow(
     title: String,
     subtitle: String,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, style = MaterialTheme.typography.bodyLarge)
-            if (subtitle.isNotBlank()) {
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-        IconButton(onClick = onEdit) {
-            Icon(Icons.Filled.Edit, contentDescription = "Edit $title")
-        }
-        IconButton(onClick = onDelete) {
-            Icon(
-                Icons.Filled.Delete,
-                contentDescription = "Delete $title",
-                tint = MaterialTheme.colorScheme.error,
+        Text(text = title, style = MaterialTheme.typography.bodyLarge)
+        if (subtitle.isNotBlank()) {
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

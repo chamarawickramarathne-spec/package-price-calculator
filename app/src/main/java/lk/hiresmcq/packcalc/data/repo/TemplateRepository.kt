@@ -48,8 +48,4 @@ class TemplateRepository(private val api: SupabaseApi) {
         }
         saved
     }
-
-    suspend fun deleteTemplate(id: Int): Result<Unit> = safeApiCall {
-        api.deleteTemplate("eq.$id")
-    }
 }

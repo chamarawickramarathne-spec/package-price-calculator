@@ -109,7 +109,6 @@ fun AppNav() {
                 TemplatesScreen(
                     viewModel = vm,
                     onAddTemplate = { navController.navigate(Dest.TEMPLATE_NEW) },
-                    onEditTemplate = { navController.navigate(Dest.templateEdit(it)) },
                     onUseTemplate = { navController.navigate(Dest.calculatorFromTemplate(it)) },
                 )
             }
@@ -121,7 +120,6 @@ fun AppNav() {
                 EquipmentScreen(
                     viewModel = vm,
                     onAddEquipment = { navController.navigate(Dest.EQUIPMENT_NEW) },
-                    onEditEquipment = { navController.navigate(Dest.equipmentEdit(it)) },
                     onOpenTaxonomy = { navController.navigate(Dest.TAXONOMY) },
                 )
             }
@@ -135,20 +133,7 @@ fun AppNav() {
 
             composable(Dest.EQUIPMENT_NEW) {
                 val vm: EquipmentEditorViewModel = viewModel(
-                    factory = SimpleVmFactory(container) { EquipmentEditorViewModel(it.catalogRepository, null) },
-                )
-                EquipmentEditorScreen(viewModel = vm, onBack = { navController.popBackStack() })
-            }
-
-            composable(
-                route = Dest.EQUIPMENT_EDIT,
-                arguments = listOf(navArgument("equipmentId") { type = NavType.IntType }),
-            ) { entry ->
-                val equipmentId = entry.arguments?.getInt("equipmentId") ?: return@composable
-                val vm: EquipmentEditorViewModel = viewModel(
-                    factory = SimpleVmFactory(container) {
-                        EquipmentEditorViewModel(it.catalogRepository, equipmentId)
-                    },
+                    factory = SimpleVmFactory(container) { EquipmentEditorViewModel(it.catalogRepository) },
                 )
                 EquipmentEditorScreen(viewModel = vm, onBack = { navController.popBackStack() })
             }
@@ -156,24 +141,7 @@ fun AppNav() {
             composable(Dest.TEMPLATE_NEW) {
                 val vm: TemplateEditorViewModel = viewModel(
                     factory = SimpleVmFactory(container) {
-                        TemplateEditorViewModel(it.templateRepository, it.catalogRepository, null)
-                    },
-                )
-                TemplateEditorScreen(
-                    viewModel = vm,
-                    onBack = { navController.popBackStack() },
-                    onDone = { navController.popBackStack() },
-                )
-            }
-
-            composable(
-                route = Dest.TEMPLATE_EDIT,
-                arguments = listOf(navArgument("templateId") { type = NavType.IntType }),
-            ) { entry ->
-                val templateId = entry.arguments?.getInt("templateId") ?: return@composable
-                val vm: TemplateEditorViewModel = viewModel(
-                    factory = SimpleVmFactory(container) {
-                        TemplateEditorViewModel(it.templateRepository, it.catalogRepository, templateId)
+                        TemplateEditorViewModel(it.templateRepository, it.catalogRepository)
                     },
                 )
                 TemplateEditorScreen(
@@ -184,55 +152,47 @@ fun AppNav() {
             }
 
             composable(Dest.CALCULATOR_NEW) {
-                calculatorDestination(navController, container, CalculatorMode.New)
+                CalculatorDestination(navController, container, CalculatorMode.New)
             }
             composable(
                 route = Dest.CALCULATOR_EDIT,
                 arguments = listOf(navArgument("packageId") { type = NavType.IntType }),
             ) { entry ->
                 val packageId = entry.arguments?.getInt("packageId") ?: return@composable
-                calculatorDestination(navController, container, CalculatorMode.Edit(packageId))
+                CalculatorDestination(navController, container, CalculatorMode.Edit(packageId))
             }
             composable(
                 route = Dest.CALCULATOR_TEMPLATE,
                 arguments = listOf(navArgument("templateId") { type = NavType.IntType }),
             ) { entry ->
                 val templateId = entry.arguments?.getInt("templateId") ?: return@composable
-                calculatorDestination(navController, container, CalculatorMode.FromTemplate(templateId))
+                CalculatorDestination(navController, container, CalculatorMode.FromTemplate(templateId))
             }
         }
     }
 }
 
 @Composable
-private fun androidx.navigation.NavGraphBuilder.calculatorDestination(
+private fun CalculatorDestination(
     navController: NavHostController,
     container: lk.hiresmcq.packcalc.di.AppContainer,
     mode: CalculatorMode,
 ) {
-    composable(mode.routePattern()) {
-        val vm: CalculatorViewModel = viewModel(
-            factory = SimpleVmFactory(container) {
-                CalculatorViewModel(
-                    catalogRepository = it.catalogRepository,
-                    templateRepository = it.templateRepository,
-                    packageRepository = it.packageRepository,
-                    mode = mode,
-                )
-            },
-        )
-        CalculatorScreen(
-            viewModel = vm,
-            onBack = { navController.popBackStack() },
-            onDone = { navController.popBackStack() },
-        )
-    }
-}
-
-private fun CalculatorMode.routePattern(): String = when (this) {
-    is CalculatorMode.New -> Dest.CALCULATOR_NEW
-    is CalculatorMode.Edit -> Dest.CALCULATOR_EDIT
-    is CalculatorMode.FromTemplate -> Dest.CALCULATOR_TEMPLATE
+    val vm: CalculatorViewModel = viewModel(
+        factory = SimpleVmFactory(container) {
+            CalculatorViewModel(
+                catalogRepository = it.catalogRepository,
+                templateRepository = it.templateRepository,
+                packageRepository = it.packageRepository,
+                mode = mode,
+            )
+        },
+    )
+    CalculatorScreen(
+        viewModel = vm,
+        onBack = { navController.popBackStack() },
+        onDone = { navController.popBackStack() },
+    )
 }
 
 @Composable

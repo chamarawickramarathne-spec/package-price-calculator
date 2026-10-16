@@ -12,10 +12,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.clickable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -25,12 +23,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import lk.hiresmcq.packcalc.data.model.EquipmentDto
 import lk.hiresmcq.packcalc.ui.LoadState
-import lk.hiresmcq.packcalc.ui.components.ConfirmDialog
 import lk.hiresmcq.packcalc.ui.components.EmptyBox
 import lk.hiresmcq.packcalc.ui.components.ErrorBox
 import lk.hiresmcq.packcalc.ui.components.LoadingBox
@@ -53,20 +47,9 @@ import lk.hiresmcq.packcalc.util.CurrencyFormat
 fun EquipmentScreen(
     viewModel: EquipmentListViewModel,
     onAddEquipment: () -> Unit,
-    onEditEquipment: (Int) -> Unit,
     onOpenTaxonomy: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val snackbarMessage by viewModel.snackbar.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
-    var pendingDelete by remember { mutableStateOf<EquipmentDto?>(null) }
-
-    LaunchedEffect(snackbarMessage) {
-        snackbarMessage?.let {
-            snackbarHostState.showSnackbar(it)
-            viewModel.consumeSnackbar()
-        }
-    }
 
     Scaffold(
         topBar = {
@@ -84,41 +67,20 @@ fun EquipmentScreen(
                 Icon(Icons.Filled.Add, contentDescription = "Add equipment")
             }
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             when (val current = state) {
                 is LoadState.Loading -> LoadingBox()
                 is LoadState.Error -> ErrorBox(current.message, onRetry = viewModel::load)
-                is LoadState.Ready -> EquipmentListContent(
-                    data = current.data,
-                    onEdit = onEditEquipment,
-                    onDelete = { pendingDelete = it },
-                )
+                is LoadState.Ready -> EquipmentListContent(data = current.data)
             }
         }
-    }
-
-    pendingDelete?.let { target ->
-        ConfirmDialog(
-            title = "Delete equipment?",
-            message = "\"${target.name}\" will be permanently removed and also dropped from any packages or templates that use it.",
-            confirmLabel = "Delete",
-            destructive = true,
-            onConfirm = {
-                viewModel.delete(target)
-                pendingDelete = null
-            },
-            onDismiss = { pendingDelete = null },
-        )
     }
 }
 
 @Composable
 private fun EquipmentListContent(
     data: EquipmentListData,
-    onEdit: (Int) -> Unit,
-    onDelete: (EquipmentDto) -> Unit,
 ) {
     var query by remember { mutableStateOf("") }
     var categoryFilter by remember { mutableStateOf<Int?>(null) }
@@ -199,8 +161,6 @@ private fun EquipmentListContent(
                             item = item,
                             typeName = typeNames[item.type].orEmpty(),
                             categoryName = categoryNames[item.categoryId].orEmpty(),
-                            onClick = { item.id?.let(onEdit) },
-                            onDelete = { onDelete(item) },
                         )
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                     }
@@ -215,15 +175,12 @@ private fun EquipmentRow(
     item: EquipmentDto,
     typeName: String,
     categoryName: String,
-    onClick: () -> Unit,
-    onDelete: () -> Unit,
 ) {
     val inactive = (item.isActive ?: 1) == 0
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(start = 16.dp, end = 4.dp, top = 10.dp, bottom = 10.dp),
+            .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 10.dp),
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -246,13 +203,6 @@ private fun EquipmentRow(
                 } else {
                     MaterialTheme.colorScheme.primary
                 },
-            )
-        }
-        IconButton(onClick = onDelete) {
-            Icon(
-                Icons.Filled.Delete,
-                contentDescription = "Delete ${item.name}",
-                tint = MaterialTheme.colorScheme.error,
             )
         }
     }

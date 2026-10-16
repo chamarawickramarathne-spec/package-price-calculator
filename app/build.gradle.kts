@@ -32,8 +32,8 @@ android {
         applicationId = "lk.hiresmcq.packcalc"
         minSdk = 26
         targetSdk = 35
-        versionCode = 6
-        versionName = "1.1.1"
+        versionCode = 8
+        versionName = "1.2.0"
         vectorDrawables { useSupportLibrary = true }
 
         val supabaseUrl = secretsProperties.getProperty("SUPABASE_URL")

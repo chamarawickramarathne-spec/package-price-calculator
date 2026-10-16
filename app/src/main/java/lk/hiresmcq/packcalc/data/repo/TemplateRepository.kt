@@ -25,17 +25,12 @@ class TemplateRepository(private val api: SupabaseApi) {
         api.getTemplateEquipment(order = "id.asc", templateId = "eq.$templateId")
     }
 
-    suspend fun saveTemplate(
+    suspend fun createTemplate(
         dto: TemplateDto,
         lines: List<TemplateEquipmentDto>,
     ): Result<TemplateDto> = safeApiCall {
-        val saved = if (dto.id == null) {
-            api.insertTemplate(dto).first()
-        } else {
-            api.updateTemplate("eq.${dto.id}", dto).first()
-        }
+        val saved = api.insertTemplate(dto).first()
         val templateId = requireNotNull(saved.id) { "Saved template has no id" }
-        api.deleteTemplateEquipment("eq.$templateId")
         if (lines.isNotEmpty()) {
             val reloaded = lines.map {
                 TemplateEquipmentDto(

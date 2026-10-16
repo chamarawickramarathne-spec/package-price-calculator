@@ -111,7 +111,7 @@ class EquipmentEditorViewModel(
         )
         _saving.value = true
         viewModelScope.launch {
-            repository.saveEquipment(dto)
+            repository.addEquipment(dto)
                 .onSuccess {
                     _saving.value = false
                     _saved.value = true

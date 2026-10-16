@@ -145,7 +145,7 @@ class TemplateEditorViewModel(
         }
         _saving.value = true
         viewModelScope.launch {
-            templateRepository.saveTemplate(dto, lineDtos)
+            templateRepository.createTemplate(dto, lineDtos)
                 .onSuccess {
                     _saving.value = false
                     _saved.value = true

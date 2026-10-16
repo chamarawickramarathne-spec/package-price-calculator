@@ -47,11 +47,11 @@ class TaxonomyViewModel(
         }
     }
 
-    fun saveCategory(id: Int?, name: String, description: String) {
+    fun addCategory(name: String, description: String) {
         viewModelScope.launch {
-            repository.saveCategory(
+            repository.addCategory(
                 CategoryDto(
-                    id = id,
+                    id = null,
                     name = name.trim(),
                     description = description.trim().ifBlank { null },
                     displayOrder = null,
@@ -66,10 +66,10 @@ class TaxonomyViewModel(
         }
     }
 
-    fun saveType(id: Int?, type: String) {
+    fun addType(type: String) {
         viewModelScope.launch {
-            repository.saveType(
-                EquipmentTypeDto(id = id, type = type.trim(), isActive = 1),
+            repository.addType(
+                EquipmentTypeDto(id = null, type = type.trim(), isActive = 1),
             )
                 .onSuccess {
                     _snackbar.value = "Type saved"

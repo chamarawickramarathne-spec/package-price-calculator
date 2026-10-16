@@ -41,7 +41,7 @@ import lk.hiresmcq.packcalc.ui.components.ErrorBox
 import lk.hiresmcq.packcalc.ui.components.LabeledTextField
 import lk.hiresmcq.packcalc.ui.components.LoadingBox
 
-private data class EditTarget(val id: Int?, val name: String, val description: String = "")
+private data class EditTarget(val name: String, val description: String = "")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +74,7 @@ fun TaxonomyScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { editorTarget = EditTarget(null, "") }) {
+            FloatingActionButton(onClick = { editorTarget = EditTarget("") }) {
                 Icon(Icons.Filled.Add, contentDescription = "Add")
             }
         },
@@ -133,9 +133,9 @@ fun TaxonomyScreen(
             onDismiss = { editorTarget = null },
             onSave = { name, description ->
                 if (tabIndex == 0) {
-                    viewModel.saveCategory(target.id, name, description)
+                    viewModel.addCategory(name, description)
                 } else {
-                    viewModel.saveType(target.id, name)
+                    viewModel.addType(name)
                 }
                 editorTarget = null
             },

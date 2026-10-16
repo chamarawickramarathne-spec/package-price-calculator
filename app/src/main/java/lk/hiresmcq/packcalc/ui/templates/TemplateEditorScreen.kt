@@ -134,7 +134,7 @@ fun TemplateEditorScreen(
                     DecimalField(
                         value = form.laborHoursText,
                         onValueChange = viewModel::onLaborHoursChange,
-                        label = "Labor hours",
+                        label = "Event hours",
                         prefix = "hrs",
                     )
                     DecimalField(

@@ -90,15 +90,31 @@ Implementation plan and task tracker for the native Android rewrite
         longer PDF can never leave trailing bytes.
       - Release builds now fail loudly when the published signing key is
         missing, instead of silently falling back to a debug signature.
+- [x] **SQL installer (Mod 008):** `sql/install.sql` — one paste-ready,
+      re-runnable script (schema + seed + sequences + RLS) so the live DB can be
+      fixed in a single run.
+- [x] **Release 1.2.0 — security cleanup + UX/PDF refresh (Mod 009):**
+      - Catalog/taxonomy/templates made strictly create-only (removed the
+        unreachable PATCH/DELETE repository branches and unused `SupabaseApi`
+        endpoints).
+      - SQL narrowed to `SELECT, INSERT` on the five catalog tables; `REVOKE ALL`
+        on `packages`, `package_equipment`, `access_logs`; explicit per-command
+        policies (no `FOR ALL`).
+      - "Labor hours" → "Event hours" (label only; DB/Room field names kept).
+      - New-package defaults: 3 event hours, LKR 1,000/hour, 10% profit.
+      - PDF redesigned in the `Details.pdf` house style (orange wordmark, red
+        "Package Details", amber package banner, green price badge, tick list,
+        amber note band) while keeping the itemised breakdown; split into
+        `util/PdfTheme.kt` + `util/InvoiceSheet.kt`.
+      - 13/13 unit tests; all files < 300 lines.
 
 ### Pending
 - [ ] **Run `sql/install.sql`** in the Supabase SQL Editor (single paste, single
       run) so the equipment catalog and templates load — until then the
       Equipment picker and Templates list stay empty.
+- [ ] **Eyeball the redesigned PDF on a device** and confirm it matches
+      `Details.pdf` (not rendered on this machine — no device/emulator attached).
 - [ ] Supabase Auth for per-user ownership (hardening).
-- [ ] Remove the unreachable PATCH/DELETE code paths (repository update
-      branches + unused `SupabaseApi` endpoints) and then narrow the anon
-      catalog grant to `SELECT, INSERT` (+ `DELETE` on `template_equipment`).
 
 ---
 

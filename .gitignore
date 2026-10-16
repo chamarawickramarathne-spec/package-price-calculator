@@ -38,6 +38,9 @@ output-metadata.json
 npm-debug.log*
 build.out*
 
+# ============ Local design reference ============
+Details.pdf
+
 # ============ OS junk ============
 Thumbs.db
 ehthumbs.db

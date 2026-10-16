@@ -1,6 +1,6 @@
 ================================================================================
 MEDIA SUPPORT — Package Price Calculator
-Hire Artist Studio (hiresmcq)  |  Version 1.1.1  |  Generated 2026-10-17
+Hire Artist Studio (hiresmcq)  |  Version 1.2.0  |  Generated 2026-10-17
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -12,8 +12,8 @@ Package Price Calculator
 2. SHORT DESCRIPTION
 --------------------------------------------------------------------------------
 Build a photo/video shoot price in seconds: a guided 4-step wizard for gear,
-labor, extra costs and profit — then save it locally and export a ready-to-send
-PDF invoice.
+event hours, extra costs and profit — then save it locally and export a
+ready-to-send PDF quote.
 
 --------------------------------------------------------------------------------
 3. LONG DESCRIPTION
@@ -32,13 +32,16 @@ Who it is for:
 Main features:
 - 4-step package wizard: Package Details, Equipment Selection, Labor & Profit,
   and Pricing — with Back/Next navigation and the final total always visible.
-- Live price breakdown: equipment + labor + extra costs = subtotal, then your
-  profit percentage on top, updated as you type.
+- Sensible defaults on every new quote: 3 event hours, LKR 1,000 per hour and a
+  10% profit margin — change them in a tap.
+- Live price breakdown: equipment + event hours + extra costs = subtotal, then
+  your profit percentage on top, updated as you type.
 - Extra cost fields that reflect a real shoot: extra gear, transportation,
   assistant pay, editing/retouching and a free-form additional cost.
-- PDF invoices: branded with your studio name, an automatic invoice number
-  (INV-0001, INV-0002, ...) and a full itemised list. Share to WhatsApp or
-  email, or save to your device.
+- Professional PDF quote/invoice: your studio header, a highlighted package
+  banner, a green total badge, an at-a-glance coverage summary and an automatic
+  invoice number (INV-0001, INV-0002, ...). Share to WhatsApp or email, or save
+  to your device.
 - Project details: client name and project date, so a saved package is a real
   job record.
 - Local storage: packages are saved on your device and work offline — open, edit
@@ -69,15 +72,17 @@ invoice to send it with.
 New: quote AND invoice your next shoot from one app. 📸
 
 Package Price Calculator walks you through a simple 4-step wizard — details,
-equipment, labor & profit, and the final price. Add the costs most apps forget
-(travel, assistant pay, editing) and get an itemised total you can trust.
+equipment, event hours & profit, and the final price. Add the costs most apps
+forget (travel, assistant pay, editing) and get an itemised total you can trust.
 
-Then export a clean PDF invoice with your studio name and an automatic invoice
-number, and send it straight to your client on WhatsApp or email.
+Then export a clean PDF quote with your studio name, a highlighted package
+banner, a green total badge and an automatic invoice number — ready to send to
+your client on WhatsApp or email.
 
 - Guided package wizard with a live final total
+- Sensible defaults: 3 event hours, LKR 1,000/hour, 10% profit
 - Extra cost fields for travel, assistants and editing
-- Professional PDF invoices, ready to send
+- Professional PDF quotes, ready to send
 - Packages saved on your device — works offline
 - Built for photographers, videographers and studios
 
@@ -115,17 +120,18 @@ Download Package Price Calculator and price your next job the easy way.
    travel and assistant costs, minimal desk, bright natural light, top-down
    commercial photography.
 
-3. A wedding photographer at a venue sharing a professional PDF invoice from
-   their phone to a happy couple, phone screen showing a branded invoice with a
-   clear total, candid documentary style, warm golden-hour light.
+3. A wedding photographer at a venue sharing a professional PDF quote from
+   their phone to a happy couple, the phone screen showing a document with a
+   bold orange package banner, a green price badge and green tick marks, candid
+   documentary style, warm golden-hour light.
 
 4. A friendly app-icon style illustration: a camera lens merging with a rupee
-   price tag and a small invoice document, flat vector design, warm red-orange
-   and cream palette, rounded shapes, clean background, suitable for a social
-   media avatar.
+   price tag and a small document, flat vector design, warm red-orange, amber
+   banner and emerald green accents on a cream background, rounded shapes, clean
+   background, suitable for a social media avatar.
 
 5. A studio owner at a tidy desk reviewing a list of saved shoot packages and
-   invoices on a phone propped on a stand, gear bags in the background,
+   their PDF quotes on a phone propped on a stand, gear bags in the background,
    organised and professional atmosphere, soft rim lighting, editorial
    commercial style.
 

@@ -21,34 +21,18 @@ class CatalogRepository(private val api: SupabaseApi) {
         api.getEquipment(
             order = "name.asc",
             isActive = if (includeInactive) null else "eq.1",
-            id = null,
         )
     }
 
-    suspend fun saveEquipment(dto: EquipmentDto): Result<EquipmentDto> = safeApiCall {
-        val id = dto.id
-        if (id == null) {
-            api.insertEquipment(dto).first()
-        } else {
-            api.updateEquipment("eq.$id", dto).first()
-        }
+    suspend fun addEquipment(dto: EquipmentDto): Result<EquipmentDto> = safeApiCall {
+        api.insertEquipment(dto).first()
     }
 
-    suspend fun saveCategory(dto: CategoryDto): Result<CategoryDto> = safeApiCall {
-        val id = dto.id
-        if (id == null) {
-            api.insertCategory(dto).first()
-        } else {
-            api.updateCategory("eq.$id", dto).first()
-        }
+    suspend fun addCategory(dto: CategoryDto): Result<CategoryDto> = safeApiCall {
+        api.insertCategory(dto).first()
     }
 
-    suspend fun saveType(dto: EquipmentTypeDto): Result<EquipmentTypeDto> = safeApiCall {
-        val id = dto.id
-        if (id == null) {
-            api.insertEquipmentType(dto).first()
-        } else {
-            api.updateEquipmentType("eq.$id", dto).first()
-        }
+    suspend fun addType(dto: EquipmentTypeDto): Result<EquipmentTypeDto> = safeApiCall {
+        api.insertEquipmentType(dto).first()
     }
 }

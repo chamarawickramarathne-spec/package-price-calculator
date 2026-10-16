@@ -12,7 +12,8 @@
 --      original hiresmcq_lens_calculator schema).
 --   2. Seeds categories, equipment types, the equipment catalog and templates.
 --   3. Re-arms the id sequences so ids the app adds cannot collide.
---   4. Enables Row Level Security and restores the anon grants the app needs.
+--   4. Enables Row Level Security and grants the anon role exactly what the
+--      app uses: SELECT + INSERT on the five catalog tables.
 --
 -- SAFE TO RE-RUN: yes, as many times as you like. Re-running restores the
 --   catalog to this snapshot. Saved packages are NOT affected - since v1.1.0
@@ -20,14 +21,16 @@
 --
 -- SECURITY MODEL (interim)
 --   The app authenticates with the project anon key, which is embedded in the
---   APK, so anyone holding the APK can read and write the catalog tables. RLS
---   makes that access explicit and documented; it does NOT make the catalog
---   private. HARDENING (recommended next step): enable Supabase Auth and
---   replace the anon policies with auth.uid()-based policies.
+--   APK, so anyone holding the APK can read the catalog and add rows to it.
+--   RLS makes that access explicit and documented; it does NOT make the catalog
+--   private, and it does not allow anon to change or delete existing catalog
+--   rows. HARDENING (recommended next step): enable Supabase Auth and replace
+--   the anon policies with auth.uid()-based policies.
 --
---   public.packages and public.package_equipment are deliberately NOT granted
---   to anon: the app has not used them since packages moved on-device, so the
---   REVOKE below also removes any grant left behind by the earlier
+--   public.packages, public.package_equipment and public.access_logs are
+--   deliberately NOT granted to anon: the app never touches them remotely
+--   (packages are device-local, and there are no log endpoints), so the REVOKE
+--   below also removes any grant left behind by the earlier
 --   migrations/001_rls_policies.sql.
 -- =========================================================================
 
@@ -408,11 +411,11 @@ SELECT setval(pg_get_serial_sequence('public.templates', 'id'), 5, false);
 SELECT setval(pg_get_serial_sequence('public.template_equipment', 'id'), 21, false);
 
 -- ============================ security (RLS) ============================
--- The anon role is the only role the app can use, so it needs the privileges
--- the screens actually exercise: reads everywhere in the catalog, inserts for
--- the "add" forms, and delete for template line items.
+-- The anon role is the only role the app can use. The app reads the catalog and
+-- adds rows from its "add" forms, so it needs exactly SELECT + INSERT on the
+-- five catalog tables - nothing else.
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE
+GRANT SELECT, INSERT ON TABLE
     public.category_types,
     public.equipment_types,
     public.equipment_details,
@@ -420,15 +423,18 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE
     public.template_equipment
 TO anon;
 
--- access_logs is append-only from the client.
-GRANT SELECT, INSERT ON TABLE public.access_logs TO anon;
-
 -- Sequences drive the identity columns the add forms insert into.
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO anon;
 
--- Saved packages live on the device (v1.1.0+): the app never touches these
--- tables remotely, so withdraw any access an earlier migration granted.
-REVOKE ALL ON TABLE public.packages, public.package_equipment FROM anon;
+-- Withdraw anything a previous migration may have granted to the tables the app
+-- does not use remotely:
+--   * packages / package_equipment - device-local since v1.1.0 (Room/SQLite).
+--   * access_logs - the app never reads or writes it.
+REVOKE ALL ON TABLE
+    public.packages,
+    public.package_equipment,
+    public.access_logs
+FROM anon;
 
 -- ============================ enable RLS ============================
 ALTER TABLE public.category_types      ENABLE ROW LEVEL SECURITY;
@@ -440,33 +446,52 @@ ALTER TABLE public.packages            ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.package_equipment   ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.access_logs         ENABLE ROW LEVEL SECURITY;
 
--- ============================ policies: catalog (anon) ============================
+-- ============================ policies: catalog (select + insert) ============================
+-- One SELECT and one INSERT policy per catalog table, matching the grants
+-- above. No UPDATE/DELETE policy exists, so even a stray future grant cannot
+-- let the anon role rewrite or erase the catalog.
 DROP POLICY IF EXISTS anon_all_category_types    ON public.category_types;
 DROP POLICY IF EXISTS anon_all_equipment_types   ON public.equipment_types;
 DROP POLICY IF EXISTS anon_all_equipment_details ON public.equipment_details;
 DROP POLICY IF EXISTS anon_all_templates         ON public.templates;
 DROP POLICY IF EXISTS anon_all_template_equip    ON public.template_equipment;
+DROP POLICY IF EXISTS anon_sel_category_types    ON public.category_types;
+DROP POLICY IF EXISTS anon_sel_equipment_types   ON public.equipment_types;
+DROP POLICY IF EXISTS anon_sel_equipment_details ON public.equipment_details;
+DROP POLICY IF EXISTS anon_sel_templates         ON public.templates;
+DROP POLICY IF EXISTS anon_sel_template_equip    ON public.template_equipment;
+DROP POLICY IF EXISTS anon_ins_category_types    ON public.category_types;
+DROP POLICY IF EXISTS anon_ins_equipment_types   ON public.equipment_types;
+DROP POLICY IF EXISTS anon_ins_equipment_details ON public.equipment_details;
+DROP POLICY IF EXISTS anon_ins_templates         ON public.templates;
+DROP POLICY IF EXISTS anon_ins_template_equip    ON public.template_equipment;
 
-CREATE POLICY anon_all_category_types    ON public.category_types    FOR ALL TO anon USING (true) WITH CHECK (true);
-CREATE POLICY anon_all_equipment_types   ON public.equipment_types   FOR ALL TO anon USING (true) WITH CHECK (true);
-CREATE POLICY anon_all_equipment_details ON public.equipment_details FOR ALL TO anon USING (true) WITH CHECK (true);
-CREATE POLICY anon_all_templates         ON public.templates         FOR ALL TO anon USING (true) WITH CHECK (true);
-CREATE POLICY anon_all_template_equip    ON public.template_equipment FOR ALL TO anon USING (true) WITH CHECK (true);
+CREATE POLICY anon_sel_category_types    ON public.category_types    FOR SELECT TO anon USING (true);
+CREATE POLICY anon_ins_category_types    ON public.category_types    FOR INSERT TO anon WITH CHECK (true);
 
--- ============================ policies: packages (no anon access) ============================
+CREATE POLICY anon_sel_equipment_types   ON public.equipment_types   FOR SELECT TO anon USING (true);
+CREATE POLICY anon_ins_equipment_types   ON public.equipment_types   FOR INSERT TO anon WITH CHECK (true);
+
+CREATE POLICY anon_sel_equipment_details ON public.equipment_details FOR SELECT TO anon USING (true);
+CREATE POLICY anon_ins_equipment_details ON public.equipment_details FOR INSERT TO anon WITH CHECK (true);
+
+CREATE POLICY anon_sel_templates         ON public.templates         FOR SELECT TO anon USING (true);
+CREATE POLICY anon_ins_templates         ON public.templates         FOR INSERT TO anon WITH CHECK (true);
+
+CREATE POLICY anon_sel_template_equip    ON public.template_equipment FOR SELECT TO anon USING (true);
+CREATE POLICY anon_ins_template_equip    ON public.template_equipment FOR INSERT TO anon WITH CHECK (true);
+
+-- ============================ policies: unused tables (no anon access) ============================
 -- RLS is enabled above and no anon policy is created, so the default is deny.
 DROP POLICY IF EXISTS anon_all_packages      ON public.packages;
 DROP POLICY IF EXISTS anon_all_package_equip ON public.package_equipment;
-
--- ============================ policies: access logs (append-only) ============================
 DROP POLICY IF EXISTS anon_read_access_logs  ON public.access_logs;
 DROP POLICY IF EXISTS anon_write_access_logs ON public.access_logs;
-CREATE POLICY anon_read_access_logs  ON public.access_logs FOR SELECT TO anon USING (true);
-CREATE POLICY anon_write_access_logs ON public.access_logs FOR INSERT TO anon WITH CHECK (true);
 
 -- ============================ verify ============================
--- Expect a row per table listing the applied policies.
-SELECT tablename, policyname
+-- Expect two rows per catalog table (anon_sel_* / anon_ins_*) and none for
+-- packages, package_equipment or access_logs.
+SELECT tablename, policyname, cmd
 FROM pg_policies
 WHERE schemaname = 'public'
 ORDER BY tablename, policyname;

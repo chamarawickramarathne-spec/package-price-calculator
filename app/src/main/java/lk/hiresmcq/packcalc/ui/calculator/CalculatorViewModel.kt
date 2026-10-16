@@ -18,7 +18,6 @@ import lk.hiresmcq.packcalc.data.repo.CatalogRepository
 import lk.hiresmcq.packcalc.data.repo.LocalPackageRepository
 import lk.hiresmcq.packcalc.data.repo.TemplateRepository
 import lk.hiresmcq.packcalc.domain.EquipmentLine
-import lk.hiresmcq.packcalc.domain.PackageDraft
 import lk.hiresmcq.packcalc.domain.PricingBreakdown
 import lk.hiresmcq.packcalc.domain.PricingCalculator
 import lk.hiresmcq.packcalc.ui.LoadState
@@ -261,23 +260,8 @@ class CalculatorViewModel(
         _snackbar.value = null
     }
 
-    /** Saves the current form locally and returns the package id. */
     private suspend fun persist(): Result<Long> = runCatching {
-        val form = _form.value
-        val draft = PackageDraft(
-            id = form.editingPackageId,
-            packageName = form.packageName.trim(),
-            clientName = form.clientName.trim().ifBlank { null },
-            projectDate = form.projectDate.trim().ifBlank { null },
-            lines = _lines.value,
-            laborHours = NumberInput.toBigDecimal(form.laborHoursText),
-            hourlyRate = NumberInput.toBigDecimal(form.hourlyRateText),
-            profitPercentage = NumberInput.toBigDecimal(form.profitText),
-            extraCosts = form.extraCosts(),
-            notes = form.notes.trim().ifBlank { null },
-            sourceTemplateId = form.sourceTemplateId,
-        )
-        packageRepository.save(draft)
+        packageRepository.save(_form.value.toDraft(_lines.value))
     }
 
     private fun validateName(): Boolean {

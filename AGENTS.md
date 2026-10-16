@@ -63,9 +63,11 @@ log. Kept up to date after every change.
 - Supabase project URL + anon key live in gitignored `secrets.properties`
   (template: `secrets.properties.example`).
 - The anon key is embedded in the APK (`BuildConfig`). Anyone with the APK can
-  read/write tables the anon role is granted. See `sql/migrations/001_rls_policies.sql`
-  for the intended Row Level Security model. **Adding Supabase Auth is the
-  recommended production hardening step.**
+  read the catalog and append rows to it — and nothing more: since v1.2.0 the
+  anon role has only `SELECT, INSERT` on the five catalog tables (no
+  UPDATE/DELETE policy exists). See `sql/install.sql` and
+  `sql/migrations/001_rls_policies.sql` for the Row Level Security model.
+  **Adding Supabase Auth is the recommended production hardening step.**
 - `com.squareup.retrofit2:converter-kotlinx-serialization` MUST be used for the
   JSON converter (the jakewharton artifact's Kotlin metadata does not resolve).
 
@@ -381,8 +383,89 @@ Date: 2026-10-17
 
 ---
 
+### Modification 009
+
+Date: 2026-10-17
+
+### Changes
+- **Security & code cleanup (was planned as v1.1.2).** Removed the unreachable
+  PATCH/DELETE paths and unused `SupabaseApi` endpoints; the catalog, taxonomy
+  and templates are now **create-only** (insert-only) at the repository layer.
+  - `SupabaseApi.kt`: deleted `updateCategory`, `updateEquipmentType`,
+    `updateEquipment`, `updateTemplate`, `deleteTemplateEquipment`, the
+    `PATCH`/`DELETE` imports and the unused `id` parameter on `getEquipment`.
+  - `CatalogRepository.kt`: `saveEquipment`/`saveCategory`/`saveType` →
+    `addEquipment`/`addCategory`/`addType` (insert-only); `loadEquipment` no
+    longer takes an `id`.
+  - `TemplateRepository.kt`: `saveTemplate` → `createTemplate` (insert template
+    + lines; removed the update branch and the no-op `deleteTemplateEquipment`).
+  - Call sites: `EquipmentEditorViewModel` → `addEquipment`;
+    `TemplateEditorViewModel` → `createTemplate`; `TaxonomyViewModel` →
+    `addCategory(name, description)` / `addType(type)`; `TaxonomyScreen`
+    `EditTarget` is now `(name, description = "")` and the FAB calls
+    `EditTarget("")`.
+- **SQL hardening.** `sql/install.sql` and `sql/migrations/001_rls_policies.sql`
+  now grant the anon role exactly `SELECT, INSERT` on the five catalog tables
+  and `REVOKE ALL` on `packages`, `package_equipment` and `access_logs` (RLS
+  enabled, no anon policy ⇒ deny). `FOR ALL` catalog policies replaced with
+  explicit `FOR SELECT` / `FOR INSERT` per table, so anon can no longer UPDATE
+  or DELETE catalog rows even if a grant is added later.
+- **"Labor hours" renamed to "Event hours"** in the calculator
+  (`LaborProfitTab`) and the template editor. Code/DB field names
+  (`laborHours`, Room column, remote `labor_hours`) are unchanged to avoid a
+  schema migration.
+- **New defaults on a fresh package:** event hours `3`, hourly rate `1000`,
+  profit `10` (`CalculatorForm`).
+- **PDF redesigned to match `Details.pdf`** (user-supplied reference) while
+  keeping the itemised breakdown. New `util/PdfTheme.kt` (colours taken from the
+  reference: orange `#EA580C`, banner amber `#F59E0B`, red `#D22525`, green
+  `#10B981`, ink/greys, rule `#E5E7EB`; A4 geometry with a 56pt margin;
+  vector tick + warning marks; text fitting/wrapping/ellipsis helpers;
+  `PdfDates` for ISO → "October 16, 2026" and "+7 days" expiry) and new
+  `util/InvoiceSheet.kt` (the renderer). `PdfInvoiceGenerator.kt` now only
+  exposes `generate`/`suggestedName`.
+  - Layout: orange wordmark + studio line → red "Package Details" → Date /
+    Client / Invoice # / Expires On grid → amber package banner (name + studio
+    tagline) → "Important" tick list (event-hours coverage + up to 4 equipment
+    items, grey sub-note) → itemised table → totals (equipment, event hours,
+    extras, subtotal, profit) → green "Total Package Price / LKR" badge →
+    amber-ruled "Important Note" band (notes) → centred footer. Continuation
+    pages get a compact orange header.
+- Also moved the form→draft mapping to `CalculatorForm.toDraft(lines)` in
+  `CalculatorModels.kt`, trimming `CalculatorViewModel.kt` to 285 lines.
+- Bumped `versionCode` 6 → 8 and `versionName` 1.1.1 → **1.2.0** (the
+  security-only clean-up was never released on its own, so it ships here).
+
+### Files / Components
+- `data/remote/SupabaseApi.kt`, `data/repo/{CatalogRepository,TemplateRepository}.kt`
+- `ui/equipment/{EquipmentEditorViewModel,TaxonomyViewModel,TaxonomyScreen}.kt`,
+  `ui/templates/TemplateEditorViewModel.kt`
+- `ui/calculator/{CalculatorModels,CalculatorViewModel}.kt`,
+  `ui/calculator/tabs/LaborProfitTab.kt`, `ui/templates/TemplateEditorScreen.kt`
+- `util/{PdfTheme,InvoiceSheet,PdfInvoiceGenerator}.kt`
+- `sql/install.sql`, `sql/migrations/001_rls_policies.sql`
+- `app/build.gradle.kts`, `medial_support.txt`, `AGENTS_PLAN.md`
+
+### Important Notes
+- Fixes applied during review before release: item names are clamped to the QTY
+  column, totals labels are clamped against their amount, and the green badge
+  auto-shrinks the amount so a large total cannot overflow the box.
+- `PdfDates` parses ISO dates with `ParsePosition` (no `ParseException` on
+  unexpected input) and builds a formatter per call (`SimpleDateFormat` is not
+  thread-safe).
+- **Not verified on a device:** no Android device/emulator was attached to this
+  machine, so the generated PDF was not rendered here. Layout geometry, colours
+  and font sizes were transcribed from `Details.pdf` (extracted with PyMuPDF),
+  and the module compiles plus passes 13/13 unit tests. On-device PDF rendering
+  remains to be eyeballed by the user.
+- `Details.pdf` (the reference) is left untracked in the repo root and is not
+  committed.
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
 - **Fix the live Supabase DB (RLS/seed)** so the equipment catalog and
-  templates load — the calculator's Equipment tab is empty until then.
+  templates load — run `sql/install.sql` in the Supabase SQL Editor.
+- **Eyeball the new PDF on a device** and confirm it matches `Details.pdf`.
 - Supabase Auth for per-user ownership (hardening).

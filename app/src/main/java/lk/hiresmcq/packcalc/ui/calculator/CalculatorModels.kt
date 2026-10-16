@@ -2,11 +2,12 @@ package lk.hiresmcq.packcalc.ui.calculator
 
 import lk.hiresmcq.packcalc.data.model.CategoryDto
 import lk.hiresmcq.packcalc.data.model.EquipmentDto
+import lk.hiresmcq.packcalc.domain.EquipmentLine
 import lk.hiresmcq.packcalc.domain.ExtraCosts
+import lk.hiresmcq.packcalc.domain.PackageDraft
 import lk.hiresmcq.packcalc.util.NumberInput
 import java.io.File
 
-/** Index of the wizard's last tab (Pricing). */
 const val LAST_TAB = 3
 
 sealed interface CalculatorMode {
@@ -28,9 +29,9 @@ data class CalculatorForm(
     val packageName: String = "",
     val clientName: String = "",
     val projectDate: String = "",
-    val laborHoursText: String = "",
-    val hourlyRateText: String = "",
-    val profitText: String = "",
+    val laborHoursText: String = "3",
+    val hourlyRateText: String = "1000",
+    val profitText: String = "10",
     val extraGearText: String = "",
     val transportationText: String = "",
     val assistantPayText: String = "",
@@ -47,5 +48,19 @@ data class CalculatorForm(
         assistantPay = NumberInput.toBigDecimal(assistantPayText),
         editing = NumberInput.toBigDecimal(editingText),
         additional = NumberInput.toBigDecimal(additionalText),
+    )
+
+    fun toDraft(lines: List<EquipmentLine>): PackageDraft = PackageDraft(
+        id = editingPackageId,
+        packageName = packageName.trim(),
+        clientName = clientName.trim().ifBlank { null },
+        projectDate = projectDate.trim().ifBlank { null },
+        lines = lines,
+        laborHours = NumberInput.toBigDecimal(laborHoursText),
+        hourlyRate = NumberInput.toBigDecimal(hourlyRateText),
+        profitPercentage = NumberInput.toBigDecimal(profitText),
+        extraCosts = extraCosts(),
+        notes = notes.trim().ifBlank { null },
+        sourceTemplateId = sourceTemplateId,
     )
 }

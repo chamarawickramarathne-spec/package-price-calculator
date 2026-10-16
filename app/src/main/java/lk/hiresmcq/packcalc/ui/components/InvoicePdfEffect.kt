@@ -46,7 +46,11 @@ fun InvoicePdfEffect(
     LaunchedEffect(pdf) {
         pdf?.let { result ->
             when (result.mode) {
-                PdfMode.Share -> context.startActivity(InvoiceSharing.shareIntent(context, result.file))
+                PdfMode.Share -> {
+                    val intent = InvoiceSharing.shareIntent(context, result.file)
+                    runCatching { context.startActivity(intent) }
+                        .onFailure { onMessage(it.message ?: "No app available to share the invoice") }
+                }
                 PdfMode.Save -> {
                     pendingSave = result
                     saveDocument.launch(result.file.name)

@@ -28,6 +28,9 @@ class PackageDetailViewModel(
     private val _pdf = MutableStateFlow<PdfResult?>(null)
     val pdf: StateFlow<PdfResult?> = _pdf.asStateFlow()
 
+    private val _snackbar = MutableStateFlow<String?>(null)
+    val snackbar: StateFlow<String?> = _snackbar.asStateFlow()
+
     init {
         load()
     }
@@ -50,11 +53,17 @@ class PackageDetailViewModel(
         viewModelScope.launch {
             runCatching {
                 withContext(Dispatchers.IO) { PdfInvoiceGenerator.generate(appContext, quote) }
-            }.onSuccess { _pdf.value = PdfResult(it, mode) }
+            }
+                .onSuccess { _pdf.value = PdfResult(it, mode) }
+                .onFailure { _snackbar.value = it.message ?: "Could not create the invoice PDF" }
         }
     }
 
     fun consumePdf() {
         _pdf.value = null
+    }
+
+    fun consumeSnackbar() {
+        _snackbar.value = null
     }
 }

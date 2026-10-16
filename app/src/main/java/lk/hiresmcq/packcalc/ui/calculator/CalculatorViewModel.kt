@@ -242,7 +242,11 @@ class CalculatorViewModel(
                 return@launch
             }
             val file = withContext(Dispatchers.IO) {
-                PdfInvoiceGenerator.generate(appContext, quote)
+                runCatching { PdfInvoiceGenerator.generate(appContext, quote) }
+            }.getOrElse {
+                _saving.value = false
+                _snackbar.value = it.message ?: "Could not create the invoice PDF"
+                return@launch
             }
             _saving.value = false
             _pdf.value = PdfResult(file, pdfMode)

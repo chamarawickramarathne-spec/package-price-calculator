@@ -25,7 +25,7 @@ object InvoiceSharing {
     }
 
     suspend fun copyTo(context: Context, file: File, destination: Uri) = withContext(Dispatchers.IO) {
-        val output = context.contentResolver.openOutputStream(destination)
+        val output = context.contentResolver.openOutputStream(destination, "wt")
             ?: error("Could not open the selected location")
         output.use { target -> file.inputStream().use { source -> source.copyTo(target) } }
     }

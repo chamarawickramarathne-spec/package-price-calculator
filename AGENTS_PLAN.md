@@ -82,6 +82,14 @@ Implementation plan and task tracker for the native Android rewrite
         package detail.
       - Added a project date field with a Material3 date picker.
       - Added Room + KSP; unit tests now 13 (7 pricing + 6 version).
+- [x] **Fix 1.1.1 — post-release audit (rule 21):**
+      - PDF failures are now surfaced instead of crashing (wizard) or being
+        silently swallowed (saved-package detail).
+      - Share-sheet launch failures show a message instead of crashing.
+      - Saved invoices now overwrite the target file (truncate) so an existing
+        longer PDF can never leave trailing bytes.
+      - Release builds now fail loudly when the published signing key is
+        missing, instead of silently falling back to a debug signature.
 
 ### Pending
 - [ ] Apply live DB SQL in Supabase SQL Editor (schema + seed, then RLS) —

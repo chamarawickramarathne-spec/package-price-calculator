@@ -293,6 +293,53 @@ Date: 2026-10-17
 
 ---
 
+### Modification 007
+
+Date: 2026-10-17
+
+### Changes
+- **Post-release security/robustness audit (rule 21)** of v1.1.0 and five fixes:
+  1. `CalculatorViewModel.requestPdf` — PDF generation ran **unwrapped**, so a
+     failure (cache write error, OOM) crashed the app. Now wrapped in
+     `runCatching`; the failure is reported through the existing snackbar.
+  2. `PackageDetailViewModel.requestPdf` — the failure branch of
+     `runCatching { … }.onSuccess { … }` was **discarded**, so tapping
+     Share/Save produced no feedback at all. Added a `snackbar` channel and
+     `consumeSnackbar()`; the screen now shows the message.
+  3. `InvoicePdfEffect` — `startActivity(shareIntent)` could throw
+     `ActivityNotFoundException` (no receiver for the PDF share) and crash.
+     Now guarded, with a user-visible message.
+  4. `InvoiceSharing.copyTo` — wrote with the default mode; overwriting an
+     existing file could leave the tail of a previously longer PDF. Now opens
+     the stream with `"wt"` (truncate).
+  5. `app/build.gradle.kts` — release builds **silently fell back to the debug
+     signing config** when `keystore.properties` was absent, which would ship an
+     APK that cannot install over a release-signed one. Now a
+     `gradle.taskGraph.whenReady` guard throws a `GradleException` with
+     instructions whenever a Release task runs without the publisher keystore.
+     Debug/test tasks are unaffected (verified both paths).
+- Bumped `versionCode` 5 → 6 and `versionName` 1.1.0 → 1.1.1.
+
+### Files / Components
+- `ui/calculator/CalculatorViewModel.kt`, `ui/packages/PackageDetailViewModel.kt`,
+  `ui/packages/PackageDetailScreen.kt`, `ui/components/InvoicePdfEffect.kt`,
+  `util/InvoiceSharing.kt`, `app/build.gradle.kts`, `AGENTS_PLAN.md`,
+  `medial_support.txt`.
+
+### Important Notes
+- Reviewed and found no issue with: HTTP logging (gated behind
+  `BuildConfig.DEBUG`, level `BASIC`), manifest exposure (only `MainActivity`
+  exported, `allowBackup="false"`, FileProvider `exported="false"`), FileProvider
+  paths (cache subdirs only — no external storage), Room schema (FK
+  `package_items → packages` `ON DELETE CASCADE` is generated), secrets
+  (`secrets.properties`/`keystore.properties` gitignored, absent from the tree).
+- Verified the shipped APK is signed by the publisher key
+  (`CN=Hire Artist Studio`, SHA-256 `F5:C6:C7:3F…93:EC:87`) — identical to the
+  keystore used for v1.0.0–v1.1.0, so in-app updates install cleanly.
+- Tests still 13/13; all files remain under 300 lines.
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
 - **Fix the live Supabase DB (RLS/seed)** so the equipment catalog and

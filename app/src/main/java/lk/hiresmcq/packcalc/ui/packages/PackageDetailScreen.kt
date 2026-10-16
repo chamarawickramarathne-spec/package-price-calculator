@@ -26,6 +26,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -55,6 +56,7 @@ fun PackageDetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val pdf by viewModel.pdf.collectAsStateWithLifecycle()
+    val snackbarMessage by viewModel.snackbar.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -63,6 +65,13 @@ fun PackageDetailScreen(
         onConsumed = viewModel::consumePdf,
         onMessage = { message -> scope.launch { snackbarHostState.showSnackbar(message) } },
     )
+
+    LaunchedEffect(snackbarMessage) {
+        snackbarMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            viewModel.consumeSnackbar()
+        }
+    }
 
     Scaffold(
         topBar = {

@@ -32,8 +32,8 @@ android {
         applicationId = "lk.hiresmcq.packcalc"
         minSdk = 26
         targetSdk = 35
-        versionCode = 5
-        versionName = "1.1.0"
+        versionCode = 6
+        versionName = "1.1.1"
         vectorDrawables { useSupportLibrary = true }
 
         val supabaseUrl = secretsProperties.getProperty("SUPABASE_URL")
@@ -60,7 +60,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("release")
         }
         debug {
             applicationIdSuffix = ".debug"
@@ -77,6 +77,20 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+}
+
+// Never produce a release build without the published signing key: a silently
+// debug-signed (or unsigned) APK cannot be installed as an update over a
+// release-signed one. Fail loudly instead.
+gradle.taskGraph.whenReady {
+    val buildsRelease = allTasks.any { it.name.contains("Release") }
+    if (buildsRelease && !keystoreProperties.containsKey("storeFile")) {
+        throw GradleException(
+            "Release signing is not configured. Create keystore.properties with storeFile, " +
+                "storePassword, keyAlias and keyPassword so release builds use the same key " +
+                "as published releases."
+        )
     }
 }
 

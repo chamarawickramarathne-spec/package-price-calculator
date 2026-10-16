@@ -57,9 +57,10 @@ Implementation plan and task tracker for the native Android rewrite
 - [x] Release keystore generated; signed release APK built (`assembleRelease`).
 - [x] Universal APK staged at `build/Package-Price-Calculator.apk`.
 - [x] `medial_support.txt` regenerated for v1.0.0.
+- [x] Committed to `main` and pushed.
+- [x] GitHub release `v1.0.0` published with the universal APK attached.
 
 ### Pending
-- [ ] Commit + GitHub release (v1.0.0) with the universal APK attached.
 - [ ] Supabase Auth for per-user package ownership (hardening).
 - [ ] Optional: PDF export / sharing of saved packages.
 

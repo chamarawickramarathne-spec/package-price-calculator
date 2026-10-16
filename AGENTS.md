@@ -107,6 +107,25 @@ Date: 2026-10-16
   `sql/migrations/001_rls_policies.sql`. Supabase Auth is the recommended
   hardening step.
 
+### Modification 002
+
+Date: 2026-10-16
+
+### Changes
+- Changed the GitHub repository visibility from **private to public** so the
+  release APK download link resolves for anonymous users.
+
+### Files / Components
+- GitHub repo setting: `chamarawickramarathne-spec/package-price-calculator`
+
+### Important Notes
+- Private repos return HTTP 404 for release assets to unauthenticated users
+  (GitHub hides existence). Public visibility makes the stable link work:
+  `https://github.com/chamarawickramarathne-spec/package-price-calculator/releases/download/v1.0.0/Package-Price-Calculator.apk`
+- Verified anonymously: HTTP 200, `application/vnd.android.package-archive`.
+- Reference: `sql/migrations/001_rls_policies.sql` (interim anon model) + the
+  embedded anon key already allow app access regardless of repo visibility.
+
 ---
 
 ## Remaining Work (Tracked in AGENTS_PLAN.md)

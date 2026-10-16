@@ -1,5 +1,6 @@
 package lk.hiresmcq.packcalc.data.remote
 
+import lk.hiresmcq.packcalc.data.model.AccessLogDto
 import lk.hiresmcq.packcalc.data.model.CategoryDto
 import lk.hiresmcq.packcalc.data.model.EquipmentDto
 import lk.hiresmcq.packcalc.data.model.EquipmentTypeDto
@@ -58,9 +59,14 @@ interface SupabaseApi {
     @POST("templates")
     suspend fun insertTemplate(@Body body: TemplateDto): List<TemplateDto>
 
-    @Headers("Prefer: return=representation")
+    @Headers("Prefer: return=minimal")
     @POST("template_equipment")
     suspend fun insertTemplateEquipment(
         @Body body: List<TemplateEquipmentDto>,
     ): List<TemplateEquipmentDto>
+
+    // ---- access_logs (usage logging; append-only) ----
+    @Headers("Prefer: return=minimal")
+    @POST("access_logs")
+    suspend fun insertAccessLog(@Body body: AccessLogDto)
 }

@@ -128,7 +128,12 @@ fun AppNav() {
                 val packageId = entry.arguments?.getLong("packageId") ?: return@composable
                 val vm: PackageDetailViewModel = viewModel(
                     factory = SimpleVmFactory(container) {
-                        PackageDetailViewModel(it.packageRepository, appContext, packageId)
+                        PackageDetailViewModel(
+                            it.packageRepository,
+                            it.usageLogRepository,
+                            appContext,
+                            packageId,
+                        )
                     },
                 )
                 PackageDetailScreen(
@@ -235,6 +240,7 @@ private fun CalculatorDestination(
                 catalogRepository = it.catalogRepository,
                 templateRepository = it.templateRepository,
                 packageRepository = it.packageRepository,
+                usageLogRepository = it.usageLogRepository,
                 appContext = appContext,
                 mode = mode,
             )

@@ -10,6 +10,7 @@ import lk.hiresmcq.packcalc.data.repo.CatalogRepository
 import lk.hiresmcq.packcalc.data.repo.LocalPackageRepository
 import lk.hiresmcq.packcalc.data.repo.TemplateRepository
 import lk.hiresmcq.packcalc.data.repo.UpdateRepository
+import lk.hiresmcq.packcalc.data.repo.UsageLogRepository
 
 class AppContainer(context: Context) {
 
@@ -20,10 +21,12 @@ class AppContainer(context: Context) {
     )
 
     private val database: AppDatabase = AppDatabase.build(context)
+    private val appContext = context.applicationContext
 
     val catalogRepository = CatalogRepository(api)
     val templateRepository = TemplateRepository(api)
     val packageRepository = LocalPackageRepository(database)
+    val usageLogRepository = UsageLogRepository(api, appContext)
 
     private val githubApi = NetworkModule.createGitHubApi(debugLogging = BuildConfig.DEBUG)
     val updateRepository = UpdateRepository(githubApi)

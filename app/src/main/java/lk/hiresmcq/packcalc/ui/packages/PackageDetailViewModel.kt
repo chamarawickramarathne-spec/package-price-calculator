@@ -10,14 +10,17 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import lk.hiresmcq.packcalc.data.repo.LocalPackageRepository
+import lk.hiresmcq.packcalc.data.repo.UsageLogRepository
 import lk.hiresmcq.packcalc.domain.PackageQuote
 import lk.hiresmcq.packcalc.ui.LoadState
 import lk.hiresmcq.packcalc.ui.calculator.PdfMode
 import lk.hiresmcq.packcalc.ui.calculator.PdfResult
+import lk.hiresmcq.packcalc.ui.calculator.toUsageEvent
 import lk.hiresmcq.packcalc.util.PdfInvoiceGenerator
 
 class PackageDetailViewModel(
     private val packageRepository: LocalPackageRepository,
+    private val usageLogRepository: UsageLogRepository,
     private val appContext: Context,
     private val packageId: Long,
 ) : ViewModel() {
@@ -54,7 +57,10 @@ class PackageDetailViewModel(
             runCatching {
                 withContext(Dispatchers.IO) { PdfInvoiceGenerator.generate(appContext, quote) }
             }
-                .onSuccess { _pdf.value = PdfResult(it, mode) }
+                .onSuccess {
+                    _pdf.value = PdfResult(it, mode)
+                    usageLogRepository.log(mode.toUsageEvent())
+                }
                 .onFailure { _snackbar.value = it.message ?: "Could not create the invoice PDF" }
         }
     }

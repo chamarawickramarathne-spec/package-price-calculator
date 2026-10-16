@@ -19,8 +19,12 @@
 --
 --   public.packages / public.package_equipment are NOT granted: since v1.1.0
 --   saved packages are stored on the device (Room), so the app never touches
---   these tables remotely. public.access_logs is not granted either - the app
---   has no logging endpoints.
+--   these tables remotely.
+--
+--   public.access_logs is NOT granted by THIS file (it is revoked below). Since
+--   migrations/002_usage_logs.sql the app appends app-open and PDF-export rows
+--   there, so 002 grants anon INSERT (and only INSERT) on that table. If you run
+--   this file, run 002 after it.
 --
 --   This matches the current exposure: anyone holding the anon key can read the
 --   catalog and append rows to it. Enabling RLS here makes the model explicit

@@ -8,6 +8,8 @@ import lk.hiresmcq.packcalc.domain.PackageDraft
 import lk.hiresmcq.packcalc.util.NumberInput
 import java.io.File
 
+import lk.hiresmcq.packcalc.domain.UsageEvent
+
 const val LAST_TAB = 3
 
 sealed interface CalculatorMode {
@@ -64,3 +66,9 @@ data class CalculatorForm(
         sourceTemplateId = sourceTemplateId,
     )
 }
+
+fun PdfMode.toUsageEvent(): UsageEvent = when (this) {
+    PdfMode.Share -> UsageEvent.PdfShare
+    PdfMode.Save -> UsageEvent.PdfSave
+}
+

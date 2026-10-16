@@ -25,10 +25,14 @@ import lk.hiresmcq.packcalc.util.NumberInput
 import lk.hiresmcq.packcalc.util.PdfInvoiceGenerator
 import java.math.BigDecimal
 
+import lk.hiresmcq.packcalc.data.repo.UsageLogRepository
+import lk.hiresmcq.packcalc.ui.calculator.toUsageEvent
+
 class CalculatorViewModel(
     private val catalogRepository: CatalogRepository,
     private val templateRepository: TemplateRepository,
     private val packageRepository: LocalPackageRepository,
+    private val usageLogRepository: UsageLogRepository,
     private val appContext: Context,
     private val mode: CalculatorMode,
 ) : ViewModel() {
@@ -249,6 +253,7 @@ class CalculatorViewModel(
             }
             _saving.value = false
             _pdf.value = PdfResult(file, pdfMode)
+            usageLogRepository.log(pdfMode.toUsageEvent())
         }
     }
 

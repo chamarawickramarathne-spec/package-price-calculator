@@ -1,11 +1,9 @@
 package lk.hiresmcq.packcalc.util
 
-import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import lk.hiresmcq.packcalc.domain.PackageQuote
-import java.math.BigDecimal
 
-/** Draws one [PackageQuote] onto A4 pages using the Details.pdf house style. */
+/** Draws the client copy (page 1): the Details.pdf house-style quote summary. */
 internal class InvoiceSheet(document: PdfDocument) : PdfPageWriter(document) {
 
     private val wordmark = PdfTheme.paint(30f, PdfTheme.ORANGE, bold = true)
@@ -13,13 +11,11 @@ internal class InvoiceSheet(document: PdfDocument) : PdfPageWriter(document) {
     private val title = PdfTheme.paint(16f, PdfTheme.RED, bold = true)
     private val fieldLabel = PdfTheme.paint(10f, PdfTheme.INK_STRONG)
     private val fieldValue = PdfTheme.paint(11f, PdfTheme.INK)
-    private val packageName = PdfTheme.paint(24f, PdfTheme.RED, bold = true)
-    private val tagline = PdfTheme.paint(10f, PdfTheme.ORANGE, italic = true)
+    private val packageName = PdfTheme.paint(24f, PdfTheme.WHITE, bold = true)
+    private val tagline = PdfTheme.paint(10f, PdfTheme.WHITE, italic = true)
     private val heading = PdfTheme.paint(14f, PdfTheme.INK, bold = true)
     private val body = PdfTheme.paint(11f, PdfTheme.INK)
-    private val bodyBold = PdfTheme.paint(11f, PdfTheme.INK, bold = true)
     private val muted = PdfTheme.paint(9f, PdfTheme.MUTED)
-    private val tableHead = PdfTheme.paint(10f, PdfTheme.INK_STRONG)
     private val badgeCaption = PdfTheme.paint(13f, PdfTheme.INK_SUB)
     private val badgeCurrency = PdfTheme.paint(20f, PdfTheme.GREEN, bold = true)
     private val badgeAmount = PdfTheme.paint(32f, PdfTheme.GREEN, bold = true)
@@ -37,8 +33,6 @@ internal class InvoiceSheet(document: PdfDocument) : PdfPageWriter(document) {
         drawMeta()
         drawBanner()
         drawChecklist()
-        drawItems()
-        drawTotals()
         drawPriceBadge()
         drawNoteBand()
         drawFooter()
@@ -117,75 +111,26 @@ internal class InvoiceSheet(document: PdfDocument) : PdfPageWriter(document) {
     private fun checklistRows(): List<String> {
         val rows = ArrayList<String>()
         rows += "${NumberInput.toDisplay(quote.laborHours)} Hours of Photography Coverage"
-        quote.lines.take(CHECKLIST_LIMIT).forEach { rows += "${it.quantity} \u00D7 ${it.name}" }
+        val items = quote.lines.size
+        if (items > 0) rows += "$items Item${if (items == 1) "" else "s"} of Professional Equipment"
         return rows
     }
 
     private fun checklistNote(): String? {
-        val hidden = quote.lines.size - CHECKLIST_LIMIT
-        return when {
-            hidden > 0 -> "+$hidden more item(s), itemised below."
-            quote.extraCosts.total.signum() > 0 -> "Additional costs are itemised below."
-            else -> null
-        }
-    }
-
-    private fun drawItems() {
-        val target = canvas ?: return
-        needs(48f)
-        val qtyX = PdfTheme.MARGIN + PdfTheme.CONTENT_WIDTH * 0.62f
-        val unitX = PdfTheme.MARGIN + PdfTheme.CONTENT_WIDTH * 0.84f
-        top("ITEM", PdfTheme.MARGIN, tableHead)
-        rightTop("QTY", qtyX, tableHead)
-        rightTop("UNIT (LKR)", unitX, tableHead)
-        rightTop("TOTAL (LKR)", PdfTheme.CONTENT_RIGHT, tableHead)
-        advance(PdfTheme.lineHeight(tableHead) + 6f)
-        rule()
-        advance(14f)
-        if (quote.lines.isEmpty()) {
-            top("No equipment items.", PdfTheme.MARGIN, muted)
-            advance(PdfTheme.lineHeight(muted))
-        } else {
-            quote.lines.forEach { line ->
-                needs(18f)
-                top(PdfTheme.ellipsize(body, line.name, qtyX - PdfTheme.MARGIN - 24f), PdfTheme.MARGIN, body)
-                rightTop(line.quantity.toString(), qtyX, body)
-                rightTop(CurrencyFormat.formatPlain(line.unitValue), unitX, body)
-                rightTop(CurrencyFormat.formatPlain(line.lineTotal), PdfTheme.CONTENT_RIGHT, body)
-                advance(18f)
-            }
-        }
-        advance(10f)
-    }
-
-    private fun drawTotals() {
-        needs(200f)
-        val labelX = PdfTheme.MARGIN + PdfTheme.CONTENT_WIDTH * 0.58f
-        totalRow("Equipment", CurrencyFormat.formatPlain(quote.breakdown.equipmentTotal), labelX, body)
-        totalRow(
-            "Event hours (${NumberInput.toDisplay(quote.laborHours)} hrs \u00D7 " +
-                "${CurrencyFormat.formatPlain(quote.hourlyRate)})",
-            CurrencyFormat.formatPlain(quote.breakdown.laborTotal),
-            labelX,
-            body,
-        )
         val extras = quote.extraCosts
-        totalRowIfPositive("Extra gear", extras.extraGear, labelX)
-        totalRowIfPositive("Transportation", extras.transportation, labelX)
-        totalRowIfPositive("Assistant pay", extras.assistantPay, labelX)
-        totalRowIfPositive("Editing / retouching", extras.editing, labelX)
-        totalRowIfPositive("Additional", extras.additional, labelX)
-        advance(4f)
-        rule()
-        advance(12f)
-        totalRow("Subtotal", CurrencyFormat.formatPlain(quote.breakdown.subtotal), labelX, bodyBold)
-        totalRow(
-            "Profit (${NumberInput.toDisplay(quote.profitPercentage)}%)",
-            CurrencyFormat.formatPlain(quote.breakdown.profitAmount),
-            labelX,
-            body,
-        )
-        advance(12f)
+        val included = ArrayList<String>()
+        if (extras.extraGear.signum() > 0) included += "extra gear"
+        if (extras.transportation.signum() > 0) included += "transportation"
+        if (extras.assistantPay.signum() > 0) included += "assistant pay"
+        if (extras.editing.signum() > 0) included += "editing and retouching"
+        if (extras.additional.signum() > 0) included += "additional costs"
+        return when (included.size) {
+            0 -> null
+            1 -> "The package price includes ${included[0]}."
+            2 -> "The package price includes ${included[0]} and ${included[1]}."
+            else -> "The package price includes " +
+                included.dropLast(1).joinToString(", ") + " and " + included.last() + "."
+        }
     }
 
     private fun drawPriceBadge() {
@@ -238,25 +183,5 @@ internal class InvoiceSheet(document: PdfDocument) : PdfPageWriter(document) {
         advance(12f)
         centered("\u00A9 ${PdfDates.year(quote.createdAt)} ${CompanyInfo.NAME}. All rights reserved.", y, footer)
         centered("Thank you for choosing ${PdfTheme.APP_NAME} for your photography pricing needs.", y + 16f, footer)
-    }
-
-    private fun totalRow(label: String, value: String, labelX: Float, paint: Paint) {
-        val target = canvas ?: return
-        val maxLabel = PdfTheme.CONTENT_RIGHT - labelX - paint.measureText(value) - 14f
-        target.drawText(PdfTheme.ellipsize(paint, label, maxLabel), labelX, PdfTheme.baselineOf(paint, y), paint)
-        target.drawText(
-            value, PdfTheme.CONTENT_RIGHT - paint.measureText(value), PdfTheme.baselineOf(paint, y), paint,
-        )
-        advance(16f)
-    }
-
-    private fun totalRowIfPositive(label: String, value: BigDecimal, labelX: Float) {
-        if (value.signum() > 0) {
-            totalRow(label, CurrencyFormat.formatPlain(value), labelX, body)
-        }
-    }
-
-    private companion object {
-        const val CHECKLIST_LIMIT = 4
     }
 }

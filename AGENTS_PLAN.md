@@ -107,12 +107,18 @@ Implementation plan and task tracker for the native Android rewrite
         amber note band) while keeping the itemised breakdown; split into
         `util/PdfTheme.kt` + `util/InvoiceSheet.kt`.
       - 13/13 unit tests; all files < 300 lines.
+- [x] **Release 1.2.1 — two-page PDF (Mod 010):** page 1 is the client summary
+      (no itemised lines, no breakdown); page 2 is the studio copy
+      (`util/BreakdownSheet.kt`) with the itemised table and the full price
+      breakdown ending in a green Final Total row. Package name + sub-title are
+      now white on the amber banner; page 1's coverage list shows hours +
+      equipment count instead of priced item names.
 
 ### Pending
 - [ ] **Run `sql/install.sql`** in the Supabase SQL Editor (single paste, single
       run) so the equipment catalog and templates load — until then the
       Equipment picker and Templates list stay empty.
-- [ ] **Eyeball the redesigned PDF on a device** and confirm it matches
+- [ ] **Eyeball the redesigned PDF on a device** and confirm the summary matches
       `Details.pdf` (not rendered on this machine — no device/emulator attached).
 - [ ] Supabase Auth for per-user ownership (hardening).
 

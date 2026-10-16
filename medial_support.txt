@@ -1,6 +1,6 @@
 ================================================================================
 MEDIA SUPPORT — Package Price Calculator
-Hire Artist Studio (hiresmcq)  |  Version 1.2.0  |  Generated 2026-10-17
+Hire Artist Studio (hiresmcq)  |  Version 1.2.1  |  Generated 2026-10-17
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -38,10 +38,12 @@ Main features:
   your profit percentage on top, updated as you type.
 - Extra cost fields that reflect a real shoot: extra gear, transportation,
   assistant pay, editing/retouching and a free-form additional cost.
-- Professional PDF quote/invoice: your studio header, a highlighted package
-  banner, a green total badge, an at-a-glance coverage summary and an automatic
-  invoice number (INV-0001, INV-0002, ...). Share to WhatsApp or email, or save
-  to your device.
+- Two-page professional PDF: page 1 is the client quote (studio header, a
+  highlighted package banner, a coverage summary and a green total badge with
+  the final price) and page 2 is your studio copy (itemised equipment with
+  unit prices plus the full breakdown - equipment, event hours, extras,
+  subtotal and profit). Automatic invoice number (INV-0001, INV-0002, ...).
+  Share to WhatsApp or email, or save to your device.
 - Project details: client name and project date, so a saved package is a real
   job record.
 - Local storage: packages are saved on your device and work offline — open, edit
@@ -75,14 +77,15 @@ Package Price Calculator walks you through a simple 4-step wizard — details,
 equipment, event hours & profit, and the final price. Add the costs most apps
 forget (travel, assistant pay, editing) and get an itemised total you can trust.
 
-Then export a clean PDF quote with your studio name, a highlighted package
-banner, a green total badge and an automatic invoice number — ready to send to
-your client on WhatsApp or email.
+Then export a two-page PDF: a clean client quote with your studio name, a
+highlighted package banner and a green total badge — plus a studio copy with
+the itemised equipment and full price breakdown — ready to send on WhatsApp
+or email.
 
 - Guided package wizard with a live final total
 - Sensible defaults: 3 event hours, LKR 1,000/hour, 10% profit
 - Extra cost fields for travel, assistants and editing
-- Professional PDF quotes, ready to send
+- Two-page PDF: client quote + itemised studio copy
 - Packages saved on your device — works offline
 - Built for photographers, videographers and studios
 

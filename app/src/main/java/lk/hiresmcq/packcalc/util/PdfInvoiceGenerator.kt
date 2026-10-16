@@ -5,7 +5,10 @@ import android.graphics.pdf.PdfDocument
 import lk.hiresmcq.packcalc.domain.PackageQuote
 import java.io.File
 
-/** Renders a package quote to a branded A4 PDF (Details.pdf house style). */
+/**
+ * Renders a package quote to a branded A4 PDF (Details.pdf house style):
+ * page 1 is the client summary, page 2 the studio copy with itemised prices.
+ */
 object PdfInvoiceGenerator {
 
     fun suggestedName(quote: PackageQuote): String {
@@ -25,6 +28,7 @@ object PdfInvoiceGenerator {
         val document = PdfDocument()
         try {
             InvoiceSheet(document).render(quote)
+            BreakdownSheet(document).render(quote)
             file.outputStream().use { document.writeTo(it) }
         } finally {
             document.close()

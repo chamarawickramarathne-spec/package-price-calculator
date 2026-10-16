@@ -463,9 +463,54 @@ Date: 2026-10-17
 
 ---
 
+### Modification 010
+
+Date: 2026-10-17
+
+### Changes
+- **Quote PDF is now two pages with different audiences.**
+  - **Page 1 - client copy** (sent on WhatsApp): masthead, "Package Details",
+    the date / client / invoice # / expiry grid, the amber package banner, the
+    coverage tick list, the green **Total Package Price** badge (final total
+    only), the optional amber "Important Note" band and the footer. It carries
+    **no** itemised lines and **no** price breakdown.
+  - **Page 2 - studio copy**: "Price Breakdown" heading with package name /
+    invoice # / client, the itemised table (ITEM / QTY / UNIT (LKR) /
+    TOTAL (LKR)) and the full breakdown (equipment, event hours, each non-zero
+    extra, subtotal, profit, a green **Final Total (LKR)** row), closed by
+    "Studio copy - itemised prices and profit included. Not for the client."
+- **Package name and sub-title (tagline) are now white** on the amber banner
+  (were red / orange).
+- Page 1's coverage list no longer names priced items: `"{hours} Hours of
+  Photography Coverage"` plus, when equipment exists, `"{n} Item(s) of
+  Professional Equipment"`; the old "itemised below" sub-note was replaced by a
+  "The package price includes …" sentence built from the non-zero extras.
+- New `util/BreakdownSheet.kt` (studio page); `PdfInvoiceGenerator.generate`
+  renders `InvoiceSheet` then `BreakdownSheet` into one `PdfDocument`;
+  `PdfPageWriter.rightTop` was restored for the right-aligned amount columns,
+  and the `Paint` / `BigDecimal` imports came back with it.
+- Bumped `versionCode` 8 → 9 and `versionName` 1.2.0 → **1.2.1**.
+
+### Files / Components
+- `util/{InvoiceSheet,BreakdownSheet,PdfPageWriter,PdfInvoiceGenerator}.kt`,
+  `app/build.gradle.kts`, `medial_support.txt`, `AGENTS_PLAN.md`.
+
+### Important Notes
+- The app's on-screen price breakdown is unchanged; only the PDF is split.
+- A package with many equipment lines continues onto a third page (continuation
+  header), with page 2's heading staying on its own page.
+- **Contrast caveat:** white text on the amber banner (`#F59E0B`) is roughly
+  2:1, below the WCAG 4.5:1 minimum. Done as requested; darkening the banner
+  (e.g. `#B45309`) would restore readability if that matters for print/screen.
+- Not rendered on a device (no device/emulator attached) — still to be
+  eyeballed by the user; module compiles and 13/13 unit tests pass.
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
 - **Fix the live Supabase DB (RLS/seed)** so the equipment catalog and
   templates load — run `sql/install.sql` in the Supabase SQL Editor.
-- **Eyeball the new PDF on a device** and confirm it matches `Details.pdf`.
+- **Eyeball the new PDF on a device** and confirm the summary matches
+  `Details.pdf`.
 - Supabase Auth for per-user ownership (hardening).

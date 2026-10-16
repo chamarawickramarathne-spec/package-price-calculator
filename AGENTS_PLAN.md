@@ -92,11 +92,13 @@ Implementation plan and task tracker for the native Android rewrite
         missing, instead of silently falling back to a debug signature.
 
 ### Pending
-- [ ] Apply live DB SQL in Supabase SQL Editor (schema + seed, then RLS) —
-      the app connects but tables currently return 0 rows to anon, so the
-      Equipment picker and Templates list are empty. `sql/diagnostics.sql`
-      is ready to run to confirm the cause.
+- [ ] **Run `sql/install.sql`** in the Supabase SQL Editor (single paste, single
+      run) so the equipment catalog and templates load — until then the
+      Equipment picker and Templates list stay empty.
 - [ ] Supabase Auth for per-user ownership (hardening).
+- [ ] Remove the unreachable PATCH/DELETE code paths (repository update
+      branches + unused `SupabaseApi` endpoints) and then narrow the anon
+      catalog grant to `SELECT, INSERT` (+ `DELETE` on `template_equipment`).
 
 ---
 

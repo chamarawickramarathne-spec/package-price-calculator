@@ -3,6 +3,11 @@
 -- (MariaDB dump, 2026-10-16 08:20). Structure + data only.
 -- Paste this entire file into the Supabase SQL Editor and Run.
 -- Safe to re-run: tables are dropped and recreated (exact mirror).
+--
+-- RECOMMENDED: use sql/install.sql instead - a single paste that runs this
+-- schema + data AND then applies the Row Level Security policies, so the app
+-- can read the catalog immediately. This file alone creates the tables but
+-- leaves RLS/policies to a separate step (sql/migrations/001_rls_policies.sql).
 -- =========================================================================
 
 BEGIN;

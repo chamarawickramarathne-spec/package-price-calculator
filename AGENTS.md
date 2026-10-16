@@ -340,6 +340,47 @@ Date: 2026-10-17
 
 ---
 
+### Modification 008
+
+Date: 2026-10-17
+
+### Changes
+- Added **`sql/install.sql`** — a single paste-ready, re-runnable database
+  installer: base schema mirror + seed data + sequence `setval`s + Row Level
+  Security grants and policies. The previous flow needed two files run in a
+  specific order, which is the likely cause of the live DB returning 0 rows.
+- **Scoped the anon role down to what the app actually uses** (audit, rule 21).
+  Verified from the code that the only reachable writes are INSERTs on the five
+  catalog tables (all editors pass `id = null` — create-only since Mod 004) and
+  a DELETE on `template_equipment`; nothing calls the PATCH paths.
+  `public.packages` / `public.package_equipment` are now **revoked** and left
+  with RLS enabled and no anon policy (packages are device-local since v1.1.0),
+  and `sql/migrations/001_rls_policies.sql` was updated to match so the two SQL
+  paths cannot diverge.
+- Added a pointer in `sql/hiresmcq_lens_calculator_postgres.sql` recommending
+  `sql/install.sql`.
+
+### Files / Components
+- `sql/install.sql` (new, 474 lines), `sql/migrations/001_rls_policies.sql`,
+  `sql/hiresmcq_lens_calculator_postgres.sql`.
+
+### Important Notes
+- Run instructions: Supabase dashboard → SQL Editor → paste `sql/install.sql` →
+  Run (single run). Re-running is safe and restores the catalog snapshot; saved
+  packages are unaffected because they live in the app's Room database.
+- **Not executed here**: no Docker/psql/Postgres is available on this machine, so
+  the script could not be run against a real server. It was assembled from the
+  previously working schema/seed file plus the known-good policy set, and
+  statically checked (ASCII-only, balanced parentheses, even quoting,
+  single `BEGIN;`/`COMMIT;`).
+- No app code changed, so no rebuild or re-release was required (rule 4/12).
+- Deferred hardening (tracked in AGENTS_PLAN.md): remove the now-unreachable
+  PATCH/DELETE repository branches and the unused `SupabaseApi` update/delete
+  endpoints, then narrow the catalog grant to `SELECT, INSERT` (+ `DELETE` on
+  `template_equipment`).
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
 - **Fix the live Supabase DB (RLS/seed)** so the equipment catalog and

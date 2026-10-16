@@ -126,6 +126,31 @@ Date: 2026-10-16
 - Reference: `sql/migrations/001_rls_policies.sql` (interim anon model) + the
   embedded anon key already allow app access regardless of repo visibility.
 
+### Modification 003
+
+Date: 2026-10-16
+
+### Changes
+- Fixed a typo in `secrets.properties` `SUPABASE_URL`: the project ref was
+  `vpuzpcyrrteadmolycl` (missing `q`) and did not resolve in DNS, so the app
+  reported "Could not reach the server. Check your internet connection."
+  Corrected to `vpuzpcyrrteadmolqycl`.
+- Bumped `versionCode` 1 → 2 and `versionName` 1.0.0 → 1.0.1.
+- Rebuilt the signed release APK and republished it.
+
+### Files / Components
+- `secrets.properties` (gitignored), `app/build.gradle.kts`
+
+### Important Notes
+- The anon key already contained the correct ref (`vpuzpcyrrteadmolqycl`) —
+  only the URL was wrong. Verified a corrected query returns HTTP 200.
+- Verified the signed APK's `classes.dex` embeds the corrected URL.
+- Live Supabase DB state: RLS is ENABLED and blocks the anon role (test INSERT
+  → HTTP 401, code `42501`), and every app table returns `Content-Range: */0`
+  (0 rows) to anon. To use the app, run in the Supabase SQL Editor, in order:
+  1. `sql/hiresmcq_lens_calculator_postgres.sql` (schema + data)
+  2. `sql/migrations/001_rls_policies.sql` (interim anon full-CRUD policies)
+
 ---
 
 ## Remaining Work (Tracked in AGENTS_PLAN.md)

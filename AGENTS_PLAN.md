@@ -59,8 +59,12 @@ Implementation plan and task tracker for the native Android rewrite
 - [x] `medial_support.txt` regenerated for v1.0.0.
 - [x] Committed to `main` and pushed.
 - [x] GitHub release `v1.0.0` published with the universal APK attached.
+- [x] Hotfix 1.0.1: corrected Supabase URL typo (project ref was missing `q`);
+      rebuilt + republished the APK.
 
 ### Pending
+- [ ] Apply live DB SQL in Supabase SQL Editor (schema + seed, then RLS) —
+      the app connects but tables currently return 0 rows to anon.
 - [ ] Supabase Auth for per-user package ownership (hardening).
 - [ ] Optional: PDF export / sharing of saved packages.
 

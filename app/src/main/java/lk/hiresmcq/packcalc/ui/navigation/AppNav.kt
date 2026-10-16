@@ -2,19 +2,25 @@ package lk.hiresmcq.packcalc.ui.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -24,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import kotlinx.coroutines.launch
 import lk.hiresmcq.packcalc.ui.SimpleVmFactory
 import lk.hiresmcq.packcalc.ui.appContainer
 import lk.hiresmcq.packcalc.ui.calculator.CalculatorMode
@@ -46,19 +53,22 @@ import lk.hiresmcq.packcalc.ui.templates.TemplatesScreen
 import lk.hiresmcq.packcalc.ui.update.UpdateDialog
 import lk.hiresmcq.packcalc.ui.update.UpdateViewModel
 
-private data class BottomTab(val route: String, val label: String, val icon: ImageVector)
+private data class DrawerEntry(val route: String, val label: String, val icon: ImageVector)
 
-private val bottomTabs = listOf(
-    BottomTab(Dest.PACKAGES, "Packages", Icons.Filled.Dashboard),
-    BottomTab(Dest.TEMPLATES, "Templates", Icons.Filled.CameraAlt),
-    BottomTab(Dest.EQUIPMENT, "Equipment", Icons.Filled.Map),
+private val drawerEntries = listOf(
+    DrawerEntry(Dest.NEW_PACKAGE, "New Package", Icons.Filled.Add),
+    DrawerEntry(Dest.PACKAGES, "Saved Packages", Icons.Filled.Dashboard),
+    DrawerEntry(Dest.TEMPLATES, "Templates", Icons.Filled.CameraAlt),
+    DrawerEntry(Dest.EQUIPMENT, "Equipment", Icons.Filled.Map),
 )
 
 @Composable
 fun AppNav() {
     val navController = rememberNavController()
     val container = appContainer()
-    val appContext = LocalContext.current.applicationContext
+    val appContext = androidx.compose.ui.platform.LocalContext.current.applicationContext
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
     val updateViewModel: UpdateViewModel = viewModel(
         factory = SimpleVmFactory(container) {
@@ -68,39 +78,57 @@ fun AppNav() {
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-    val showBottomBar = bottomTabs.any { it.route == currentRoute }
+    val isTopLevel = currentRoute in Dest.topLevelRoutes
+    val openMenu: () -> Unit = { scope.launch { drawerState.open() } }
 
-    Scaffold(
-        bottomBar = {
-            if (showBottomBar) {
-                AppBottomBar(navController = navController, currentRoute = currentRoute)
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = isTopLevel,
+        drawerContent = {
+            AppDrawer(currentRoute = currentRoute) { route ->
+                scope.launch { drawerState.close() }
+                if (route != currentRoute) {
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             }
         },
-    ) { padding ->
+    ) {
         NavHost(
             navController = navController,
-            startDestination = Dest.PACKAGES,
-            modifier = Modifier.padding(padding),
+            startDestination = Dest.NEW_PACKAGE,
         ) {
+            composable(Dest.NEW_PACKAGE) {
+                CalculatorDestination(
+                    navController = navController,
+                    mode = CalculatorMode.New,
+                    onMenuClick = openMenu,
+                )
+            }
+
             composable(Dest.PACKAGES) {
                 val vm: PackageListViewModel = viewModel(
                     factory = SimpleVmFactory(container) { PackageListViewModel(it.packageRepository) },
                 )
                 PackageListScreen(
                     viewModel = vm,
-                    onNewPackage = { navController.navigate(Dest.CALCULATOR_NEW) },
+                    onNewPackage = { navController.navigate(Dest.NEW_PACKAGE) },
                     onOpenPackage = { navController.navigate(Dest.packageDetail(it)) },
+                    onMenuClick = openMenu,
                 )
             }
 
             composable(
                 route = Dest.PACKAGE_DETAIL,
-                arguments = listOf(navArgument("packageId") { type = NavType.IntType }),
+                arguments = listOf(navArgument("packageId") { type = NavType.LongType }),
             ) { entry ->
-                val packageId = entry.arguments?.getInt("packageId") ?: return@composable
+                val packageId = entry.arguments?.getLong("packageId") ?: return@composable
                 val vm: PackageDetailViewModel = viewModel(
                     factory = SimpleVmFactory(container) {
-                        PackageDetailViewModel(it.packageRepository, it.catalogRepository, packageId)
+                        PackageDetailViewModel(it.packageRepository, appContext, packageId)
                     },
                 )
                 PackageDetailScreen(
@@ -120,6 +148,7 @@ fun AppNav() {
                     viewModel = vm,
                     onAddTemplate = { navController.navigate(Dest.TEMPLATE_NEW) },
                     onUseTemplate = { navController.navigate(Dest.calculatorFromTemplate(it)) },
+                    onMenuClick = openMenu,
                 )
             }
 
@@ -131,6 +160,7 @@ fun AppNav() {
                     viewModel = vm,
                     onAddEquipment = { navController.navigate(Dest.EQUIPMENT_NEW) },
                     onOpenTaxonomy = { navController.navigate(Dest.TAXONOMY) },
+                    onMenuClick = openMenu,
                 )
             }
 
@@ -161,22 +191,28 @@ fun AppNav() {
                 )
             }
 
-            composable(Dest.CALCULATOR_NEW) {
-                CalculatorDestination(navController, container, CalculatorMode.New)
-            }
             composable(
                 route = Dest.CALCULATOR_EDIT,
-                arguments = listOf(navArgument("packageId") { type = NavType.IntType }),
+                arguments = listOf(navArgument("packageId") { type = NavType.LongType }),
             ) { entry ->
-                val packageId = entry.arguments?.getInt("packageId") ?: return@composable
-                CalculatorDestination(navController, container, CalculatorMode.Edit(packageId))
+                val packageId = entry.arguments?.getLong("packageId") ?: return@composable
+                CalculatorDestination(
+                    navController = navController,
+                    mode = CalculatorMode.Edit(packageId),
+                    onMenuClick = null,
+                )
             }
+
             composable(
                 route = Dest.CALCULATOR_TEMPLATE,
                 arguments = listOf(navArgument("templateId") { type = NavType.IntType }),
             ) { entry ->
                 val templateId = entry.arguments?.getInt("templateId") ?: return@composable
-                CalculatorDestination(navController, container, CalculatorMode.FromTemplate(templateId))
+                CalculatorDestination(
+                    navController = navController,
+                    mode = CalculatorMode.FromTemplate(templateId),
+                    onMenuClick = null,
+                )
             }
         }
 
@@ -187,15 +223,19 @@ fun AppNav() {
 @Composable
 private fun CalculatorDestination(
     navController: NavHostController,
-    container: lk.hiresmcq.packcalc.di.AppContainer,
     mode: CalculatorMode,
+    onMenuClick: (() -> Unit)?,
 ) {
+    val container = appContainer()
+    val appContext = androidx.compose.ui.platform.LocalContext.current.applicationContext
     val vm: CalculatorViewModel = viewModel(
+        key = "calculator-${mode}",
         factory = SimpleVmFactory(container) {
             CalculatorViewModel(
                 catalogRepository = it.catalogRepository,
                 templateRepository = it.templateRepository,
                 packageRepository = it.packageRepository,
+                appContext = appContext,
                 mode = mode,
             )
         },
@@ -203,25 +243,38 @@ private fun CalculatorDestination(
     CalculatorScreen(
         viewModel = vm,
         onBack = { navController.popBackStack() },
-        onDone = { navController.popBackStack() },
+        onMenuClick = onMenuClick,
+        onDone = {
+            navController.navigate(Dest.PACKAGES) {
+                popUpTo(navController.graph.findStartDestination().id) { inclusive = true }
+                launchSingleTop = true
+            }
+        },
     )
 }
 
 @Composable
-private fun AppBottomBar(navController: NavHostController, currentRoute: String?) {
-    NavigationBar {
-        bottomTabs.forEach { tab ->
-            NavigationBarItem(
-                selected = currentRoute == tab.route,
-                onClick = {
-                    navController.navigate(tab.route) {
-                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                icon = { Icon(tab.icon, contentDescription = tab.label) },
-                label = { Text(tab.label) },
+private fun AppDrawer(currentRoute: String?, onNavigate: (String) -> Unit) {
+    ModalDrawerSheet {
+        Text(
+            text = "Package Price Calculator",
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 28.dp, top = 24.dp, bottom = 4.dp),
+        )
+        Text(
+            text = "Hire Artist Studio",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 28.dp, bottom = 16.dp),
+        )
+        drawerEntries.forEach { entry ->
+            NavigationDrawerItem(
+                label = { Text(entry.label) },
+                icon = { Icon(entry.icon, contentDescription = null) },
+                selected = currentRoute == entry.route,
+                onClick = { onNavigate(entry.route) },
+                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
             )
         }
     }

@@ -200,7 +200,7 @@ private fun startingPriceOf(
     lines = lines,
     laborHours = NumberInput.toBigDecimal(form.laborHoursText),
     hourlyRate = NumberInput.toBigDecimal(form.hourlyRateText),
-    marginPercentage = NumberInput.toBigDecimal(form.marginText),
+    profitPercentage = NumberInput.toBigDecimal(form.marginText),
 ).finalTotal
 
 @Composable

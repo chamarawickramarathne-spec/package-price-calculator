@@ -1,52 +1,36 @@
 package lk.hiresmcq.packcalc.ui.calculator
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import lk.hiresmcq.packcalc.data.model.CategoryDto
+import kotlinx.coroutines.withContext
 import lk.hiresmcq.packcalc.data.model.EquipmentDto
-import lk.hiresmcq.packcalc.data.model.PackageDto
-import lk.hiresmcq.packcalc.data.model.PackageEquipmentDto
 import lk.hiresmcq.packcalc.data.repo.CatalogRepository
-import lk.hiresmcq.packcalc.data.repo.PackageRepository
+import lk.hiresmcq.packcalc.data.repo.LocalPackageRepository
 import lk.hiresmcq.packcalc.data.repo.TemplateRepository
 import lk.hiresmcq.packcalc.domain.EquipmentLine
+import lk.hiresmcq.packcalc.domain.PackageDraft
+import lk.hiresmcq.packcalc.domain.PricingBreakdown
 import lk.hiresmcq.packcalc.domain.PricingCalculator
 import lk.hiresmcq.packcalc.ui.LoadState
 import lk.hiresmcq.packcalc.util.NumberInput
+import lk.hiresmcq.packcalc.util.PdfInvoiceGenerator
 import java.math.BigDecimal
-
-sealed interface CalculatorMode {
-    data object New : CalculatorMode
-    data class Edit(val packageId: Int) : CalculatorMode
-    data class FromTemplate(val templateId: Int) : CalculatorMode
-}
-
-data class CalculatorData(
-    val categories: List<CategoryDto>,
-    val activeEquipment: List<EquipmentDto>,
-    val equipmentById: Map<Int, EquipmentDto>,
-)
-
-data class CalculatorForm(
-    val packageName: String = "",
-    val clientName: String = "",
-    val laborHoursText: String = "",
-    val hourlyRateText: String = "",
-    val marginText: String = "",
-    val showNameError: Boolean = false,
-    val sourceTemplateId: Int? = null,
-    val editingPackageId: Int? = null,
-)
 
 class CalculatorViewModel(
     private val catalogRepository: CatalogRepository,
     private val templateRepository: TemplateRepository,
-    private val packageRepository: PackageRepository,
+    private val packageRepository: LocalPackageRepository,
+    private val appContext: Context,
     private val mode: CalculatorMode,
 ) : ViewModel() {
 
@@ -59,14 +43,24 @@ class CalculatorViewModel(
     private val _lines = MutableStateFlow<List<EquipmentLine>>(emptyList())
     val lines: StateFlow<List<EquipmentLine>> = _lines.asStateFlow()
 
+    private val _tab = MutableStateFlow(0)
+    val tab: StateFlow<Int> = _tab.asStateFlow()
+
     private val _saving = MutableStateFlow(false)
     val saving: StateFlow<Boolean> = _saving.asStateFlow()
 
     private val _saved = MutableStateFlow(false)
     val saved: StateFlow<Boolean> = _saved.asStateFlow()
 
+    private val _pdf = MutableStateFlow<PdfResult?>(null)
+    val pdf: StateFlow<PdfResult?> = _pdf.asStateFlow()
+
     private val _snackbar = MutableStateFlow<String?>(null)
     val snackbar: StateFlow<String?> = _snackbar.asStateFlow()
+
+    val breakdown: StateFlow<PricingBreakdown> =
+        combine(_form, _lines) { form, lines -> compute(form, lines) }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, PricingBreakdown.ZERO)
 
     init {
         load()
@@ -89,56 +83,45 @@ class CalculatorViewModel(
                 return@launch
             }
 
-            val equipmentById = equipmentList.mapNotNull { item ->
-                item.id?.let { it to item }
-            }.toMap()
-
+            val equipmentById = equipmentList.mapNotNull { item -> item.id?.let { it to item } }.toMap()
             _state.value = LoadState.Ready(
                 CalculatorData(
                     categories = categoryList,
                     activeEquipment = equipmentList.filter { (it.isActive ?: 1) == 1 },
-                    equipmentById = equipmentById,
                 ),
             )
 
             when (mode) {
                 is CalculatorMode.New -> Unit
-                is CalculatorMode.Edit -> loadExistingPackage(mode.packageId, equipmentById)
+                is CalculatorMode.Edit -> loadExistingPackage(mode.packageId)
                 is CalculatorMode.FromTemplate -> loadFromTemplate(mode.templateId, equipmentById)
             }
         }
     }
 
-    private suspend fun loadExistingPackage(packageId: Int, equipmentById: Map<Int, EquipmentDto>) {
-        val result = packageRepository.loadPackage(packageId)
-        val pkg = result.getOrNull()
-        if (pkg == null) {
-            _snackbar.value = result.exceptionOrNull()?.message ?: "Package not found"
+    private suspend fun loadExistingPackage(packageId: Long) {
+        val quote = packageRepository.getQuote(packageId)
+        if (quote == null) {
+            _snackbar.value = "Package not found"
             return
         }
         _form.value = CalculatorForm(
-            packageName = pkg.packageName,
-            clientName = pkg.clientName.orEmpty(),
-            laborHoursText = NumberInput.toDisplay(pkg.laborHours),
-            hourlyRateText = NumberInput.toDisplay(pkg.hourlyRate),
-            marginText = NumberInput.toDisplay(pkg.marginPercentage),
-            editingPackageId = pkg.id,
+            packageName = quote.packageName,
+            clientName = quote.clientName.orEmpty(),
+            projectDate = quote.projectDate.orEmpty(),
+            laborHoursText = NumberInput.toDisplay(quote.laborHours),
+            hourlyRateText = NumberInput.toDisplay(quote.hourlyRate),
+            profitText = NumberInput.toDisplay(quote.profitPercentage),
+            extraGearText = NumberInput.toDisplay(quote.extraCosts.extraGear),
+            transportationText = NumberInput.toDisplay(quote.extraCosts.transportation),
+            assistantPayText = NumberInput.toDisplay(quote.extraCosts.assistantPay),
+            editingText = NumberInput.toDisplay(quote.extraCosts.editing),
+            additionalText = NumberInput.toDisplay(quote.extraCosts.additional),
+            notes = quote.notes.orEmpty(),
+            sourceTemplateId = quote.sourceTemplateId,
+            editingPackageId = quote.id,
         )
-        val linesResult = packageRepository.loadPackageEquipment(packageId)
-        val storedLines = linesResult.getOrNull()
-        if (storedLines == null) {
-            _snackbar.value = linesResult.exceptionOrNull()?.message ?: "Failed to load package items"
-            return
-        }
-        _lines.value = storedLines.map { line ->
-            val equipment = equipmentById[line.equipmentId]
-            EquipmentLine(
-                equipmentId = line.equipmentId,
-                name = equipment?.name ?: "Unknown item",
-                unitValue = BigDecimal.valueOf(line.unitValue),
-                quantity = line.quantity ?: 1,
-            )
-        }
+        _lines.value = quote.lines
     }
 
     private suspend fun loadFromTemplate(templateId: Int, equipmentById: Map<Int, EquipmentDto>) {
@@ -150,10 +133,9 @@ class CalculatorViewModel(
         }
         _form.value = CalculatorForm(
             packageName = template.name,
-            clientName = "",
             laborHoursText = NumberInput.toDisplay(template.laborHours),
             hourlyRateText = NumberInput.toDisplay(template.hourlyRate),
-            marginText = NumberInput.toDisplay(template.marginPercentage),
+            profitText = NumberInput.toDisplay(template.marginPercentage),
             sourceTemplateId = template.id,
         )
         val linesResult = templateRepository.loadTemplateLines(templateId)
@@ -173,14 +155,18 @@ class CalculatorViewModel(
         }
     }
 
-    fun onPackageNameChange(value: String) {
-        _form.update { it.copy(packageName = value, showNameError = false) }
-    }
-
+    fun onPackageNameChange(value: String) = _form.update { it.copy(packageName = value, showNameError = false) }
     fun onClientNameChange(value: String) = _form.update { it.copy(clientName = value) }
+    fun onProjectDateChange(value: String) = _form.update { it.copy(projectDate = value) }
     fun onLaborHoursChange(value: String) = _form.update { it.copy(laborHoursText = value) }
     fun onHourlyRateChange(value: String) = _form.update { it.copy(hourlyRateText = value) }
-    fun onMarginChange(value: String) = _form.update { it.copy(marginText = value) }
+    fun onProfitChange(value: String) = _form.update { it.copy(profitText = value) }
+    fun onExtraGearChange(value: String) = _form.update { it.copy(extraGearText = value) }
+    fun onTransportationChange(value: String) = _form.update { it.copy(transportationText = value) }
+    fun onAssistantPayChange(value: String) = _form.update { it.copy(assistantPayText = value) }
+    fun onEditingChange(value: String) = _form.update { it.copy(editingText = value) }
+    fun onAdditionalChange(value: String) = _form.update { it.copy(additionalText = value) }
+    fun onNotesChange(value: String) = _form.update { it.copy(notes = value) }
 
     val selectedQuantities: Map<Int, Int>
         get() = _lines.value.associate { it.equipmentId to it.quantity }
@@ -206,67 +192,106 @@ class CalculatorViewModel(
     }
 
     fun setLineQuantity(equipmentId: Int, quantity: Int) {
-        if (quantity <= 0) {
-            _lines.value = _lines.value.filterNot { it.equipmentId == equipmentId }
+        _lines.value = if (quantity <= 0) {
+            _lines.value.filterNot { it.equipmentId == equipmentId }
         } else {
-            _lines.value = _lines.value.map {
-                if (it.equipmentId == equipmentId) it.copy(quantity = quantity) else it
-            }
+            _lines.value.map { if (it.equipmentId == equipmentId) it.copy(quantity = quantity) else it }
         }
     }
 
+    fun selectTab(index: Int) {
+        if (index > 0 && !validateName()) return
+        _tab.value = index.coerceIn(0, LAST_TAB)
+    }
+
+    fun nextTab() = selectTab(_tab.value + 1)
+
+    fun previousTab() = selectTab(_tab.value - 1)
+
     fun save() {
-        val currentForm = _form.value
-        if (currentForm.packageName.isBlank()) {
-            _form.update { it.copy(showNameError = true) }
-            _snackbar.value = "Please enter a package name."
-            return
-        }
-        val breakdown = PricingCalculator.calculate(
-            lines = _lines.value,
-            laborHours = NumberInput.toBigDecimal(currentForm.laborHoursText),
-            hourlyRate = NumberInput.toBigDecimal(currentForm.hourlyRateText),
-            marginPercentage = NumberInput.toBigDecimal(currentForm.marginText),
-        )
-        val dto = PackageDto(
-            id = currentForm.editingPackageId,
-            packageName = currentForm.packageName.trim(),
-            clientName = currentForm.clientName.trim().ifBlank { null },
-            templateId = currentForm.sourceTemplateId,
-            laborHours = NumberInput.toBigDecimal(currentForm.laborHoursText).toDouble(),
-            hourlyRate = NumberInput.toBigDecimal(currentForm.hourlyRateText).toDouble(),
-            marginPercentage = NumberInput.toBigDecimal(currentForm.marginText).toDouble(),
-            equipmentTotal = breakdown.equipmentTotal.toDouble(),
-            laborTotal = breakdown.laborTotal.toDouble(),
-            subtotal = breakdown.subtotal.toDouble(),
-            marginAmount = breakdown.marginAmount.toDouble(),
-            finalTotal = breakdown.finalTotal.toDouble(),
-            notes = null,
-        )
-        val lineDtos = _lines.value.map { line ->
-            PackageEquipmentDto(
-                packageId = currentForm.editingPackageId ?: 0,
-                equipmentId = line.equipmentId,
-                quantity = line.quantity,
-                unitValue = line.unitValue.toDouble(),
-                totalValue = line.lineTotal.toDouble(),
-            )
-        }
+        if (!validateName()) return
         _saving.value = true
         viewModelScope.launch {
-            packageRepository.savePackage(dto, lineDtos)
-                .onSuccess {
+            persist()
+                .onSuccess { id ->
+                    _form.update { it.copy(editingPackageId = id) }
                     _saving.value = false
                     _saved.value = true
                 }
                 .onFailure {
                     _saving.value = false
-                    _snackbar.value = it.message
+                    _snackbar.value = it.message ?: "Could not save package"
                 }
         }
+    }
+
+    fun requestPdf(pdfMode: PdfMode) {
+        if (!validateName()) return
+        _saving.value = true
+        viewModelScope.launch {
+            val id = persist().getOrElse {
+                _saving.value = false
+                _snackbar.value = it.message ?: "Could not save package"
+                return@launch
+            }
+            _form.update { it.copy(editingPackageId = id) }
+            val quote = packageRepository.getQuote(id)
+            if (quote == null) {
+                _saving.value = false
+                _snackbar.value = "Could not load package"
+                return@launch
+            }
+            val file = withContext(Dispatchers.IO) {
+                PdfInvoiceGenerator.generate(appContext, quote)
+            }
+            _saving.value = false
+            _pdf.value = PdfResult(file, pdfMode)
+        }
+    }
+
+    fun consumePdf() {
+        _pdf.value = null
     }
 
     fun consumeSnackbar() {
         _snackbar.value = null
     }
+
+    /** Saves the current form locally and returns the package id. */
+    private suspend fun persist(): Result<Long> = runCatching {
+        val form = _form.value
+        val draft = PackageDraft(
+            id = form.editingPackageId,
+            packageName = form.packageName.trim(),
+            clientName = form.clientName.trim().ifBlank { null },
+            projectDate = form.projectDate.trim().ifBlank { null },
+            lines = _lines.value,
+            laborHours = NumberInput.toBigDecimal(form.laborHoursText),
+            hourlyRate = NumberInput.toBigDecimal(form.hourlyRateText),
+            profitPercentage = NumberInput.toBigDecimal(form.profitText),
+            extraCosts = form.extraCosts(),
+            notes = form.notes.trim().ifBlank { null },
+            sourceTemplateId = form.sourceTemplateId,
+        )
+        packageRepository.save(draft)
+    }
+
+    private fun validateName(): Boolean {
+        if (_form.value.packageName.isBlank()) {
+            _form.update { it.copy(showNameError = true) }
+            _tab.value = 0
+            _snackbar.value = "Please enter a package name."
+            return false
+        }
+        return true
+    }
+
+    private fun compute(form: CalculatorForm, lines: List<EquipmentLine>): PricingBreakdown =
+        PricingCalculator.calculate(
+            lines = lines,
+            laborHours = NumberInput.toBigDecimal(form.laborHoursText),
+            hourlyRate = NumberInput.toBigDecimal(form.hourlyRateText),
+            profitPercentage = NumberInput.toBigDecimal(form.profitText),
+            extraCosts = form.extraCosts(),
+        )
 }

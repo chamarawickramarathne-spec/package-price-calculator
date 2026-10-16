@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -48,6 +49,7 @@ fun EquipmentScreen(
     viewModel: EquipmentListViewModel,
     onAddEquipment: () -> Unit,
     onOpenTaxonomy: () -> Unit,
+    onMenuClick: (() -> Unit)? = null,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -55,6 +57,13 @@ fun EquipmentScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Equipment") },
+                navigationIcon = {
+                    if (onMenuClick != null) {
+                        IconButton(onClick = onMenuClick) {
+                            Icon(Icons.Filled.Menu, contentDescription = "Open menu")
+                        }
+                    }
+                },
                 actions = {
                     IconButton(onClick = onOpenTaxonomy) {
                         Icon(Icons.Filled.Tune, contentDescription = "Manage categories and types")

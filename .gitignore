@@ -36,6 +36,7 @@ output-metadata.json
 # ============ Logs ============
 *.log
 npm-debug.log*
+build.out*
 
 # ============ OS junk ============
 Thumbs.db

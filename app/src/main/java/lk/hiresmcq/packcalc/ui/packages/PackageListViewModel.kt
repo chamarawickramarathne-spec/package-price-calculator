@@ -5,58 +5,44 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import lk.hiresmcq.packcalc.data.model.PackageDto
-import lk.hiresmcq.packcalc.data.repo.PackageRepository
+import lk.hiresmcq.packcalc.data.repo.LocalPackageRepository
+import lk.hiresmcq.packcalc.domain.SavedPackageSummary
 import lk.hiresmcq.packcalc.ui.LoadState
-import java.math.BigDecimal
-
-data class PackageDisplay(
-    val pkg: PackageDto,
-    val finalTotal: BigDecimal,
-)
 
 class PackageListViewModel(
-    private val packageRepository: PackageRepository,
+    private val packageRepository: LocalPackageRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<LoadState<List<PackageDisplay>>>(LoadState.Loading)
-    val state: StateFlow<LoadState<List<PackageDisplay>>> = _state.asStateFlow()
+    private val _state = MutableStateFlow<LoadState<List<SavedPackageSummary>>>(LoadState.Loading)
+    val state: StateFlow<LoadState<List<SavedPackageSummary>>> = _state.asStateFlow()
 
     private val _snackbar = MutableStateFlow<String?>(null)
     val snackbar: StateFlow<String?> = _snackbar.asStateFlow()
 
     init {
-        load()
+        observe()
     }
 
-    fun load() {
+    fun load() = observe()
+
+    private fun observe() {
         viewModelScope.launch {
             _state.value = LoadState.Loading
-            packageRepository.loadPackages()
-                .onSuccess { list ->
-                    _state.value = LoadState.Ready(list.map(::buildDisplay))
+            packageRepository.observeSummaries()
+                .catch { error ->
+                    _state.value = LoadState.Error(error.message ?: "Failed to load packages")
                 }
-                .onFailure {
-                    _state.value = LoadState.Error(it.message ?: "Failed to load packages")
-                }
+                .collect { list -> _state.value = LoadState.Ready(list) }
         }
     }
 
-    private fun buildDisplay(pkg: PackageDto): PackageDisplay {
-        val total = pkg.finalTotal?.let { BigDecimal.valueOf(it) } ?: BigDecimal.ZERO
-        return PackageDisplay(pkg = pkg, finalTotal = total)
-    }
-
-    fun delete(pkg: PackageDto) {
-        val id = pkg.id ?: return
+    fun delete(summary: SavedPackageSummary) {
         viewModelScope.launch {
-            packageRepository.deletePackage(id)
-                .onSuccess {
-                    _snackbar.value = "Package deleted"
-                    load()
-                }
-                .onFailure { _snackbar.value = it.message }
+            runCatching { packageRepository.delete(summary.id) }
+                .onSuccess { _snackbar.value = "Package deleted" }
+                .onFailure { _snackbar.value = it.message ?: "Could not delete package" }
         }
     }
 

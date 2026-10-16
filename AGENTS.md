@@ -227,7 +227,74 @@ Date: 2026-10-16
 
 ---
 
+### Modification 006
+
+Date: 2026-10-17
+
+### Changes
+- **Major UX redesign of New Package.** The single scrolling form became a
+  **4-tab wizard**: `Details`, `Equipment`, `Labor & Profit`, `Pricing`
+  (bottom bar shows the live Final Total plus Back / Next / Save).
+- **5 new cost fields** (all flat LKR), added under Labor & Profits:
+  Extra Gear Cost, Transportation Cost, Assistant Pay, Editing/Retouching Cost,
+  Additional Cost.
+- **Renamed Margin → Profit** everywhere in the calculator. New formula:
+  `equipmentTotal + laborTotal + extraCosts = subtotal`;
+  `profit = subtotal × profit%`; `finalTotal = subtotal + profit`
+  (extras join the subtotal and profit applies to all of it).
+  `PricingBreakdown` now carries `extraCostsTotal` + `profitAmount`.
+- **Packages are now stored on-device with Room (SQLite).** New
+  `data/local/{AppDatabase,PackageDao,PackageEntity,PackageItemEntity}.kt`
+  and `data/repo/LocalPackageRepository.kt`. The `packages` /
+  `package_equipment` remote endpoints were removed from `SupabaseApi`
+  and the old `PackageRepository` was deleted.
+- **Drawer navigation replaces the bottom bar.** `AppNav` now uses
+  `ModalNavigationDrawer` (New Package / Saved Packages / Templates /
+  Equipment); the calculator is the start destination. Package-detail and
+  calculator-route ids changed from `Int` to `Long`.
+- **PDF invoices.** `util/PdfInvoiceGenerator.kt` renders a branded A4 invoice
+  (Hire Artist Studio header, placeholder contact, auto `INV-####` number,
+  item lines, itemised extra costs, subtotal, profit, final total, notes).
+  Available from wizard tab 4 and from the saved-package detail screen, via
+  `util/InvoiceSharing.kt` (share) and the SAF document picker (save).
+  `ui/components/InvoicePdfEffect.kt` handles both screens.
+- Added a **project date** field (with Material3 date picker) to tab 1.
+- Bumped `versionCode` 4 → 5 and `versionName` 1.0.3 → 1.1.0.
+
+### Files / Components
+- Gradle: `gradle/libs.versions.toml`, `app/build.gradle.kts` (KSP plugin,
+  Room runtime/ktx/compiler).
+- `data/local/{AppDatabase,PackageDao,PackageEntity,PackageItemEntity}.kt`,
+  `data/repo/LocalPackageRepository.kt`, `data/repo/PackageRepository.kt` (deleted).
+- `data/remote/SupabaseApi.kt`, `data/model/PackageModels.kt` (package DTOs removed).
+- `domain/{ExtraCosts,PricingCalculator,SavedPackage}.kt`.
+- `util/{CompanyInfo,PdfInvoiceGenerator,InvoiceSharing}.kt`.
+- `ui/calculator/{CalculatorViewModel,CalculatorScreen,CalculatorBottomBar}.kt`
+  and `ui/calculator/tabs/{PackageDetailsTab,EquipmentTab,LaborProfitTab,PricingTab}.kt`.
+- `ui/packages/{PackageListViewModel,PackageListScreen,PackageDetailViewModel,PackageDetailScreen}.kt`.
+- `ui/components/{InvoicePdfEffect,PriceBreakdownCard}.kt`,
+  `ui/templates/{TemplatesScreen,TemplateListViewModel,TemplateEditorScreen}.kt`,
+  `ui/equipment/EquipmentScreen.kt`, `ui/navigation/{AppNav,Dest}.kt`,
+  `di/AppContainer.kt`, `PackCalcApp.kt`, `res/xml/file_paths.xml`,
+  `app/proguard-rules.pro`.
+
+### Important Notes
+- **Storage split (by decision):** packages live locally in Room (with a
+  snapshot of the equipment lines so old packages keep their names/values);
+  the **equipment catalog and templates remain in Supabase**.
+- Invoice numbers are assigned from the Room row id (`INV-0001`, …) inside a
+  single transaction, so they are stable and never reused.
+- **Saving or sharing a PDF first stores the package** so it has an invoice
+  number; the dialog says so.
+- PDF generation runs on `Dispatchers.IO`; the share sheet uses a FileProvider
+  path (`cache/invoices`), the save flow uses `ActivityResultContracts.CreateDocument`.
+- Added Room consumer keep-rules to `proguard-rules.pro`.
+- Unit tests now 13 (7 pricing + 6 version).
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
-- Supabase Auth for per-user package ownership (hardening).
-- Optional: saved-package sharing / PDF export (out of v1 scope).
+- **Fix the live Supabase DB (RLS/seed)** so the equipment catalog and
+  templates load — the calculator's Equipment tab is empty until then.
+- Supabase Auth for per-user ownership (hardening).

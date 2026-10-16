@@ -83,7 +83,7 @@ class TemplateListViewModel(
             lines = equipmentLines,
             laborHours = BigDecimal.valueOf(template.laborHours ?: 0.0),
             hourlyRate = BigDecimal.valueOf(template.hourlyRate ?: 0.0),
-            marginPercentage = BigDecimal.valueOf(template.marginPercentage ?: 0.0),
+            profitPercentage = BigDecimal.valueOf(template.marginPercentage ?: 0.0),
         )
         return TemplateDisplay(
             template = template,

@@ -50,7 +50,8 @@ Implementation plan and task tracker for the native Android rewrite
 - [x] Templates: list + editor.
 - [x] Equipment: catalog list + editor, taxonomy manager.
 - [x] Packages: history list + detail.
-- [x] Navigation: bottom-nav `AppNav` + `MainActivity` wiring.
+- [x] Navigation: bottom-nav `AppNav` + `MainActivity` wiring (bottom bar was
+      replaced by a navigation drawer in v1.1.0).
 - [x] `assembleDebug` and `testDebugUnitTest` green.
 - [x] `media/` + `sql/` restored; docs regenerated.
 - [x] `sql/migrations/001_rls_policies.sql` (interim anon full-CRUD model).
@@ -65,12 +66,29 @@ Implementation plan and task tracker for the native Android rewrite
       removed edit/delete options for equipment, templates, categories & types.
 - [x] Feature 1.0.3: in-app auto-update (check GitHub Releases, download APK,
       launch installer).
+- [x] **Feature 1.1.0 — UX redesign (this phase):**
+      - New Package became a 4-tab wizard (Details / Equipment / Labor & Profit /
+        Pricing) with Back / Next / Save.
+      - 5 new flat LKR cost fields (extra gear, transportation, assistant pay,
+        editing/retouching, additional); extras join the subtotal and profit
+        applies to all of it.
+      - Margin renamed to Profit throughout the calculator.
+      - Packages stored **locally with Room (SQLite)**; catalog + templates stay
+        in Supabase.
+      - Navigation drawer replaces the bottom bar (New Package is the start
+        destination).
+      - **PDF invoices** (branded, auto `INV-####`) shared via WhatsApp/email or
+        saved with the system file picker — from the wizard and from the saved
+        package detail.
+      - Added a project date field with a Material3 date picker.
+      - Added Room + KSP; unit tests now 13 (7 pricing + 6 version).
 
 ### Pending
 - [ ] Apply live DB SQL in Supabase SQL Editor (schema + seed, then RLS) —
-      the app connects but tables currently return 0 rows to anon.
-- [ ] Supabase Auth for per-user package ownership (hardening).
-- [ ] Optional: PDF export / sharing of saved packages.
+      the app connects but tables currently return 0 rows to anon, so the
+      Equipment picker and Templates list are empty. `sql/diagnostics.sql`
+      is ready to run to confirm the cause.
+- [ ] Supabase Auth for per-user ownership (hardening).
 
 ---
 

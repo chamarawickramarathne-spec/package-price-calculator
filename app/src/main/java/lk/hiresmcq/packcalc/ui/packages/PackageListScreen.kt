@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import lk.hiresmcq.packcalc.domain.SavedPackageSummary
 import lk.hiresmcq.packcalc.ui.LoadState
 import lk.hiresmcq.packcalc.ui.components.ConfirmDialog
 import lk.hiresmcq.packcalc.ui.components.EmptyBox
@@ -48,12 +50,13 @@ import lk.hiresmcq.packcalc.util.CurrencyFormat
 fun PackageListScreen(
     viewModel: PackageListViewModel,
     onNewPackage: () -> Unit,
-    onOpenPackage: (Int) -> Unit,
+    onOpenPackage: (Long) -> Unit,
+    onMenuClick: (() -> Unit)? = null,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarMessage by viewModel.snackbar.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    var pendingDelete by remember { mutableStateOf<PackageDisplay?>(null) }
+    var pendingDelete by remember { mutableStateOf<SavedPackageSummary?>(null) }
 
     LaunchedEffect(snackbarMessage) {
         snackbarMessage?.let {
@@ -63,7 +66,18 @@ fun PackageListScreen(
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Packages") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Saved Packages") },
+                navigationIcon = {
+                    if (onMenuClick != null) {
+                        IconButton(onClick = onMenuClick) {
+                            Icon(Icons.Filled.Menu, contentDescription = "Open menu")
+                        }
+                    }
+                },
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = onNewPackage) {
                 Icon(Icons.Filled.Add, contentDescription = "New package")
@@ -77,8 +91,8 @@ fun PackageListScreen(
                 is LoadState.Error -> ErrorBox(current.message, onRetry = viewModel::load)
                 is LoadState.Ready -> if (current.data.isEmpty()) {
                     EmptyBox(
-                        title = "No packages yet",
-                        subtitle = "Create your first package to see its price breakdown here.",
+                        title = "No saved packages yet",
+                        subtitle = "Create a package and save it to see it here.",
                         actionLabel = "New package",
                         onAction = onNewPackage,
                     )
@@ -88,11 +102,11 @@ fun PackageListScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        items(current.data, key = { it.pkg.id ?: 0 }) { display ->
+                        items(current.data, key = { it.id }) { summary ->
                             PackageCard(
-                                display = display,
-                                onOpen = { display.pkg.id?.let(onOpenPackage) },
-                                onDelete = { pendingDelete = display },
+                                summary = summary,
+                                onOpen = { onOpenPackage(summary.id) },
+                                onDelete = { pendingDelete = summary },
                             )
                         }
                     }
@@ -104,11 +118,11 @@ fun PackageListScreen(
     pendingDelete?.let { target ->
         ConfirmDialog(
             title = "Delete package?",
-            message = "\"${target.pkg.packageName}\" will be permanently removed.",
+            message = "\"${target.packageName}\" will be permanently removed from this device.",
             confirmLabel = "Delete",
             destructive = true,
             onConfirm = {
-                viewModel.delete(target.pkg)
+                viewModel.delete(target)
                 pendingDelete = null
             },
             onDismiss = { pendingDelete = null },
@@ -118,7 +132,7 @@ fun PackageListScreen(
 
 @Composable
 private fun PackageCard(
-    display: PackageDisplay,
+    summary: SavedPackageSummary,
     onOpen: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -137,21 +151,23 @@ private fun PackageCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
-                    text = display.pkg.packageName,
+                    text = summary.packageName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )
-                display.pkg.clientName?.let {
-                    if (it.isNotBlank()) {
-                        Text(
-                            text = it,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
+                val subtitle = listOfNotNull(
+                    summary.clientName?.takeIf { it.isNotBlank() },
+                    summary.projectDate?.takeIf { it.isNotBlank() },
+                ).joinToString("  ·  ")
+                if (subtitle.isNotBlank()) {
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
                 Text(
-                    text = CurrencyFormat.format(display.finalTotal),
+                    text = CurrencyFormat.format(summary.finalTotal),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,

@@ -1,7 +1,6 @@
 package lk.hiresmcq.packcalc.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,16 +18,16 @@ import lk.hiresmcq.packcalc.util.CurrencyFormat
 fun PriceBreakdownCard(
     breakdown: PricingBreakdown,
     modifier: Modifier = Modifier,
-    marginLabel: String? = null,
+    profitLabel: String = "Profit",
 ) {
     SectionCard(title = "Price breakdown", modifier = modifier) {
         BreakdownRow("Equipment", CurrencyFormat.format(breakdown.equipmentTotal))
         BreakdownRow("Labor", CurrencyFormat.format(breakdown.laborTotal))
+        if (breakdown.extraCostsTotal.signum() > 0) {
+            BreakdownRow("Additional costs", CurrencyFormat.format(breakdown.extraCostsTotal))
+        }
         BreakdownRow("Subtotal", CurrencyFormat.format(breakdown.subtotal))
-        BreakdownRow(
-            label = marginLabel ?: "Margin",
-            value = CurrencyFormat.format(breakdown.marginAmount),
-        )
+        BreakdownRow(profitLabel, CurrencyFormat.format(breakdown.profitAmount))
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         Row(
             modifier = Modifier

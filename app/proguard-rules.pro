@@ -24,3 +24,7 @@
 # OkHttp
 -dontwarn okhttp3.**
 -dontwarn okio.**
+
+# Room (generated _Impl classes are loaded by name at runtime)
+-keep class * extends androidx.room.RoomDatabase
+-dontwarn androidx.room.paging.**

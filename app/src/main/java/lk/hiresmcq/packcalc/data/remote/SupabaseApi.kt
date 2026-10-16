@@ -3,8 +3,6 @@ package lk.hiresmcq.packcalc.data.remote
 import lk.hiresmcq.packcalc.data.model.CategoryDto
 import lk.hiresmcq.packcalc.data.model.EquipmentDto
 import lk.hiresmcq.packcalc.data.model.EquipmentTypeDto
-import lk.hiresmcq.packcalc.data.model.PackageDto
-import lk.hiresmcq.packcalc.data.model.PackageEquipmentDto
 import lk.hiresmcq.packcalc.data.model.TemplateDto
 import lk.hiresmcq.packcalc.data.model.TemplateEquipmentDto
 import retrofit2.http.Body
@@ -43,15 +41,6 @@ interface SupabaseApi {
         @Query("template_id") templateId: String?,
     ): List<TemplateEquipmentDto>
 
-    @GET("packages")
-    suspend fun getPackages(@Query("order") order: String): List<PackageDto>
-
-    @GET("package_equipment")
-    suspend fun getPackageEquipment(
-        @Query("order") order: String,
-        @Query("package_id") packageId: String?,
-    ): List<PackageEquipmentDto>
-
     // ---- category_types ----
     @Headers("Prefer: return=representation")
     @POST("category_types")
@@ -84,30 +73,6 @@ interface SupabaseApi {
         @Query("id") idFilter: String,
         @Body body: EquipmentDto,
     ): List<EquipmentDto>
-
-    // ---- packages ----
-    @Headers("Prefer: return=representation")
-    @POST("packages")
-    suspend fun insertPackage(@Body body: PackageDto): List<PackageDto>
-
-    @Headers("Prefer: return=representation")
-    @PATCH("packages")
-    suspend fun updatePackage(
-        @Query("id") idFilter: String,
-        @Body body: PackageDto,
-    ): List<PackageDto>
-
-    @DELETE("packages")
-    suspend fun deletePackage(@Query("id") idFilter: String)
-
-    @Headers("Prefer: return=representation")
-    @POST("package_equipment")
-    suspend fun insertPackageEquipment(
-        @Body body: List<PackageEquipmentDto>,
-    ): List<PackageEquipmentDto>
-
-    @DELETE("package_equipment")
-    suspend fun deletePackageEquipment(@Query("package_id") packageIdFilter: String)
 
     // ---- templates ----
     @Headers("Prefer: return=representation")

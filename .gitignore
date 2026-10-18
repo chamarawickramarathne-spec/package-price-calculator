@@ -35,6 +35,7 @@ output-metadata.json
 
 # ============ Logs ============
 *.log
+*.out
 npm-debug.log*
 build.out*
 

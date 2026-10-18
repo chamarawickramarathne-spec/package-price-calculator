@@ -1,6 +1,6 @@
 ﻿================================================================================
 MEDIA SUPPORT - Package Price Calculator
-Hire Artist Studio (hiresmcq)  |  Version 1.3.0  |  Generated 2026-10-17
+Hire Artist Studio (hiresmcq)  |  Version 1.4.0  |  Generated 2026-10-18
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -12,8 +12,8 @@ Package Price Calculator
 2. SHORT DESCRIPTION
 --------------------------------------------------------------------------------
 Build a photo/video shoot price in seconds: a guided 4-step wizard for gear,
-event hours, extra costs and profit â€” then save it locally and export a
-ready-to-send PDF quote.
+event hours, extra costs and profit - then save it locally and export a
+ready-to-send PDF quote. One-time email sign-in, no password.
 
 --------------------------------------------------------------------------------
 3. LONG DESCRIPTION
@@ -21,7 +21,7 @@ ready-to-send PDF quote.
 Package Price Calculator is a fast, native Android quoting and invoicing tool for
 photographers and videographers who price shoots for clients. Instead of
 rebuilding the same quote by hand, walk through the wizard, add your real costs,
-and let the app do the maths â€” then send the client a proper PDF invoice.
+and let the app do the maths - then send the client a proper PDF invoice.
 
 Who it is for:
 - Wedding, event and portrait photographers
@@ -30,10 +30,12 @@ Who it is for:
 - Anyone who rents or bundles camera gear per job
 
 Main features:
+- One-time email sign-in: enter your email once (no password needed) and the
+  app remembers it on your device, so every later launch goes straight to work.
 - 4-step package wizard: Package Details, Equipment Selection, Labor & Profit,
-  and Pricing â€” with Back/Next navigation and the final total always visible.
+  and Pricing - with Back/Next navigation and the final total always visible.
 - Sensible defaults on every new quote: 3 event hours, LKR 1,000 per hour and a
-  10% profit margin â€” change them in a tap.
+  10% profit margin - change them in a tap.
 - Live price breakdown: equipment + event hours + extra costs = subtotal, then
   your profit percentage on top, updated as you type.
 - Extra cost fields that reflect a real shoot: extra gear, transportation,
@@ -46,22 +48,25 @@ Main features:
   Share to WhatsApp or email, or save to your device.
 - Project details: client name and project date, so a saved package is a real
   job record.
-- Local storage: packages are saved on your device and work offline â€” open, edit
+- Local storage: packages are saved on your device and work offline - open, edit
   and delete them from Saved Packages.
 - Templates: save your usual gear + labor + profit as a template and start any
   new quote from it in one tap.
-- Equipment catalog: keep your gear â€” with values, categories and types â€” in one
+- Equipment catalog: keep your gear - with values, categories and types - in one
   place so your prices always use current rates.
 - Clean LKR currency formatting (Rs. 12,345.00) and precise decimal maths.
 - In-app updates: the app checks for a newer version and can download and
   install it for you in a couple of taps.
+- Usage analytics: anonymous app open and PDF export events are recorded to
+  measure adoption (no client names, package names or prices are logged).
 
 Main benefits:
 - Quote a client before you leave the venue.
-- Charge for the real cost of the job â€” travel, assistants and editing are no
+- Charge for the real cost of the job - travel, assistants and editing are no
   longer forgotten.
 - Send a professional PDF invoice instead of a rushed message.
-- Keep every price consistent â€” no mental arithmetic, no forgotten items.
+- Keep every price consistent - no mental arithmetic, no forgotten items.
+- Sign in once and forget about it - no password to create or remember.
 
 Problem it solves: pricing a shoot is repetitive and error-prone, and turning a
 price into something you can send a client is usually another chore. This app
@@ -71,24 +76,26 @@ invoice to send it with.
 --------------------------------------------------------------------------------
 4. FACEBOOK PROMOTIONAL TEXT
 --------------------------------------------------------------------------------
-New: quote AND invoice your next shoot from one app. ðŸ“¸
+New: quote AND invoice your next shoot from one app.
 
-Package Price Calculator walks you through a simple 4-step wizard â€” details,
+Package Price Calculator walks you through a simple 4-step wizard - details,
 equipment, event hours & profit, and the final price. Add the costs most apps
 forget (travel, assistant pay, editing) and get an itemised total you can trust.
 
 Then export a two-page PDF: a clean client quote with your studio name, a
-highlighted package banner and a green total badge â€” plus a studio copy with
-the itemised equipment and full price breakdown â€” ready to send on WhatsApp
- - Usage analytics: anonymous app open and PDF export events are recorded to
-   measure adoption (no client or price data is logged).
+highlighted package banner and a green total badge - plus a studio copy with
+the itemised equipment and full price breakdown - ready to send on WhatsApp
 or email.
 
+Sign-in is effortless: enter your email once, no password, and the app
+remembers you from then on.
+
 - Guided package wizard with a live final total
+- One-time email sign-in - no password required
 - Sensible defaults: 3 event hours, LKR 1,000/hour, 10% profit
 - Extra cost fields for travel, assistants and editing
 - Two-page PDF: client quote + itemised studio copy
-- Packages saved on your device â€” works offline
+- Packages saved on your device - works offline
 - Built for photographers, videographers and studios
 
 Quote before you leave the venue. Send the invoice the same day.
@@ -112,6 +119,7 @@ Download Package Price Calculator and price your next job the easy way.
 #SmallBusinessTools
 #PDFInvoice #LKR #SriLanka #HireArtistStudio
 #AndroidApp #PhotographyLife #ShootCosting #InvoiceMaker
+#NoPasswordLogin #PhotographerPricing
 
 --------------------------------------------------------------------------------
 6. AI IMAGE PROMPTS (5)
@@ -135,10 +143,10 @@ Download Package Price Calculator and price your next job the easy way.
    banner and emerald green accents on a cream background, rounded shapes, clean
    background, suitable for a social media avatar.
 
-5. A studio owner at a tidy desk reviewing a list of saved shoot packages and
-   their PDF quotes on a phone propped on a stand, gear bags in the background,
-   organised and professional atmosphere, soft rim lighting, editorial
-   commercial style.
+5. A minimal welcome screen concept: a phone showing a single email field with
+   a large orange "Continue" button and a camera icon above it, no password
+   fields anywhere, warm cream background, soft shadows, clean modern UI
+   design, promotional screenshot style.
 
 --------------------------------------------------------------------------------
 (C) 2026 Hire Artist Studio. Package Price Calculator.

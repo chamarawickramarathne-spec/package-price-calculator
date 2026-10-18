@@ -13,5 +13,7 @@ class PackCalcApp : Application() {
         super.onCreate()
         container = AppContainer(this)
         container.usageLogRepository.log(UsageEvent.AppOpen)
+        // Retry an email that never reached user_emails (saved while offline).
+        container.userEmailRepository.syncPending()
     }
 }

@@ -1,6 +1,7 @@
 package lk.hiresmcq.packcalc.ui.navigation
 
 object Dest {
+    const val LOGIN = "login"
     const val NEW_PACKAGE = "new-package"
     const val PACKAGES = "packages"
     const val PACKAGE_DETAIL = "packages/{packageId}"
@@ -15,6 +16,8 @@ object Dest {
     const val EQUIPMENT_NEW = "equipment/new"
 
     const val TAXONOMY = "taxonomy"
+
+    const val EMAIL_CHANGE = "email/change"
 
     fun packageDetail(id: Long) = "packages/$id"
     fun calculatorEdit(id: Long) = "calculator/edit/$id"

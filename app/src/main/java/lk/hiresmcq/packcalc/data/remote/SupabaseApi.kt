@@ -6,6 +6,7 @@ import lk.hiresmcq.packcalc.data.model.EquipmentDto
 import lk.hiresmcq.packcalc.data.model.EquipmentTypeDto
 import lk.hiresmcq.packcalc.data.model.TemplateDto
 import lk.hiresmcq.packcalc.data.model.TemplateEquipmentDto
+import lk.hiresmcq.packcalc.data.model.UserEmailDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -69,4 +70,15 @@ interface SupabaseApi {
     @Headers("Prefer: return=minimal")
     @POST("access_logs")
     suspend fun insertAccessLog(@Body body: AccessLogDto)
+
+    // ---- user_emails (sign-in list; append-only, duplicates ignored) ----
+    // on_conflict=email + resolution=ignore-duplicates: re-submitting an
+    // already recorded email (offline retry, re-install) is a no-op instead
+    // of a 409. Requires the UNIQUE constraint from migrations/003.
+    @Headers("Prefer: resolution=ignore-duplicates")
+    @POST("user_emails")
+    suspend fun insertUserEmail(
+        @Query("on_conflict") onConflict: String,
+        @Body body: UserEmailDto,
+    )
 }

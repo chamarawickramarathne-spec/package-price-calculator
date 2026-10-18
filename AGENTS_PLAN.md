@@ -113,14 +113,32 @@ Implementation plan and task tracker for the native Android rewrite
       breakdown ending in a green Final Total row. Package name + sub-title are
       now white on the amber banner; page 1's coverage list shows hours +
       equipment count instead of priced item names.
+- [x] **Release 1.3.0 — usage logging (Mod 011):** append-only
+      `public.access_logs` events (`app_open`, `pdf_export`) with a pseudonymous
+      device hash; INSERT-only anon grant, no SELECT policy; `usage_reports.sql`
+      for the studio; `UsageEventTest` + `DeviceHashTest` (19 tests total).
+      (Released and published before the docs were updated - backfilled in
+      Mod 012's log entry.)
+- [x] **Release 1.4.0 — email sign-in gate (Mod 012):**
+      - Mandatory one-time email screen before the main UI (no password);
+        remembered on the device (SharedPreferences) and skipped afterwards.
+      - Email recorded in new append-only `public.user_emails` table (anon
+        INSERT-only, UNIQUE email, length CHECKs) for promoting other apps.
+      - Offline-first: local save wins, server copy retried at each app open
+        until it lands; drawer shows the email with a tap-to-change route.
+      - `EmailValidationTest` added; unit tests now 27. versionCode 11.
+      - Also removed the build log files accidentally committed in v1.3.0 and
+        added `*.out` to `.gitignore`.
 
 ### Pending
-- [ ] **Run `sql/install.sql`** in the Supabase SQL Editor (single paste, single
-      run) so the equipment catalog and templates load — until then the
-      Equipment picker and Templates list stay empty.
-- [ ] **Eyeball the redesigned PDF on a device** and confirm the summary matches
-      `Details.pdf` (not rendered on this machine — no device/emulator attached).
-- [ ] Supabase Auth for per-user ownership (hardening).
+- [ ] **Run `sql/migrations/003_user_emails.sql`** in the Supabase SQL Editor
+      so sign-in emails reach the server (until then they sync from the device
+      at the next launch after the run). Also still needed: `sql/install.sql`
+      for the catalog/seed if that has not been run yet.
+- [ ] **Eyeball the email gate + redesigned PDF on a device** (no device or
+      emulator attached to this machine - not rendered here).
+- [ ] Supabase Auth for real per-user accounts (hardening; the email gate is a
+      soft identity, not authentication).
 
 ---
 

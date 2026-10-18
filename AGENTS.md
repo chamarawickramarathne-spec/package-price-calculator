@@ -507,6 +507,104 @@ Date: 2026-10-17
 
 ---
 
+### Modification 011
+
+Date: 2026-10-16
+
+> Retroactively documented in Mod 012: this release was committed and
+> published as v1.3.0 without being added to this log (rule 2 slip).
+
+### Changes
+- Added **append-only usage logging**. On app open and on PDF share/save the
+  app inserts a row into `public.access_logs` (`event_type` `app_open` /
+  `pdf_export`, pseudonymous `device_id`, `app_version`, `platform`).
+- New components: `domain/UsageEvent.kt`, `data/model/UsageModels.kt`
+  (`AccessLogDto`), `data/repo/UsageLogRepository.kt` (fire-and-forget on an
+  app-scoped IO scope; failures only go to Logcat), `util/DeviceHash.kt` +
+  `util/DeviceIdentity.kt` (salted SHA-256 of ANDROID_ID, truncated to 32 hex).
+- SQL: `sql/migrations/002_usage_logs.sql` (makes `access_logs` app-friendly:
+  nullable `ip_address`, new columns, length CHECKs, **INSERT-only** anon
+  grant with no SELECT/UPDATE/DELETE policy), `sql/usage_reports.sql`,
+  `sql/diagnostics.sql`; `install.sql` + `001_rls_policies.sql` aligned.
+- Tests: `UsageEventTest` (3) + `DeviceHashTest` (6); total unit tests 19.
+- Bumped `versionCode` 9 → 10 and `versionName` 1.2.1 → 1.3.0; GitHub release
+  v1.3.0 published with the APK.
+
+### Files / Components
+- `domain/UsageEvent.kt`, `data/model/UsageModels.kt`, `data/repo/UsageLogRepository.kt`
+- `util/{DeviceHash,DeviceIdentity}.kt`, `di/AppContainer.kt`, `PackCalcApp.kt`
+- `ui/calculator/{CalculatorModels,CalculatorViewModel}.kt`,
+  `ui/packages/PackageDetailViewModel.kt`, `ui/navigation/AppNav.kt`
+- `sql/{migrations/002_usage_logs.sql,usage_reports.sql,diagnostics.sql,install.sql}`
+- `app/build.gradle.kts`, `medial_support.txt`
+
+### Important Notes
+- Privacy: usage rows contain no client names, package names, prices or emails.
+- Two build log files (`build-rel.out`, `test.out`) were committed by mistake;
+  they were removed and `*.out` added to `.gitignore` in Mod 012.
+
+---
+
+### Modification 012
+
+Date: 2026-10-18
+
+### Changes
+- **Mandatory one-time email sign-in gate before the main page** (v1.4.0).
+  On first launch the app opens on a branded login screen; the user enters an
+  email once (no password), it is saved on the device, and every later launch
+  skips the gate. The drawer shows the saved email under "Hire Artist Studio"
+  with a tap-to-change route.
+- **The email is also recorded in Supabase** in a new append-only table
+  `public.user_emails` (email + device hash + app version + platform +
+  timestamp) so the studio can export the list and promote its other apps.
+- **Offline-first (per decision):** the local save always wins - the user
+  enters the app even without a network, and the server copy is retried at
+  every app open until it lands (`emailSynced` flag in `SessionStore`; a
+  "we'll sync when you're back online" snackbar covers the gap).
+- New components: `domain/EmailValidation.kt` (trim/lowercase + format check),
+  `util/SessionStore.kt` (app-private SharedPreferences: `email`,
+  `email_synced`), `data/model/UserEmailDto.kt`,
+  `data/repo/UserEmailRepository.kt`, `ui/login/{LoginScreen,LoginViewModel,
+  LoginDestination}.kt`.
+- Navigation: `Dest.LOGIN` + `Dest.EMAIL_CHANGE`; start destination is the
+  gate only when no email is remembered. `AppDrawer` extracted from `AppNav`
+  into `ui/navigation/AppDrawer.kt` (AppNav was near the 300-line limit).
+- `SupabaseApi.insertUserEmail` posts with `on_conflict=email` +
+  `Prefer: resolution=ignore-duplicates` (UNIQUE email ⇒ retries/re-installs
+  collapse into one row; 409 also treated as synced).
+- `PackCalcApp` kicks `userEmailRepository.syncPending()` on every open.
+- Added `EmailValidationTest` (5 tests); total unit tests now 27.
+- Bumped `versionCode` 10 → 11 and `versionName` 1.3.0 → **1.4.0**.
+
+### Files / Components
+- `domain/EmailValidation.kt`, `util/SessionStore.kt`
+- `data/model/UserEmailDto.kt`, `data/repo/UserEmailRepository.kt`
+- `data/remote/SupabaseApi.kt`, `di/AppContainer.kt`, `PackCalcApp.kt`
+- `ui/login/{LoginScreen,LoginViewModel,LoginDestination}.kt`
+- `ui/navigation/{AppNav,Dest,AppDrawer}.kt`
+- `sql/migrations/003_user_emails.sql` (new), `sql/install.sql`
+- `app/build.gradle.kts`, `.gitignore`, `medial_support.txt`,
+  `app/src/test/.../domain/EmailValidationTest.kt`
+
+### Important Notes
+- **SQL to run:** paste `sql/migrations/003_user_emails.sql` into the Supabase
+  SQL Editor once (it is also inside `install.sql` for fresh installs). Until
+  it runs, sign-in still works locally; the server insert returns 400 and
+  stays pending, syncing at the next launch after the migration.
+- Security model mirrors `access_logs`: anon has **INSERT only** on
+  `user_emails` (no SELECT policy) - the list is read from the Supabase
+  dashboard, never from the app. `email` is UNIQUE + length CHECKed.
+- Audit (rule 21): email lives in app-private prefs with `allowBackup=false`;
+  travels only over HTTPS; never appears in Logcat, in `access_logs`, or in
+  debug HTTP logs (BASIC level, debug builds only). No password/token exists -
+  this is a soft identity for lead collection, not an accounts system; Supabase
+  Auth remains the recommended hardening step if real accounts are ever needed.
+- If the migration is missing, `on_conflict=email` fails with 400 (not 409),
+  so `emailSynced` correctly stays false and retries resume after the run.
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
 - **Fix the live Supabase DB (RLS/seed)** so the equipment catalog and

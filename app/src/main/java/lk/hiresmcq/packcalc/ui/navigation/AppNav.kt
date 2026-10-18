@@ -1,26 +1,11 @@
 package lk.hiresmcq.packcalc.ui.navigation
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.NavigationDrawerItemDefaults
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -42,6 +27,8 @@ import lk.hiresmcq.packcalc.ui.equipment.EquipmentListViewModel
 import lk.hiresmcq.packcalc.ui.equipment.EquipmentScreen
 import lk.hiresmcq.packcalc.ui.equipment.TaxonomyScreen
 import lk.hiresmcq.packcalc.ui.equipment.TaxonomyViewModel
+import lk.hiresmcq.packcalc.ui.login.LoginDestination
+import lk.hiresmcq.packcalc.ui.login.LoginMode
 import lk.hiresmcq.packcalc.ui.packages.PackageDetailScreen
 import lk.hiresmcq.packcalc.ui.packages.PackageDetailViewModel
 import lk.hiresmcq.packcalc.ui.packages.PackageListScreen
@@ -53,15 +40,6 @@ import lk.hiresmcq.packcalc.ui.templates.TemplatesScreen
 import lk.hiresmcq.packcalc.ui.update.UpdateDialog
 import lk.hiresmcq.packcalc.ui.update.UpdateViewModel
 
-private data class DrawerEntry(val route: String, val label: String, val icon: ImageVector)
-
-private val drawerEntries = listOf(
-    DrawerEntry(Dest.NEW_PACKAGE, "New Package", Icons.Filled.Add),
-    DrawerEntry(Dest.PACKAGES, "Saved Packages", Icons.Filled.Dashboard),
-    DrawerEntry(Dest.TEMPLATES, "Templates", Icons.Filled.CameraAlt),
-    DrawerEntry(Dest.EQUIPMENT, "Equipment", Icons.Filled.Map),
-)
-
 @Composable
 fun AppNav() {
     val navController = rememberNavController()
@@ -69,6 +47,11 @@ fun AppNav() {
     val appContext = androidx.compose.ui.platform.LocalContext.current.applicationContext
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    // Email gate (v1.4.0): first launch starts on the login screen; once an
+    // email is remembered the app starts straight on the calculator.
+    val startDestination =
+        if (container.sessionStore.email == null) Dest.LOGIN else Dest.NEW_PACKAGE
 
     val updateViewModel: UpdateViewModel = viewModel(
         factory = SimpleVmFactory(container) {
@@ -85,22 +68,50 @@ fun AppNav() {
         drawerState = drawerState,
         gesturesEnabled = isTopLevel,
         drawerContent = {
-            AppDrawer(currentRoute = currentRoute) { route ->
-                scope.launch { drawerState.close() }
-                if (route != currentRoute) {
-                    navController.navigate(route) {
-                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
+            AppDrawer(
+                currentRoute = currentRoute,
+                email = container.sessionStore.email,
+                onNavigate = { route ->
+                    scope.launch { drawerState.close() }
+                    if (route != currentRoute) {
+                        navController.navigate(route) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
-                }
-            }
+                },
+                onChangeEmail = {
+                    scope.launch { drawerState.close() }
+                    navController.navigate(Dest.EMAIL_CHANGE)
+                },
+            )
         },
     ) {
         NavHost(
             navController = navController,
-            startDestination = Dest.NEW_PACKAGE,
+            startDestination = startDestination,
         ) {
+            composable(Dest.LOGIN) {
+                LoginDestination(
+                    mode = LoginMode.Gate,
+                    onDone = {
+                        navController.navigate(Dest.NEW_PACKAGE) {
+                            popUpTo(Dest.LOGIN) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                )
+            }
+
+            composable(Dest.EMAIL_CHANGE) {
+                LoginDestination(
+                    mode = LoginMode.Change,
+                    onDone = { navController.popBackStack() },
+                    onBack = { navController.popBackStack() },
+                )
+            }
+
             composable(Dest.NEW_PACKAGE) {
                 CalculatorDestination(
                     navController = navController,
@@ -257,31 +268,4 @@ private fun CalculatorDestination(
             }
         },
     )
-}
-
-@Composable
-private fun AppDrawer(currentRoute: String?, onNavigate: (String) -> Unit) {
-    ModalDrawerSheet {
-        Text(
-            text = "Package Price Calculator",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(start = 28.dp, top = 24.dp, bottom = 4.dp),
-        )
-        Text(
-            text = "Hire Artist Studio",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(start = 28.dp, bottom = 16.dp),
-        )
-        drawerEntries.forEach { entry ->
-            NavigationDrawerItem(
-                label = { Text(entry.label) },
-                icon = { Icon(entry.icon, contentDescription = null) },
-                selected = currentRoute == entry.route,
-                onClick = { onNavigate(entry.route) },
-                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
-            )
-        }
-    }
 }

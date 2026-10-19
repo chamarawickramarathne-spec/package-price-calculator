@@ -199,9 +199,12 @@ Implementation plan and task tracker for the native Android rewrite
       `F5:C6:C7:3F…93:EC:87`).
 - [x] Docs: AGENTS.md Mod 015, `medial_support.txt` regenerated.
 
-### Pending
-- [ ] **Release 1.6.0**: commit, tag `v1.6.0`, publish the GitHub release with
-      the stable asset `Package-Price-Calculator.apk` (awaiting user go-ahead).
+### Completed (1.6.0 release)
+- [x] **Release 1.6.0**: commit `9d00537`, annotated tag `v1.6.0` pushed,
+      GitHub release published with the stable asset
+      `Package-Price-Calculator.apk`; anonymous download verified (HTTP 200,
+      `application/vnd.android.package-archive`, 1,864,253 bytes) and the
+      Releases API reports `v1.6.0` as latest, so in-app updates work.
 
 ### Later
 - [ ] **Eyeball the login gate + PDF on a device** (no device or emulator

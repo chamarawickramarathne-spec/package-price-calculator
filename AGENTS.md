@@ -786,8 +786,12 @@ Date: 2026-10-20
   `assembleDebug` + `testDebugUnitTest` (31/31) + `assembleRelease` green.
 - Signed release APK staged at `build/Package-Price-Calculator.apk`
   (versionCode 14, versionName 1.6.0, publisher key `CN=Hire Artist Studio`,
-  SHA-256 `F5:C6:C7:3F…93:EC:87`). **Not published** — awaiting an explicit
-  go-ahead to commit, tag and push the GitHub release.
+  SHA-256 `F5:C6:C7:3F…93:EC:87`).
+- **Released as v1.6.0**: commit `9d00537`, annotated tag `v1.6.0` pushed,
+  GitHub release published with the stable asset name
+  `Package-Price-Calculator.apk`. Anonymous download verified: HTTP 200,
+  `application/vnd.android.package-archive`, 1,864,253 bytes; the GitHub
+  Releases API reports `v1.6.0` as latest, so in-app updates resolve.
 - **Not rendered on a device** (no device/emulator attached): the inline
   meta rows are geometry-verified only; still to be eyeballed by the user.
 

@@ -148,8 +148,10 @@ Implementation plan and task tracker for the native Android rewrite
       (no device or emulator attached to this machine): sign in → row appears
       in `user_emails`; offline sign-in → row lands at the next launch after
       updating to 1.4.1; two-page PDF renders as designed.
-- [ ] Publish/verify the **v1.4.1 GitHub release** so installed devices pick
-      up the fix through the in-app updater (their pending emails then sync).
+- [x] Publish/verify the **v1.4.1 GitHub release** - tag pushed, release
+      published with `Package-Price-Calculator.apk`; anonymous download
+      verified (HTTP 200, 1,864,253 bytes) so the in-app updater can fetch it
+      and installed devices sync their pending emails on first launch.
 - [ ] Supabase Auth for real per-user accounts (hardening; the email gate is a
       soft identity, not authentication).
 

@@ -1,6 +1,7 @@
 package lk.hiresmcq.packcalc.util
 
 import android.graphics.pdf.PdfDocument
+import lk.hiresmcq.packcalc.domain.BusinessProfile
 import lk.hiresmcq.packcalc.domain.PackageQuote
 
 /** Draws the client copy (page 1): the Details.pdf house-style quote summary. */
@@ -24,9 +25,11 @@ internal class InvoiceSheet(document: PdfDocument) : PdfPageWriter(document) {
     private val footer = PdfTheme.paint(9f, PdfTheme.FOOTER)
 
     private lateinit var quote: PackageQuote
+    private lateinit var business: BusinessProfile
 
-    fun render(quote: PackageQuote) {
+    fun render(quote: PackageQuote, business: BusinessProfile) {
         this.quote = quote
+        this.business = business
         startPage(first = true)
         drawMasthead()
         drawPackageDetails()
@@ -43,7 +46,12 @@ internal class InvoiceSheet(document: PdfDocument) : PdfPageWriter(document) {
         advance(PdfTheme.MARGIN + 26f - y)
         top(PdfTheme.APP_NAME, PdfTheme.MARGIN, PdfTheme.fit(wordmark, PdfTheme.APP_NAME, PdfTheme.CONTENT_WIDTH))
         advance(PdfTheme.lineHeight(wordmark) + 18f)
-        top(CompanyInfo.NAME, PdfTheme.MARGIN, studio)
+        val name = business.displayName
+        top(
+            PdfTheme.ellipsize(PdfTheme.fit(studio, name, PdfTheme.CONTENT_WIDTH), name, PdfTheme.CONTENT_WIDTH),
+            PdfTheme.MARGIN,
+            studio,
+        )
         advance(PdfTheme.lineHeight(studio) + 30f)
     }
 
@@ -83,7 +91,7 @@ internal class InvoiceSheet(document: PdfDocument) : PdfPageWriter(document) {
             textX, PdfTheme.baselineOf(name, topY + 17f), name,
         )
         target.drawText(
-            PdfTheme.ellipsize(tagline, CompanyInfo.TAGLINE, maxWidth),
+            PdfTheme.ellipsize(tagline, business.displayTagline, maxWidth),
             textX, PdfTheme.baselineOf(tagline, topY + 54f), tagline,
         )
         advance(topY + height + 24f - y)
@@ -178,10 +186,20 @@ internal class InvoiceSheet(document: PdfDocument) : PdfPageWriter(document) {
     }
 
     private fun drawFooter() {
-        needs(50f)
+        val contactLines = business.contactLine
+            ?.let { PdfTheme.wrap(it, footer, PdfTheme.CONTENT_WIDTH, maxLines = 2) }
+            .orEmpty()
+        needs(50f + contactLines.size * 16f)
         rule()
         advance(12f)
-        centered("\u00A9 ${PdfDates.year(quote.createdAt)} ${CompanyInfo.NAME}. All rights reserved.", y, footer)
+        val copyright =
+            "\u00A9 ${PdfDates.year(quote.createdAt)} ${business.displayName}. All rights reserved."
+        centered(copyright, y, footer)
         centered("Thank you for choosing ${PdfTheme.APP_NAME} for your photography pricing needs.", y + 16f, footer)
+        var lineTop = y + 32f
+        contactLines.forEach { line ->
+            centered(line, lineTop, footer)
+            lineTop += 16f
+        }
     }
 }

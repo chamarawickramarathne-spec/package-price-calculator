@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
@@ -31,16 +32,20 @@ private val drawerEntries = listOf(
     DrawerEntry(Dest.PACKAGES, "Saved Packages", Icons.Filled.Dashboard),
     DrawerEntry(Dest.TEMPLATES, "Templates", Icons.Filled.CameraAlt),
     DrawerEntry(Dest.EQUIPMENT, "Equipment", Icons.Filled.Map),
+    DrawerEntry(Dest.BUSINESS, "Business Details", Icons.Filled.Store),
 )
 
 /**
- * App navigation drawer. When an email has been saved (v1.4.0 gate) it is
- * shown under the studio name; tapping it opens the change-email route.
+ * App navigation drawer. The studio name is the user's own business name
+ * (v1.5.0, falls back to the built-in branding); when an email has been
+ * saved (v1.4.0 gate) it is shown underneath - tapping it opens the
+ * change-email route.
  */
 @Composable
 fun AppDrawer(
     currentRoute: String?,
     email: String?,
+    businessName: String,
     onNavigate: (String) -> Unit,
     onChangeEmail: () -> Unit,
 ) {
@@ -52,7 +57,7 @@ fun AppDrawer(
             modifier = Modifier.padding(start = 28.dp, top = 24.dp, bottom = 4.dp),
         )
         Text(
-            text = "Hire Artist Studio",
+            text = businessName,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 28.dp, bottom = if (email == null) 16.dp else 4.dp),

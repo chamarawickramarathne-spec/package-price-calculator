@@ -1,6 +1,6 @@
 ﻿================================================================================
 MEDIA SUPPORT - Package Price Calculator
-Hire Artist Studio (hiresmcq)  |  Version 1.4.1  |  Generated 2026-10-19
+Hire Artist Studio (hiresmcq)  |  Version 1.5.0  |  Generated 2026-10-19
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ Package Price Calculator
 --------------------------------------------------------------------------------
 Price a photo/video shoot in minutes: a guided 4-step wizard for gear, event
 hours, extra costs and profit - save it locally and export a ready-to-send
-two-page PDF quote. One-time email sign-in, no password.
+two-page PDF quote branded with YOUR business details. One-time email sign-in.
 
 --------------------------------------------------------------------------------
 3. LONG DESCRIPTION
@@ -21,7 +21,8 @@ two-page PDF quote. One-time email sign-in, no password.
 Package Price Calculator is a fast, native Android quoting and invoicing tool for
 photographers and videographers who price shoots for clients. Instead of
 rebuilding the same quote by hand, walk through the wizard, add your real costs,
-and let the app do the maths - then send the client a proper PDF invoice.
+and let the app do the maths - then send the client a proper PDF invoice that
+carries your own studio branding.
 
 Who it is for:
 - Wedding, event and portrait photographers
@@ -30,6 +31,10 @@ Who it is for:
 - Anyone who rents or bundles camera gear per job
 
 Main features:
+- Your business, your quote: enter your business name, tagline, phone, email
+  and address once on the Business Details screen - every PDF quote then prints
+  YOUR name instead of a built-in studio brand, with your contact details in
+  the footer.
 - One-time email sign-in: enter your email once (no password needed) and the
   app remembers it on your device, so every later launch goes straight to work.
 - 4-step package wizard: Package Details, Equipment Selection, Labor & Profit,
@@ -40,9 +45,9 @@ Main features:
   your profit percentage on top, updated as you type.
 - Extra cost fields that reflect a real shoot: extra gear, transportation,
   assistant pay, editing/retouching and a free-form additional cost.
-- Two-page professional PDF: page 1 is the client quote (studio header, a
-  highlighted package banner, a coverage summary and a green total badge with
-  the final price) and page 2 is your studio copy (itemised equipment with
+- Two-page professional PDF: page 1 is the client quote (your business header,
+  a highlighted package banner, a coverage summary, a green total badge and
+  your contact line) and page 2 is your studio copy (itemised equipment with
   unit prices plus the full breakdown - equipment, event hours, extras,
   subtotal and profit). Automatic invoice number (INV-0001, INV-0002, ...).
   Share to WhatsApp or email, or save to your device.
@@ -63,6 +68,7 @@ Main features:
 
 Main benefits:
 - Quote a client before you leave the venue.
+- Every quote goes out under YOUR business name - no generic branding.
 - Charge for the real cost of the job - travel, assistants and editing are no
   longer forgotten.
 - Send a professional PDF invoice instead of a rushed message.
@@ -72,27 +78,28 @@ Main benefits:
 
 Problem it solves: pricing a shoot is repetitive and error-prone, and turning a
 price into something you can send a client is usually another chore. This app
-turns that into a few taps and gives you a trustworthy, itemised total plus the
-invoice to send it with.
+turns that into a few taps and gives you a trustworthy, itemised total plus an
+invoice - on your own letterhead - to send it with.
 
 --------------------------------------------------------------------------------
 4. FACEBOOK PROMOTIONAL TEXT
 --------------------------------------------------------------------------------
-New: quote AND invoice your next shoot from one app.
+New: quote AND invoice your next shoot from one app - under YOUR studio name.
 
 Package Price Calculator walks you through a simple 4-step wizard - details,
 equipment, event hours & profit, and the final price. Add the costs most apps
 forget (travel, assistant pay, editing) and get an itemised total you can trust.
 
-Then export a two-page PDF: a clean client quote with your studio name, a
-highlighted package banner and a green total badge - plus a studio copy with
-the itemised equipment and full price breakdown - ready to send on WhatsApp
-or email.
+Then export a two-page PDF: a clean client quote with YOUR business name and
+contact details in the header and footer, a highlighted package banner and a
+green total badge - plus a studio copy with the itemised equipment and full
+price breakdown - ready to send on WhatsApp or email.
 
 Sign-in is effortless: enter your email once, no password, and the app
 remembers you from then on. Everything also works offline - your quotes stay
 on your phone, and your details sync as soon as you are back online.
 
+- Your own business name, tagline and contact details on every PDF
 - Guided package wizard with a live final total
 - One-time email sign-in - no password required
 - Sensible defaults: 3 event hours, LKR 1,000/hour, 10% profit
@@ -124,34 +131,38 @@ Download Package Price Calculator and price your next job the easy way.
 #AndroidApp #PhotographyLife #ShootCosting #InvoiceMaker
 #NoPasswordLogin #PhotographerPricing
 #OfflineFirst #ShootQuoting
+#YourBrandYourQuote #StudioBranding #CustomInvoice
 
 --------------------------------------------------------------------------------
 6. AI IMAGE PROMPTS (5)
 --------------------------------------------------------------------------------
 1. A modern smartphone held in a photographer's hand showing a clean 4-step
-   pricing wizard with a bold LKR total at the bottom, warm red-orange accent
-   colour, soft studio lighting, shallow depth of field, product-shot style.
+   pricing wizard with a bold LKR total at the bottom, a custom studio name in
+   the header, warm red-orange accent colour, soft studio lighting, shallow
+   depth of field, product-shot style.
 
 2. Overhead flat-lay of camera gear (DSLR, lenses, tripod, drone) neatly
    arranged beside a phone displaying an itemised package price breakdown with
-   travel and assistant costs, minimal desk, bright natural light, top-down
-   commercial photography.
+   travel and assistant costs and a branded invoice footer with phone/email,
+   minimal desk, bright natural light, top-down commercial photography.
 
 3. A wedding photographer at a venue sharing a professional PDF quote from
-   their phone to a happy couple, the phone screen showing a document with a
-   bold orange package banner, a green price badge and green tick marks, candid
-   documentary style, warm golden-hour light.
+   their phone to a happy couple, the phone screen showing a document with the
+   couple's studio name in the masthead, a bold orange package banner, a green
+   price badge and green tick marks, candid documentary style, warm
+   golden-hour light.
 
 4. A friendly app-icon style illustration: a camera lens merging with a rupee
-   price tag and a small document, flat vector design, warm red-orange, amber
-   banner and emerald green accents on a cream background, rounded shapes, clean
-   background, suitable for a social media avatar.
+   price tag and a small stamped letterhead document, flat vector design, warm
+   red-orange, amber banner and emerald green accents on a cream background,
+   rounded shapes, clean background, suitable for a social media avatar.
 
-5. A minimal welcome screen concept: a phone showing a single email field with
-   a large orange "Continue" button and a camera icon above it, no password
-   fields anywhere, warm cream background, soft shadows, clean modern UI
-   design, promotional screenshot style - with a small cloud-sync tick mark
-   beside the field to hint that sign-in syncs when online.
+5. A minimal business-setup screen concept: a phone showing five short fields
+   (business name, tagline, phone, email, address) under a "Business Details"
+   heading with a large orange "Save details" button, a small preview of a PDF
+   quote with that name in its header peeking from behind, warm cream
+   background, soft shadows, clean modern UI design, promotional screenshot
+   style.
 
 --------------------------------------------------------------------------------
 (C) 2026 Hire Artist Studio. Package Price Calculator.

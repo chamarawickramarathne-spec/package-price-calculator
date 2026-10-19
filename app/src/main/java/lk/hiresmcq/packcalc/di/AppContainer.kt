@@ -12,6 +12,7 @@ import lk.hiresmcq.packcalc.data.repo.TemplateRepository
 import lk.hiresmcq.packcalc.data.repo.UpdateRepository
 import lk.hiresmcq.packcalc.data.repo.UsageLogRepository
 import lk.hiresmcq.packcalc.data.repo.UserEmailRepository
+import lk.hiresmcq.packcalc.util.BusinessStore
 import lk.hiresmcq.packcalc.util.SessionStore
 
 class AppContainer(context: Context) {
@@ -26,6 +27,7 @@ class AppContainer(context: Context) {
     private val appContext = context.applicationContext
 
     val sessionStore = SessionStore(appContext)
+    val businessStore = BusinessStore(appContext)
     val catalogRepository = CatalogRepository(api)
     val templateRepository = TemplateRepository(api)
     val packageRepository = LocalPackageRepository(database)

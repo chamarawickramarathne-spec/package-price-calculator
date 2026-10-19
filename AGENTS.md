@@ -664,6 +664,70 @@ Date: 2026-10-19
 
 ---
 
+### Modification 014
+
+Date: 2026-10-19
+
+### Changes
+- **Business details on the PDF (v1.5.0).** New drawer destination
+  "Business Details" where the user enters their own **business name,
+  tagline, phone, email and address** once; every PDF quote then prints
+  those details instead of the built-in "Hire Artist Studio" branding, and
+  the drawer header shows the user's business name.
+- **New components:**
+  - `domain/BusinessProfile.kt` — pure model with `displayName` /
+    `displayTagline` (blank fields fall back to `CompanyInfo`) and
+    `contactLine` (non-blank phone/email/address joined with " • ", null
+    when all blank); max-length constants for validation.
+  - `util/BusinessStore.kt` — app-private SharedPreferences persistence
+    (same pattern as `SessionStore`; `allowBackup=false` so it stays on
+    the device).
+  - `ui/business/{BusinessScreen,BusinessViewModel}.kt` — form with the 5
+    fields, per-field validation (email via `EmailValidation`, length caps)
+    and Save; saving pops back to the drawer.
+- **PDF (`InvoiceSheet`):** `render(quote, business)` — the masthead studio
+  name, the banner sub-title and the footer © line all use the profile's
+  display values (auto-shrunk/ellipsized as before); a new centred
+  **contact line** (up to 2 wrapped lines, `needs()` grows the footer
+  reservation) appears under the thank-you line whenever any contact field
+  is filled. `PdfInvoiceGenerator.generate` loads the profile via
+  `BusinessStore`.
+- **Navigation:** `Dest.BUSINESS` (added to `topLevelRoutes`); `AppDrawer`
+  takes a `businessName` parameter (hardcoded studio name removed) and
+  gained a "Business Details" entry (`Icons.Filled.Store`);
+  `AppNav` re-reads `businessStore.load().displayName` per route change so
+  the drawer shows the latest saved name after returning from the screen.
+- **Cleanup:** removed the dead `CompanyInfo.PHONE` / `EMAIL` / `ADDRESS`
+  constants (never referenced; superseded by user-entered details).
+- Bumped `versionCode` 12 → 13 and `versionName` 1.4.1 → **1.5.0**.
+- Added `BusinessProfileTest` (5 tests); total unit tests now 32.
+
+### Files / Components
+- `domain/BusinessProfile.kt` (new), `util/BusinessStore.kt` (new),
+  `util/CompanyInfo.kt` (trimmed to NAME + TAGLINE)
+- `util/{InvoiceSheet,PdfInvoiceGenerator}.kt`
+- `ui/business/{BusinessScreen,BusinessViewModel}.kt` (new)
+- `ui/navigation/{Dest,AppNav,AppDrawer}.kt`, `di/AppContainer.kt`
+- `app/build.gradle.kts`, `app/src/test/.../domain/BusinessProfileTest.kt`
+- `AGENTS.md`, `AGENTS_PLAN.md`, `medial_support.txt`
+
+### Important Notes
+- **Storage is device-local only** (decision): the profile is not sent to
+  Supabase; it lives in app-private SharedPreferences and only leaves the
+  device inside PDFs the user explicitly shares/saves.
+- Blank name/tagline keep the built-in "Hire Artist Studio" branding, so
+  existing behaviour is unchanged until the user opts in.
+- Contact line layout: `PdfTheme.wrap(..., maxLines = 2)` and a
+  `needs(50 + lines*16)` footer reservation; `centered()` ellipsizes as a
+  final guard, so long values can never overflow the page.
+- Audit (rule 21): no secrets, no network writes, no new permissions; input
+  length-capped (name 60, tagline 80, phone 30, email 320 via
+  `EmailValidation`, address 100); all files under 300 lines; 32/32 unit
+  tests green; `assembleDebug` green. Release APK not yet built (will be
+  built when the user confirms commit/release).
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
 - **Eyeball the email gate + fixed sync on a device** (no device or emulator

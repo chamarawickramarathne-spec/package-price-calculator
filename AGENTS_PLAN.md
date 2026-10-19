@@ -144,14 +144,36 @@ Implementation plan and task tracker for the native Android rewrite
 - [x] ~~Run `sql/migrations/003_user_emails.sql`~~ — **verified applied** on
       the live DB (probe returns 401 `permission denied`, not 404), and the
       catalog seed loads (`category_types` → 200 with rows). No SQL run needed.
-- [ ] **Eyeball the email gate + fixed sync + redesigned PDF on a device**
-      (no device or emulator attached to this machine): sign in → row appears
-      in `user_emails`; offline sign-in → row lands at the next launch after
-      updating to 1.4.1; two-page PDF renders as designed.
 - [x] Publish/verify the **v1.4.1 GitHub release** - tag pushed, release
       published with `Package-Price-Calculator.apk`; anonymous download
       verified (HTTP 200, 1,864,253 bytes) so the in-app updater can fetch it
       and installed devices sync their pending emails on first launch.
+
+### In progress — Feature 1.5.0 (Mod 014): business details on the PDF
+
+- [x] `domain/BusinessProfile.kt` — pure model (name, tagline, phone, email,
+      address) with `displayName` / `displayTagline` falling back to
+      `CompanyInfo` and `contactLine` joining the non-blank contact fields
+      (" • " separator, null when all blank).
+- [x] `util/BusinessStore.kt` — SharedPreferences persistence (same pattern as
+      `SessionStore`); exposed from `AppContainer`.
+- [x] `ui/business/{BusinessScreen,BusinessViewModel}.kt` — drawer destination
+      with the 5 fields + validation (email format via `EmailValidation`,
+      max lengths); saved locally on Save.
+- [x] PDF (`InvoiceSheet`): masthead name, banner tagline, footer © line use
+      `BusinessProfile.displayName` / `displayTagline`; new contact line under
+      the footer (wrapped, max 2 lines) when any contact field is filled.
+- [x] Drawer header shows the user's business name instead of the hardcoded
+      studio name; new "Business Details" drawer entry.
+- [x] `BusinessProfileTest`; unit tests 32; versionCode 13, versionName 1.5.0.
+- [x] Docs: AGENTS.md Mod 014, `medial_support.txt` regenerated.
+- [ ] Commit + tag v1.5.0 + GitHub release (awaiting user confirmation).
+
+### Later
+- [ ] **Eyeball the email gate + fixed sync + redesigned PDF on a device**
+      (no device or emulator attached to this machine): sign in → row appears
+      in `user_emails`; offline sign-in → row lands at the next launch after
+      updating to 1.4.1; two-page PDF renders as designed.
 - [ ] Supabase Auth for real per-user accounts (hardening; the email gate is a
       soft identity, not authentication).
 

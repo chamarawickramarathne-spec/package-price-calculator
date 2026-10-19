@@ -25,9 +25,10 @@ object PdfInvoiceGenerator {
     fun generate(context: Context, quote: PackageQuote): File {
         val dir = File(context.cacheDir, "invoices").apply { mkdirs() }
         val file = File(dir, suggestedName(quote))
+        val business = BusinessStore(context).load()
         val document = PdfDocument()
         try {
-            InvoiceSheet(document).render(quote)
+            InvoiceSheet(document).render(quote, business)
             BreakdownSheet(document).render(quote)
             file.outputStream().use { document.writeTo(it) }
         } finally {

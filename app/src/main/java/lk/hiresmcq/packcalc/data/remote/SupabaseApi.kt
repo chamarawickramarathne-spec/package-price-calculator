@@ -71,14 +71,14 @@ interface SupabaseApi {
     @POST("access_logs")
     suspend fun insertAccessLog(@Body body: AccessLogDto)
 
-    // ---- user_emails (sign-in list; append-only, duplicates ignored) ----
-    // on_conflict=email + resolution=ignore-duplicates: re-submitting an
-    // already recorded email (offline retry, re-install) is a no-op instead
-    // of a 409. Requires the UNIQUE constraint from migrations/003.
-    @Headers("Prefer: resolution=ignore-duplicates")
+    // ---- user_emails (sign-in list; append-only) ----
+    // Plain INSERT, deliberately WITHOUT ?on_conflict / Prefer: resolution=*:
+    // any ON CONFLICT clause with an arbiter requires SELECT on the relation,
+    // and anon holds INSERT only (the lead list must stay unreadable - see
+    // migrations/003). A duplicate email therefore surfaces as HTTP 409,
+    // which UserEmailRepository treats as already synced; UNIQUE(email) is
+    // the dedupe mechanism. return=minimal keeps the response body-free.
+    @Headers("Prefer: return=minimal")
     @POST("user_emails")
-    suspend fun insertUserEmail(
-        @Query("on_conflict") onConflict: String,
-        @Body body: UserEmailDto,
-    )
+    suspend fun insertUserEmail(@Body body: UserEmailDto)
 }

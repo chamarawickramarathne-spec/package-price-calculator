@@ -605,10 +605,69 @@ Date: 2026-10-18
 
 ---
 
+### Modification 013
+
+Date: 2026-10-19
+
+### Changes
+- **Fixed: sign-in emails never reached `public.user_emails` (v1.4.1).**
+  Root cause was a PostgreSQL privilege rule, not the schema or network:
+  `SupabaseApi.insertUserEmail` sent `?on_conflict=email` +
+  `Prefer: resolution=ignore-duplicates`, i.e. `INSERT ... ON CONFLICT (email)
+  DO NOTHING`. PostgreSQL requires **SELECT** privilege on the relation (and a
+  matching SELECT RLS policy) for any `ON CONFLICT` clause with an arbiter
+  - but `user_emails` is deliberately INSERT-only (the lead list must stay
+  unreadable through the public anon key), so **every insert failed with
+  HTTP 401 / `42501 permission denied`** and the row was never written.
+  `access_logs` was unaffected because it uses a plain INSERT.
+- **Fix:** `insertUserEmail` is now a plain `POST user_emails` with
+  `Prefer: return=minimal` (no `on_conflict`, no `resolution=*`). A repeat
+  email returns **HTTP 409** (`23505` unique violation), which
+  `UserEmailRepository.push()` already treated as "already synced";
+  `UNIQUE(email)` remains the dedupe mechanism. No schema change, no SELECT
+  grant - the security model is unchanged.
+- `push()` now logs the HTTP code on failure
+  (`Email sync failed (401): ...`) for easier diagnosis, and its `onFailure`
+  branch resolves `httpCode` via `(error as? RemoteException)?.httpCode`.
+- SQL comments in `sql/migrations/003_user_emails.sql` updated: dedupe is
+  UNIQUE + HTTP 409, and the file now explicitly documents why `on_conflict`
+  must never be sent.
+- Bumped `versionCode` 11 → 12 and `versionName` 1.4.0 → **1.4.1**.
+
+### Files / Components
+- `data/remote/SupabaseApi.kt`, `data/repo/UserEmailRepository.kt`
+- `sql/migrations/003_user_emails.sql` (comments only)
+- `app/build.gradle.kts`, `medial_support.txt`, `AGENTS.md`, `AGENTS_PLAN.md`
+
+### Important Notes
+- **Verified live against the Supabase project (both directions):**
+  - Pre-fix `POST /rest/v1/user_emails?on_conflict=email` → HTTP 401
+    `42501 permission denied for table user_emails` (hint asks for
+    `GRANT SELECT` - exactly the arbiter requirement). Nothing written.
+  - Fixed `POST /rest/v1/user_emails` (plain) → **HTTP 201**, and the same
+    body again → **HTTP 409** `duplicate key value violates unique
+    constraint "user_emails_email_key"`.
+  - One test row (`dev-fix-check@example.com`) was created by this
+    verification and can be deleted in the Supabase table editor.
+  - `GET /rest/v1/user_emails` still returns 401 for anon (no SELECT leak);
+    `GET /rest/v1/category_types` returns 200 (app path healthy).
+- **Migration 003 is already applied** on the live DB (the 401 - not a 404 -
+  proves the table exists). The Mod 012 note about "run migration 003 /
+  insert returns 400" is superseded by this entry.
+- **Existing installs need the 1.4.1 APK.** Devices that typed an email on
+  1.4.0 still hold it locally with `emailSynced=false`, so it syncs
+  automatically at the first launch after the in-app update - no data lost.
+- Rejected alternative: `GRANT SELECT` to `anon` (with or without a SELECT
+  policy) would make `on_conflict` work but expose the whole lead list from
+  the APK; a SECURITY DEFINER RPC would not help already-shipped builds.
+- Unit tests 27/27 green; all source files remain under 300 lines.
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
-- **Fix the live Supabase DB (RLS/seed)** so the equipment catalog and
-  templates load — run `sql/install.sql` in the Supabase SQL Editor.
-- **Eyeball the new PDF on a device** and confirm the summary matches
-  `Details.pdf`.
+- **Eyeball the email gate + fixed sync on a device** (no device or emulator
+  attached to this machine): sign in → row appears in `user_emails`;
+  airplane-mode sign-in → row lands at the next launch. Also confirm the
+  two-page PDF renders as designed.
 - Supabase Auth for per-user ownership (hardening).

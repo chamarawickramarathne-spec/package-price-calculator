@@ -23,8 +23,10 @@ import lk.hiresmcq.packcalc.util.SessionStore
  * (`true`) or is still pending (`false`). A pending copy is retried by
  * [syncPending] at every app open until it succeeds; the `emailSynced` flag
  * in [SessionStore] tracks that. Server-side duplicates cannot happen twice
- * (UNIQUE email + PostgREST ignore-duplicates), so retries and re-installs
- * collapse into one row; a 409 therefore counts as synced.
+ * (UNIQUE email), so retries and re-installs collapse into one row: the
+ * plain INSERT returns HTTP 409 on a repeat, which counts as synced.
+ * (No `on_conflict` is sent - that clause would require SELECT on a table
+ * anon may only INSERT into, so every attempt would fail with 401.)
  */
 class UserEmailRepository(
     private val api: SupabaseApi,
@@ -66,17 +68,18 @@ class UserEmailRepository(
             appVersion = BuildConfig.VERSION_NAME,
             platform = "android",
         )
-        return safeApiCall { api.insertUserEmail(ON_CONFLICT, dto) }.fold(
+        return safeApiCall { api.insertUserEmail(dto) }.fold(
             onSuccess = {
                 store.setEmailSynced(true)
                 true
             },
             onFailure = { error ->
-                if (error is RemoteException && error.httpCode == HTTP_CONFLICT) {
+                val httpCode = (error as? RemoteException)?.httpCode
+                if (httpCode == HTTP_CONFLICT) {
                     store.setEmailSynced(true)
                     true
                 } else {
-                    Log.w(TAG, "Email sync failed: ${error.message}")
+                    Log.w(TAG, "Email sync failed ($httpCode): ${error.message}")
                     false
                 }
             },
@@ -85,7 +88,6 @@ class UserEmailRepository(
 
     private companion object {
         const val TAG = "UserEmail"
-        const val ON_CONFLICT = "email"
         const val HTTP_CONFLICT = 409
         const val INVALID_MESSAGE = "Enter a valid email address."
     }

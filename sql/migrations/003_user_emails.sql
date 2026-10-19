@@ -24,10 +24,14 @@
 --   emails are read from the Supabase dashboard / table editor instead.
 --   email is UNIQUE and the app lowercases + trims before inserting, so
 --   re-submits (retry after offline, same person on a new install) collapse
---   into one row via PostgREST "resolution=ignore-duplicates". Length CHECKs
---   bound junk rows. As with access_logs, a determined client holding the
---   APK could spam inserts - accepted for now; move to Supabase Auth (or an
---   RPC) if that becomes a problem.
+--   into one row: the app sends a plain INSERT and treats the resulting
+--   HTTP 409 as "already recorded". It must NOT send PostgREST's
+--   ?on_conflict / Prefer: resolution=* - any ON CONFLICT clause with an
+--   arbiter requires SELECT on the relation (PostgreSQL INSERT docs), which
+--   would force this lead list to be readable through the public anon key.
+--   Length CHECKs bound junk rows. As with access_logs, a determined client
+--   holding the APK could spam inserts - accepted for now; move to Supabase
+--   Auth (or an RPC) if that becomes a problem.
 -- =========================================================================
 
 BEGIN;

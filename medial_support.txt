@@ -1,6 +1,6 @@
 ﻿================================================================================
 MEDIA SUPPORT - Package Price Calculator
-Hire Artist Studio (hiresmcq)  |  Version 1.4.0  |  Generated 2026-10-18
+Hire Artist Studio (hiresmcq)  |  Version 1.4.1  |  Generated 2026-10-19
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -11,9 +11,9 @@ Package Price Calculator
 --------------------------------------------------------------------------------
 2. SHORT DESCRIPTION
 --------------------------------------------------------------------------------
-Build a photo/video shoot price in seconds: a guided 4-step wizard for gear,
-event hours, extra costs and profit - then save it locally and export a
-ready-to-send PDF quote. One-time email sign-in, no password.
+Price a photo/video shoot in minutes: a guided 4-step wizard for gear, event
+hours, extra costs and profit - save it locally and export a ready-to-send
+two-page PDF quote. One-time email sign-in, no password.
 
 --------------------------------------------------------------------------------
 3. LONG DESCRIPTION
@@ -57,8 +57,9 @@ Main features:
 - Clean LKR currency formatting (Rs. 12,345.00) and precise decimal maths.
 - In-app updates: the app checks for a newer version and can download and
   install it for you in a couple of taps.
-- Usage analytics: anonymous app open and PDF export events are recorded to
-  measure adoption (no client names, package names or prices are logged).
+- Reliable sign-in sync: your email is stored on the device first and pushed to
+  our list when a connection is available - duplicates and retries collapse into
+  a single record, and your sign-in is never lost.
 
 Main benefits:
 - Quote a client before you leave the venue.
@@ -67,6 +68,7 @@ Main benefits:
 - Send a professional PDF invoice instead of a rushed message.
 - Keep every price consistent - no mental arithmetic, no forgotten items.
 - Sign in once and forget about it - no password to create or remember.
+- Works offline: plan and price on location, sync when you are back online.
 
 Problem it solves: pricing a shoot is repetitive and error-prone, and turning a
 price into something you can send a client is usually another chore. This app
@@ -88,7 +90,8 @@ the itemised equipment and full price breakdown - ready to send on WhatsApp
 or email.
 
 Sign-in is effortless: enter your email once, no password, and the app
-remembers you from then on.
+remembers you from then on. Everything also works offline - your quotes stay
+on your phone, and your details sync as soon as you are back online.
 
 - Guided package wizard with a live final total
 - One-time email sign-in - no password required
@@ -120,6 +123,7 @@ Download Package Price Calculator and price your next job the easy way.
 #PDFInvoice #LKR #SriLanka #HireArtistStudio
 #AndroidApp #PhotographyLife #ShootCosting #InvoiceMaker
 #NoPasswordLogin #PhotographerPricing
+#OfflineFirst #ShootQuoting
 
 --------------------------------------------------------------------------------
 6. AI IMAGE PROMPTS (5)
@@ -146,7 +150,8 @@ Download Package Price Calculator and price your next job the easy way.
 5. A minimal welcome screen concept: a phone showing a single email field with
    a large orange "Continue" button and a camera icon above it, no password
    fields anywhere, warm cream background, soft shadows, clean modern UI
-   design, promotional screenshot style.
+   design, promotional screenshot style - with a small cloud-sync tick mark
+   beside the field to hint that sign-in syncs when online.
 
 --------------------------------------------------------------------------------
 (C) 2026 Hire Artist Studio. Package Price Calculator.

@@ -129,14 +129,27 @@ Implementation plan and task tracker for the native Android rewrite
       - `EmailValidationTest` added; unit tests now 27. versionCode 11.
       - Also removed the build log files accidentally committed in v1.3.0 and
         added `*.out` to `.gitignore`.
+- [x] **Fix 1.4.1 — user_emails sync never landed (Mod 013):**
+      - Root cause: `?on_conflict=email` (PostgREST ignore-duplicates) makes
+        PostgreSQL require **SELECT** on the table, which anon does not have
+        (the lead list is INSERT-only by design) → every insert died with
+        HTTP 401 / `42501`.
+      - `insertUserEmail` is now a plain INSERT (`Prefer: return=minimal`);
+        duplicates surface as HTTP 409, which the repository already maps to
+        "synced". No schema change; SELECT still denied (verified live).
+      - Live probes: pre-fix POST → 401, fixed POST → 201, repeat → 409.
+      - versionCode 12; 27/27 unit tests.
 
 ### Pending
-- [ ] **Run `sql/migrations/003_user_emails.sql`** in the Supabase SQL Editor
-      so sign-in emails reach the server (until then they sync from the device
-      at the next launch after the run). Also still needed: `sql/install.sql`
-      for the catalog/seed if that has not been run yet.
-- [ ] **Eyeball the email gate + redesigned PDF on a device** (no device or
-      emulator attached to this machine - not rendered here).
+- [x] ~~Run `sql/migrations/003_user_emails.sql`~~ — **verified applied** on
+      the live DB (probe returns 401 `permission denied`, not 404), and the
+      catalog seed loads (`category_types` → 200 with rows). No SQL run needed.
+- [ ] **Eyeball the email gate + fixed sync + redesigned PDF on a device**
+      (no device or emulator attached to this machine): sign in → row appears
+      in `user_emails`; offline sign-in → row lands at the next launch after
+      updating to 1.4.1; two-page PDF renders as designed.
+- [ ] Publish/verify the **v1.4.1 GitHub release** so installed devices pick
+      up the fix through the in-app updater (their pending emails then sync).
 - [ ] Supabase Auth for real per-user accounts (hardening; the email gate is a
       soft identity, not authentication).
 

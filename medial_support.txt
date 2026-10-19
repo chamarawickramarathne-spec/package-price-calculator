@@ -1,6 +1,6 @@
-﻿================================================================================
+================================================================================
 MEDIA SUPPORT - Package Price Calculator
-Hire Artist Studio (hiresmcq)  |  Version 1.6.0  |  Generated 2026-10-20
+Hire Artist Studio (hiresmcq)  |  Version 1.6.1  |  Generated 2026-10-20
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -35,7 +35,8 @@ Main features:
 - Your business, your quote: on first launch enter your email, your business
   name (required) and an optional phone - the app remembers them on your
   device, and every PDF quote then prints YOUR business name with your phone and
-  email in the footer.
+  email in the footer. Changed your mind? Tap your details in the app menu to
+  edit the email, business name and phone at any time.
 - One-time sign-in, no password: the email you enter at start-up is the same
   address used as your quoting contact, so there is nothing else to remember.
 - 4-step package wizard: Package Details, Equipment Selection, Labor & Profit,
@@ -99,8 +100,9 @@ green total badge - plus a studio copy with the itemised equipment and full
 price breakdown - ready to send on WhatsApp or email.
 
 Set-up takes seconds: enter your email once (no password), add your business
-name and phone, and you are ready to quote. Everything also works offline - your
-quotes stay on your phone, and details sync as soon as you are back online.
+name and phone, and you are ready to quote - and you can edit those details any
+time from the app menu. Everything also works offline - your quotes stay on your
+phone, and details sync as soon as you are back online.
 
 - Your own business name and contact details on every PDF
 - One-time sign-in at start-up - no password required
@@ -160,12 +162,11 @@ Download Package Price Calculator and price your next job the easy way.
    red-orange, amber banner and emerald green accents on a cream background,
    rounded shapes, clean background, suitable for a social media avatar.
 
-5. A minimal start-up screen concept: a phone showing three short fields
-   (email address, business name and phone) under a friendly "Sign in to
-   continue" heading with a large orange Continue button, a preview of a PDF
-   quote with that business name in its header peeking from behind, warm cream
-   background, soft shadows, clean modern UI design, promotional screenshot
-   style.
+5. A minimal business-setup screen concept: a phone showing three short fields
+   (email address, business name and phone) with a large orange save button,
+   a preview of a PDF quote with that business name in its header peeking from
+   behind, warm cream background, soft shadows, clean modern UI design,
+   promotional screenshot style.
 
 --------------------------------------------------------------------------------
 (C) 2026 Hire Artist Studio. Package Price Calculator.

@@ -797,6 +797,43 @@ Date: 2026-10-20
 
 ---
 
+### Modification 016
+
+Date: 2026-10-20
+
+### Changes
+- **Business details are editable again (v1.6.1).** v1.6.0 hid the business
+  name/phone behind the one-time gate, so an install that had already signed in
+  had no way to change them. The drawer route (email row → "Tap to edit
+  details") now shows the same three fields as the gate.
+- `LoginViewModel` pre-fills email / business name / phone from `SessionStore` +
+  `BusinessStore` in Change mode, validates them with the same rules as the
+  gate (name required ≤ 60, phone ≤ 30, valid email) and always writes the
+  profile locally before any network call. The email is only pushed when it is
+  actually new, so a details-only edit never hits the server.
+- `LoginScreen`: email / business name / phone render in **both** modes (the
+  email field is `ImeAction.Next`, phone is `Done` → submit); Change mode
+  heading "Your details", top bar "Business details", button "Save details".
+- Drawer hint changed from "Tap to change email" to "Tap to edit details".
+- Bumped `versionCode` 14 → 15 and `versionName` 1.6.0 → **1.6.1**.
+
+### Files / Components
+- `ui/login/{LoginScreen,LoginViewModel}.kt`, `ui/navigation/AppDrawer.kt`
+- `app/build.gradle.kts`, `AGENTS.md`, `AGENTS_PLAN.md`, `medial_support.txt`
+
+### Important Notes
+- Audit (rule 21): no new permissions, no new network calls, no secrets; input
+  validation is unchanged and now enforced in both modes, so the profile can
+  never be cleared to an empty business name; the "email unchanged" shortcut
+  means editing name/phone works fully offline.
+- 31/31 unit tests green; `assembleDebug` + `assembleRelease` green; all source
+  files remain under 300 lines.
+- Signed release APK staged at `build/Package-Price-Calculator.apk`
+  (versionCode 15, versionName 1.6.1, publisher key `CN=Hire Artist Studio`,
+  SHA-256 `F5:C6:C7:3F…93:EC:87`).
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
 - **Eyeball the login gate + PDF on a device** (no device or emulator attached

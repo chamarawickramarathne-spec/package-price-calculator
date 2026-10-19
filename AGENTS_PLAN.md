@@ -206,6 +206,17 @@ Implementation plan and task tracker for the native Android rewrite
       `application/vnd.android.package-archive`, 1,864,253 bytes) and the
       Releases API reports `v1.6.0` as latest, so in-app updates work.
 
+### Completed — Fix 1.6.1 (Mod 016): business details editable from the drawer
+
+- [x] The drawer's edit route now shows **email + business name + phone**
+      (pre-filled), so an install that already passed the gate can change its
+      details; both modes validate and save the same way.
+- [x] Details-only edits save locally without touching the server; a changed
+      email is still pushed (`register`) with the offline retry.
+- [x] Drawer hint → "Tap to edit details"; Change-mode headings/button updated.
+- [x] 31/31 unit tests green; `assembleDebug` + `assembleRelease` green;
+      versionCode 15, versionName 1.6.1.
+
 ### Later
 - [ ] **Eyeball the login gate + PDF on a device** (no device or emulator
       attached to this machine): gate collects name/phone → drawer shows the

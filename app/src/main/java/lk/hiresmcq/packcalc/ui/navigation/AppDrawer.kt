@@ -37,7 +37,7 @@ private val drawerEntries = listOf(
  * App navigation drawer. The studio name is the user's own business name
  * (v1.6.0, collected on the login gate, falls back to the built-in branding);
  * when an email has been saved (v1.4.0 gate) it is shown underneath - tapping
- * it opens the change-email route.
+ * it opens the route that edits the saved email and business details.
  */
 @Composable
 fun AppDrawer(
@@ -81,7 +81,7 @@ fun AppDrawer(
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
-                        text = "Tap to change email",
+                        text = "Tap to edit details",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

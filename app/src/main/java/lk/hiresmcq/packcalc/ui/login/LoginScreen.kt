@@ -51,10 +51,11 @@ import lk.hiresmcq.packcalc.R
 import lk.hiresmcq.packcalc.util.CompanyInfo
 
 /**
- * The gate shown before the main app (v1.4.0 email, v1.6.0 business details).
- * [LoginMode.Gate] blocks the app until email + business name are saved;
- * [LoginMode.Change] (from the drawer) pre-fills the current email and pops
- * back on save. The business fields (name, phone) only appear in Gate mode.
+ * The gate shown before the main app, and the drawer's edit-details route
+ * (v1.4.0 email, v1.6.0 business details, v1.6.1 editable again from the
+ * drawer). [LoginMode.Gate] blocks the app until the details are saved;
+ * [LoginMode.Change] pre-fills the saved email / business name / phone and
+ * pops back on save. Both modes collect the same three fields.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,7 +84,7 @@ fun LoginScreen(
         topBar = {
             if (onBack != null) {
                 TopAppBar(
-                    title = { Text("Change email") },
+                    title = { Text("Business details") },
                     navigationIcon = {
                         IconButton(onClick = onBack) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -117,7 +118,7 @@ fun LoginScreen(
             )
             Spacer(Modifier.height(36.dp))
             Text(
-                text = if (mode == LoginMode.Gate) "Sign in to continue" else "Your email",
+                text = if (mode == LoginMode.Gate) "Sign in to continue" else "Your details",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -126,7 +127,7 @@ fun LoginScreen(
                     "Enter your details once - we'll remember them on this device. " +
                         "They appear on the PDF quotes you share."
                 } else {
-                    "Update the email saved for this app."
+                    "Update the email and business details saved for this app."
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -143,7 +144,7 @@ fun LoginScreen(
                 supportingText = state.emailError?.let { { Text(it) } },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
-                    imeAction = if (mode == LoginMode.Gate) ImeAction.Next else ImeAction.Done,
+                    imeAction = ImeAction.Next,
                 ),
                 keyboardActions = KeyboardActions(
                     onNext = { focusManager.moveFocus(FocusDirection.Down) },
@@ -154,46 +155,44 @@ fun LoginScreen(
                 ),
                 modifier = Modifier.fillMaxWidth(),
             )
-            if (mode == LoginMode.Gate) {
-                Spacer(Modifier.height(12.dp))
-                OutlinedTextField(
-                    value = state.businessName,
-                    onValueChange = viewModel::onBusinessNameChange,
-                    label = { Text("Business name") },
-                    placeholder = { Text(CompanyInfo.NAME) },
-                    singleLine = true,
-                    isError = state.businessNameError != null,
-                    supportingText = state.businessNameError?.let { { Text(it) } }
-                        ?: { Text("Printed on every PDF quote you share.") },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next,
-                    ),
-                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                Spacer(Modifier.height(12.dp))
-                OutlinedTextField(
-                    value = state.phone,
-                    onValueChange = viewModel::onPhoneChange,
-                    label = { Text("Phone (optional)") },
-                    placeholder = { Text("+94 77 123 4567") },
-                    singleLine = true,
-                    isError = state.phoneError != null,
-                    supportingText = state.phoneError?.let { { Text(it) } },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone,
-                        imeAction = ImeAction.Done,
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            keyboard?.hide()
-                            viewModel.submit()
-                        },
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = state.businessName,
+                onValueChange = viewModel::onBusinessNameChange,
+                label = { Text("Business name") },
+                placeholder = { Text(CompanyInfo.NAME) },
+                singleLine = true,
+                isError = state.businessNameError != null,
+                supportingText = state.businessNameError?.let { { Text(it) } }
+                    ?: { Text("Printed on every PDF quote you share.") },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next,
+                ),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = state.phone,
+                onValueChange = viewModel::onPhoneChange,
+                label = { Text("Phone (optional)") },
+                placeholder = { Text("+94 77 123 4567") },
+                singleLine = true,
+                isError = state.phoneError != null,
+                supportingText = state.phoneError?.let { { Text(it) } },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Done,
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        keyboard?.hide()
+                        viewModel.submit()
+                    },
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            )
             Spacer(Modifier.height(20.dp))
             Button(
                 onClick = {
@@ -211,7 +210,7 @@ fun LoginScreen(
                     Spacer(Modifier.size(10.dp))
                     Text("Saving...")
                 } else {
-                    Text(if (mode == LoginMode.Gate) "Continue" else "Save email")
+                    Text(if (mode == LoginMode.Gate) "Continue" else "Save details")
                 }
             }
             Spacer(Modifier.height(24.dp))

@@ -31,13 +31,14 @@ data class LoginUiState(
 )
 
 /**
- * Drives the email gate (and the drawer's change-email route).
+ * Drives the sign-in / details screen: the first-launch gate and the drawer's
+ * edit-details route.
  *
- * The gate (v1.6.0) also collects the business name and phone, saved to
- * [BusinessStore] along with the sign-in email (the contact email printed on
- * PDFs). Submitting always saves on the device first ([UserEmailRepository]);
- * when the server copy could not be written (offline) the UI shows [notice]
- * and still lets the user in - the copy is retried at the next app open.
+ * Both modes collect the business name and phone (saved to [BusinessStore])
+ * together with the sign-in email, which is also the contact email printed on
+ * PDFs. Submitting always saves on the device first; when the server copy of a
+ * new email could not be written (offline) the UI shows [notice] and still lets
+ * the user in - the copy is retried at the next app open.
  */
 class LoginViewModel(
     private val store: SessionStore,
@@ -46,7 +47,16 @@ class LoginViewModel(
     private val mode: LoginMode,
 ) : ViewModel() {
 
-    private val initial = LoginUiState(email = if (mode == LoginMode.Change) store.email.orEmpty() else "")
+    private val initial = if (mode == LoginMode.Change) {
+        val profile = businessStore.load()
+        LoginUiState(
+            email = store.email.orEmpty(),
+            businessName = profile.name,
+            phone = profile.phone,
+        )
+    } else {
+        LoginUiState()
+    }
 
     private val _state = MutableStateFlow(initial)
     val state: StateFlow<LoginUiState> = _state.asStateFlow()
@@ -77,11 +87,20 @@ class LoginViewModel(
             return
         }
         val normalized = EmailValidation.normalize(current.email)
+        // Local save always wins - the profile is written before any network
+        // call, so details are never lost, even offline.
+        businessStore.save(
+            BusinessProfile(
+                name = current.businessName.trim(),
+                phone = current.phone.trim(),
+                email = normalized,
+            ),
+        )
+        // The email is unchanged: nothing to push, the details are already saved.
         if (mode == LoginMode.Change && normalized == store.email) {
             _state.update { it.copy(done = true) }
             return
         }
-        saveBusinessDetails(current, normalized)
         _state.update { it.copy(saving = true) }
         viewModelScope.launch { register(normalized) }
     }
@@ -102,26 +121,6 @@ class LoginViewModel(
             }
     }
 
-    /**
-     * Local save always wins: the profile is written before the network call,
-     * so business details are never lost - even offline. The sign-in email is
-     * the contact email printed in the PDF footer, so a drawer email change
-     * keeps the profile in sync while name/phone are preserved.
-     */
-    private fun saveBusinessDetails(current: LoginUiState, email: String) {
-        if (mode == LoginMode.Gate) {
-            businessStore.save(
-                BusinessProfile(
-                    name = current.businessName.trim(),
-                    phone = current.phone.trim(),
-                    email = email,
-                ),
-            )
-        } else {
-            businessStore.save(businessStore.load().copy(email = email))
-        }
-    }
-
     /** Called once the offline notice has been displayed; finishes the screen. */
     fun consumeNotice() {
         _state.update { it.copy(notice = null, done = true) }
@@ -138,15 +137,13 @@ class LoginViewModel(
     private fun validate(state: LoginUiState): Errors {
         var errors = Errors()
         if (!EmailValidation.isValid(state.email)) errors = errors.copy(email = INVALID_MESSAGE)
-        if (mode == LoginMode.Gate) {
-            if (state.businessName.isBlank()) {
-                errors = errors.copy(businessName = REQUIRED_MESSAGE)
-            } else if (state.businessName.trim().length > BusinessProfile.MAX_NAME) {
-                errors = errors.copy(businessName = "Maximum ${BusinessProfile.MAX_NAME} characters.")
-            }
-            if (state.phone.trim().length > BusinessProfile.MAX_PHONE) {
-                errors = errors.copy(phone = "Maximum ${BusinessProfile.MAX_PHONE} characters.")
-            }
+        if (state.businessName.isBlank()) {
+            errors = errors.copy(businessName = REQUIRED_MESSAGE)
+        } else if (state.businessName.trim().length > BusinessProfile.MAX_NAME) {
+            errors = errors.copy(businessName = "Maximum ${BusinessProfile.MAX_NAME} characters.")
+        }
+        if (state.phone.trim().length > BusinessProfile.MAX_PHONE) {
+            errors = errors.copy(phone = "Maximum ${BusinessProfile.MAX_PHONE} characters.")
         }
         return errors
     }

@@ -732,10 +732,72 @@ Date: 2026-10-19
 
 ---
 
+### Modification 015
+
+Date: 2026-10-20
+
+### Changes
+- **Business details now collected on the login gate (v1.6.0).** The separate
+  "Business Details" drawer screen is gone: the gate asks for the **email**
+  (existing, no password), the **business name** (required, max 60) and an
+  optional **phone** (max 30). Tagline and address are dropped entirely.
+- **The sign-in email is the business contact email** (decision): one email
+  field signs the user in and is printed in the PDF footer contact line.
+  `LoginViewModel` writes the profile to `BusinessStore` *before* the network
+  call, so details are never lost offline.
+- `domain/BusinessProfile` reduced to `name`, `phone`, `email`
+  (`displayName` still falls back to `CompanyInfo.NAME`; `contactLine` now
+  joins phone • email). `displayTagline`, `MAX_TAGLINE`, `MAX_ADDRESS` removed;
+  the PDF package banner always prints `CompanyInfo.TAGLINE`.
+- **New-package PDF meta block** (`InvoiceSheet.drawMeta`) renders the
+  label and value **on one line** for Date, Invoice #, Expires On (and
+  Client): each field is clamped to its own column (`rightColumn - 14f` /
+  `CONTENT_RIGHT`) so a long value can never overlap the right column.
+- `LoginScreen`: gate mode shows the two extra fields with focus
+  Next/Next/Done handling and updated copy; change-email mode is unchanged.
+  A drawer email change keeps the profile email in sync (name/phone preserved).
+- **One-time local backfill** (`AppContainer.backfillBusinessEmail`, called from
+  `PackCalcApp`): installs that completed the gate before v1.6.0 copy their
+  remembered email into the profile so quotes keep their contact line.
+- Removed `ui/business/` (`BusinessScreen`, `BusinessViewModel`),
+  `Dest.BUSINESS` (and from `topLevelRoutes`), the drawer entry and its
+  `Icons.Filled.Store` import, and the `AppNav` business route/imports.
+- `BusinessProfileTest` updated to the new shape (4 tests); unit tests 31/31.
+- Bumped `versionCode` 13 → 14 and `versionName` 1.5.0 → **1.6.0**.
+
+### Files / Components
+- `domain/BusinessProfile.kt`, `util/BusinessStore.kt`, `util/CompanyInfo.kt`
+- `ui/login/{LoginScreen,LoginViewModel,LoginDestination}.kt`
+- `ui/navigation/{Dest,AppNav,AppDrawer}.kt`, `ui/business/` (deleted)
+- `util/InvoiceSheet.kt` (inline meta + default tagline), `di/AppContainer.kt`,
+  `PackCalcApp.kt`
+- `app/build.gradle.kts`, `app/src/test/.../domain/BusinessProfileTest.kt`
+- `AGENTS.md`, `AGENTS_PLAN.md`, `medial_support.txt`
+
+### Important Notes
+- **Storage is device-local only** (unchanged): the profile never goes to
+  Supabase; it lives in app-private SharedPreferences and leaves the device
+  only inside PDFs the user shares/saves. Business name/phone share the same
+  prefs file as before, so a v1.5.0 install keeps its saved name/phone.
+- Audit (rule 21): no new permissions, no new network calls, no secrets;
+  login input stays length-capped and the email is validated
+  (`EmailValidation`); the business name is required so the gate cannot be
+  cleared with an empty quote header; all source files remain under 300 lines;
+  `assembleDebug` + `testDebugUnitTest` (31/31) + `assembleRelease` green.
+- Signed release APK staged at `build/Package-Price-Calculator.apk`
+  (versionCode 14, versionName 1.6.0, publisher key `CN=Hire Artist Studio`,
+  SHA-256 `F5:C6:C7:3F…93:EC:87`). **Not published** — awaiting an explicit
+  go-ahead to commit, tag and push the GitHub release.
+- **Not rendered on a device** (no device/emulator attached): the inline
+  meta rows are geometry-verified only; still to be eyeballed by the user.
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
-- **Eyeball the email gate + fixed sync on a device** (no device or emulator
-  attached to this machine): sign in → row appears in `user_emails`;
-  airplane-mode sign-in → row lands at the next launch. Also confirm the
-  two-page PDF renders as designed.
+- **Eyeball the login gate + PDF on a device** (no device or emulator attached
+  to this machine): gate collects name/phone → drawer shows the name, PDF
+  footer shows phone • email; sign-in row lands in `user_emails` (airplane-mode
+  sign-in lands at the next launch); the two-page PDF and the inline
+  Date / Invoice # / Expires On rows render as designed.
 - Supabase Auth for per-user ownership (hardening).

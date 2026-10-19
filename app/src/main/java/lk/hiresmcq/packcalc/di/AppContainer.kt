@@ -37,4 +37,17 @@ class AppContainer(context: Context) {
     private val githubApi = NetworkModule.createGitHubApi(debugLogging = BuildConfig.DEBUG)
     val updateRepository = UpdateRepository(githubApi)
     val apkDownloader = ApkDownloader(NetworkModule.createUpdateClient(debugLogging = BuildConfig.DEBUG))
+
+    /**
+     * One-time local migration for installs that completed the email gate
+     * before business details moved there (v1.6.0): the remembered sign-in
+     * email becomes the profile's contact email so quotes keep their line.
+     */
+    fun backfillBusinessEmail() {
+        val email = sessionStore.email ?: return
+        val profile = businessStore.load()
+        if (profile.email.isBlank()) {
+            businessStore.save(profile.copy(email = email))
+        }
+    }
 }

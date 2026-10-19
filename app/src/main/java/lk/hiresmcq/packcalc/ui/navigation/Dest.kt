@@ -17,13 +17,11 @@ object Dest {
 
     const val TAXONOMY = "taxonomy"
 
-    const val BUSINESS = "business"
-
     const val EMAIL_CHANGE = "email/change"
 
     fun packageDetail(id: Long) = "packages/$id"
     fun calculatorEdit(id: Long) = "calculator/edit/$id"
     fun calculatorFromTemplate(id: Int) = "calculator/template/$id"
 
-    val topLevelRoutes = listOf(NEW_PACKAGE, PACKAGES, TEMPLATES, EQUIPMENT, BUSINESS)
+    val topLevelRoutes = listOf(NEW_PACKAGE, PACKAGES, TEMPLATES, EQUIPMENT)
 }

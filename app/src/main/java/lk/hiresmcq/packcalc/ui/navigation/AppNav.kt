@@ -19,8 +19,6 @@ import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import lk.hiresmcq.packcalc.ui.SimpleVmFactory
 import lk.hiresmcq.packcalc.ui.appContainer
-import lk.hiresmcq.packcalc.ui.business.BusinessScreen
-import lk.hiresmcq.packcalc.ui.business.BusinessViewModel
 import lk.hiresmcq.packcalc.ui.calculator.CalculatorMode
 import lk.hiresmcq.packcalc.ui.calculator.CalculatorScreen
 import lk.hiresmcq.packcalc.ui.calculator.CalculatorViewModel
@@ -66,8 +64,8 @@ fun AppNav() {
     val currentRoute = backStackEntry?.destination?.route
     val isTopLevel = currentRoute in Dest.topLevelRoutes
     val openMenu: () -> Unit = { scope.launch { drawerState.open() } }
-    // Re-read when the route changes so returning from the business screen
-    // (or the email gate) shows the latest saved name in the drawer.
+    // Re-read when the route changes so returning from the email gate shows the
+    // latest saved business name in the drawer.
     val businessName = remember(currentRoute) { container.businessStore.load().displayName }
 
     ModalNavigationDrawer(
@@ -192,17 +190,6 @@ fun AppNav() {
                     factory = SimpleVmFactory(container) { TaxonomyViewModel(it.catalogRepository) },
                 )
                 TaxonomyScreen(viewModel = vm, onBack = { navController.popBackStack() })
-            }
-
-            composable(Dest.BUSINESS) {
-                val vm: BusinessViewModel = viewModel(
-                    factory = SimpleVmFactory(container) { BusinessViewModel(it.businessStore) },
-                )
-                BusinessScreen(
-                    viewModel = vm,
-                    onBack = { navController.popBackStack() },
-                    onDone = { navController.popBackStack() },
-                )
             }
 
             composable(Dest.EQUIPMENT_NEW) {

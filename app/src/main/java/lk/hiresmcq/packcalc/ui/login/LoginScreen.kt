@@ -2,7 +2,6 @@ package lk.hiresmcq.packcalc.ui.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -40,6 +38,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -51,9 +51,10 @@ import lk.hiresmcq.packcalc.R
 import lk.hiresmcq.packcalc.util.CompanyInfo
 
 /**
- * The email gate shown before the main app (v1.4.0). One field, no password.
- * [LoginMode.Gate] blocks the app until an email is saved; [LoginMode.Change]
- * (from the drawer) pre-fills the current email and pops back on save.
+ * The gate shown before the main app (v1.4.0 email, v1.6.0 business details).
+ * [LoginMode.Gate] blocks the app until email + business name are saved;
+ * [LoginMode.Change] (from the drawer) pre-fills the current email and pops
+ * back on save. The business fields (name, phone) only appear in Gate mode.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +67,7 @@ fun LoginScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val keyboard = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(state.done) {
         if (state.done) onDone()
@@ -121,7 +123,8 @@ fun LoginScreen(
             )
             Text(
                 text = if (mode == LoginMode.Gate) {
-                    "Enter your email once - we'll remember it on this device."
+                    "Enter your details once - we'll remember them on this device. " +
+                        "They appear on the PDF quotes you share."
                 } else {
                     "Update the email saved for this app."
                 },
@@ -140,9 +143,10 @@ fun LoginScreen(
                 supportingText = state.emailError?.let { { Text(it) } },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Done,
+                    imeAction = if (mode == LoginMode.Gate) ImeAction.Next else ImeAction.Done,
                 ),
                 keyboardActions = KeyboardActions(
+                    onNext = { focusManager.moveFocus(FocusDirection.Down) },
                     onDone = {
                         keyboard?.hide()
                         viewModel.submit()
@@ -150,6 +154,46 @@ fun LoginScreen(
                 ),
                 modifier = Modifier.fillMaxWidth(),
             )
+            if (mode == LoginMode.Gate) {
+                Spacer(Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = state.businessName,
+                    onValueChange = viewModel::onBusinessNameChange,
+                    label = { Text("Business name") },
+                    placeholder = { Text(CompanyInfo.NAME) },
+                    singleLine = true,
+                    isError = state.businessNameError != null,
+                    supportingText = state.businessNameError?.let { { Text(it) } }
+                        ?: { Text("Printed on every PDF quote you share.") },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next,
+                    ),
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = state.phone,
+                    onValueChange = viewModel::onPhoneChange,
+                    label = { Text("Phone (optional)") },
+                    placeholder = { Text("+94 77 123 4567") },
+                    singleLine = true,
+                    isError = state.phoneError != null,
+                    supportingText = state.phoneError?.let { { Text(it) } },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Done,
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboard?.hide()
+                            viewModel.submit()
+                        },
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
             Spacer(Modifier.height(20.dp))
             Button(
                 onClick = {
@@ -172,8 +216,14 @@ fun LoginScreen(
             }
             Spacer(Modifier.height(24.dp))
             Text(
-                text = "We'll only use your email to tell you about our other apps " +
-                    "from ${CompanyInfo.NAME}. No password is needed.",
+                text = if (mode == LoginMode.Gate) {
+                    "Your email and business details are stored on this device and used " +
+                        "on your quotes - we'll only use your email to tell you about our " +
+                        "other apps from ${CompanyInfo.NAME}. No password is needed."
+                } else {
+                    "We'll only use your email to tell you about our other apps " +
+                        "from ${CompanyInfo.NAME}. No password is needed."
+                },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

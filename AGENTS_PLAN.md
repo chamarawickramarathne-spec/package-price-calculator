@@ -140,7 +140,7 @@ Implementation plan and task tracker for the native Android rewrite
       - Live probes: pre-fix POST → 401, fixed POST → 201, repeat → 409.
       - versionCode 12; 27/27 unit tests.
 
-### Pending
+### Completed (1.4.1 follow-up)
 - [x] ~~Run `sql/migrations/003_user_emails.sql`~~ — **verified applied** on
       the live DB (probe returns 401 `permission denied`, not 404), and the
       catalog seed loads (`category_types` → 200 with rows). No SQL run needed.
@@ -149,7 +149,7 @@ Implementation plan and task tracker for the native Android rewrite
       verified (HTTP 200, 1,864,253 bytes) so the in-app updater can fetch it
       and installed devices sync their pending emails on first launch.
 
-### In progress — Feature 1.5.0 (Mod 014): business details on the PDF
+### Completed — Feature 1.5.0 (Mod 014): business details on the PDF
 
 - [x] `domain/BusinessProfile.kt` — pure model (name, tagline, phone, email,
       address) with `displayName` / `displayTagline` falling back to
@@ -173,11 +173,42 @@ Implementation plan and task tracker for the native Android rewrite
       `application/vnd.android.package-archive`, 1,864,253 bytes) so in-app
       updates to 1.5.0 work.
 
+### Completed — Feature 1.6.0 (Mod 015): business details on the login gate
+
+- [x] Login gate now collects **email + business name (required) + phone
+      (optional)**; tagline and address dropped.
+- [x] `domain/BusinessProfile` reduced to `name` / `phone` / `email`; the
+      sign-in email is the PDF contact email (`contactLine` = phone • email).
+- [x] `LoginViewModel` writes the profile to `BusinessStore` before the network
+      call (offline-safe); a drawer email change keeps the profile email in
+      sync and preserves name/phone.
+- [x] PDF package banner always prints `CompanyInfo.TAGLINE` (tagline field
+      removed).
+- [x] `InvoiceSheet.drawMeta`: Date / Invoice # / Expires On (/ Client) render
+      **label + value on one line**, each clamped to its own column so a long
+      value cannot run under the adjacent column.
+- [x] Removed `ui/business/`, `Dest.BUSINESS`, the drawer entry and the
+      `AppNav` route/imports.
+- [x] One-time local backfill (`AppContainer.backfillBusinessEmail`): installs
+      that passed the gate before v1.6.0 copy their remembered email into the
+      profile so quotes keep their footer contact line.
+- [x] `BusinessProfileTest` updated (4 tests); **31/31** unit tests green;
+      `assembleDebug` + `assembleRelease` green.
+- [x] versionCode 14, versionName 1.6.0; signed APK staged at
+      `build/Package-Price-Calculator.apk` (publisher key, SHA-256
+      `F5:C6:C7:3F…93:EC:87`).
+- [x] Docs: AGENTS.md Mod 015, `medial_support.txt` regenerated.
+
+### Pending
+- [ ] **Release 1.6.0**: commit, tag `v1.6.0`, publish the GitHub release with
+      the stable asset `Package-Price-Calculator.apk` (awaiting user go-ahead).
+
 ### Later
-- [ ] **Eyeball the email gate + fixed sync + redesigned PDF on a device**
-      (no device or emulator attached to this machine): sign in → row appears
-      in `user_emails`; offline sign-in → row lands at the next launch after
-      updating to 1.4.1; two-page PDF renders as designed.
+- [ ] **Eyeball the login gate + PDF on a device** (no device or emulator
+      attached to this machine): gate collects name/phone → drawer shows the
+      name, PDF footer shows phone • email; the sign-in row lands in
+      `user_emails` (offline sign-in lands at the next launch); the two-page
+      PDF and the inline Date / Invoice # / Expires On rows render as designed.
 - [ ] Supabase Auth for real per-user accounts (hardening; the email gate is a
       soft identity, not authentication).
 

@@ -63,18 +63,29 @@ internal class InvoiceSheet(document: PdfDocument) : PdfPageWriter(document) {
     private fun drawMeta() {
         val base = y
         val rightColumn = PdfTheme.MARGIN + 256f
-        field("Date:", PdfDates.display(quote.projectDate, quote.createdAt), PdfTheme.MARGIN, base)
+        val rowGap = 24f
+        field("Date:", PdfDates.display(quote.projectDate, quote.createdAt), PdfTheme.MARGIN, base, rightColumn - 14f)
+        field("Invoice #:", quote.invoiceNumber ?: "-", rightColumn, base, PdfTheme.CONTENT_RIGHT)
         quote.clientName?.takeIf { it.isNotBlank() }?.let {
-            field("Client:", it, PdfTheme.MARGIN, base + 45f)
+            field("Client:", it, PdfTheme.MARGIN, base + rowGap, rightColumn - 14f)
         }
-        field("Invoice #:", quote.invoiceNumber ?: "-", rightColumn, base)
-        field("Expires On:", PdfDates.displayPlusDays(quote.projectDate, quote.createdAt, 7), rightColumn, base + 45f)
-        advance(base + 108f - y)
+        field(
+            "Expires On:",
+            PdfDates.displayPlusDays(quote.projectDate, quote.createdAt, 7),
+            rightColumn,
+            base + rowGap,
+            PdfTheme.CONTENT_RIGHT,
+        )
+        advance(base + rowGap + PdfTheme.lineHeight(fieldValue) + 22f - y)
     }
 
-    private fun field(label: String, value: String, x: Float, topY: Float) {
-        topAt(label, x, topY, fieldLabel)
-        topAt(PdfTheme.ellipsize(fieldValue, value, 190f), x, topY + 19f, fieldValue)
+    private fun field(label: String, value: String, x: Float, topY: Float, rightEdge: Float) {
+        val target = canvas ?: return
+        val baseline = PdfTheme.baselineOf(fieldLabel, topY)
+        target.drawText(label, x, baseline, fieldLabel)
+        val valueX = x + fieldLabel.measureText(label) + 6f
+        val shown = PdfTheme.ellipsize(fieldValue, value, rightEdge - valueX)
+        target.drawText(shown, valueX, baseline, fieldValue)
     }
 
     private fun drawBanner() {
@@ -91,7 +102,7 @@ internal class InvoiceSheet(document: PdfDocument) : PdfPageWriter(document) {
             textX, PdfTheme.baselineOf(name, topY + 17f), name,
         )
         target.drawText(
-            PdfTheme.ellipsize(tagline, business.displayTagline, maxWidth),
+            PdfTheme.ellipsize(tagline, CompanyInfo.TAGLINE, maxWidth),
             textX, PdfTheme.baselineOf(tagline, topY + 54f), tagline,
         )
         advance(topY + height + 24f - y)

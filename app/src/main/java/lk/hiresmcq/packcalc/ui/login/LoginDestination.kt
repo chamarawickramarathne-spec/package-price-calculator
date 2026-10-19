@@ -6,7 +6,7 @@ import lk.hiresmcq.packcalc.ui.SimpleVmFactory
 import lk.hiresmcq.packcalc.ui.appContainer
 
 /**
- * NavHost wiring for the email gate / change-email routes: builds the
+ * NavHost wiring for the gate / change-email routes: builds the
  * [LoginViewModel] from the app container and lets the caller decide what
  * "done" means (enter the app after the gate, pop back after a change).
  */
@@ -19,7 +19,7 @@ fun LoginDestination(
     val container = appContainer()
     val vm: LoginViewModel = viewModel(
         factory = SimpleVmFactory(container) {
-            LoginViewModel(it.sessionStore, it.userEmailRepository, mode)
+            LoginViewModel(it.sessionStore, it.userEmailRepository, it.businessStore, mode)
         },
     )
     LoginScreen(

@@ -17,19 +17,12 @@ class BusinessProfileTest {
     @Test
     fun customNameIsTrimmedAndUsed() {
         assertEquals("My Studio", BusinessProfile(name = "  My Studio ").displayName)
-        assertEquals("My Tagline", BusinessProfile(tagline = " My Tagline ").displayTagline)
-    }
-
-    @Test
-    fun blankTaglineFallsBackToBuiltInTagline() {
-        assertEquals(CompanyInfo.TAGLINE, BusinessProfile().displayTagline)
-        assertEquals(CompanyInfo.TAGLINE, BusinessProfile(tagline = "  ").displayTagline)
     }
 
     @Test
     fun contactLineIsNullWhenAllFieldsBlank() {
         assertNull(BusinessProfile().contactLine)
-        assertNull(BusinessProfile(phone = " ", email = "", address = "\t").contactLine)
+        assertNull(BusinessProfile(phone = " ", email = "\t").contactLine)
     }
 
     @Test
@@ -39,16 +32,12 @@ class BusinessProfileTest {
             BusinessProfile(phone = "+94 77 123 4567").contactLine,
         )
         assertEquals(
-            "+94 77 123 4567 \u2022 Colombo, Sri Lanka",
-            BusinessProfile(phone = "+94 77 123 4567", address = "Colombo, Sri Lanka").contactLine,
+            "studio@example.com",
+            BusinessProfile(email = "studio@example.com").contactLine,
         )
         assertEquals(
-            "+94 77 123 4567 \u2022 studio@example.com \u2022 Colombo",
-            BusinessProfile(
-                phone = "+94 77 123 4567",
-                email = "studio@example.com",
-                address = "Colombo",
-            ).contactLine,
+            "+94 77 123 4567 \u2022 studio@example.com",
+            BusinessProfile(phone = "+94 77 123 4567", email = "studio@example.com").contactLine,
         )
     }
 }

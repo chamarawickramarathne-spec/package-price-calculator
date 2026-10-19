@@ -217,6 +217,13 @@ Implementation plan and task tracker for the native Android rewrite
 - [x] 31/31 unit tests green; `assembleDebug` + `assembleRelease` green;
       versionCode 15, versionName 1.6.1.
 
+### Completed (1.6.1 release)
+- [x] **Release 1.6.1**: commit `a32cb2d`, annotated tag `v1.6.1` pushed,
+      GitHub release published with the stable asset
+      `Package-Price-Calculator.apk`; anonymous download verified (HTTP 200,
+      `application/vnd.android.package-archive`, 1,864,253 bytes) and the
+      Releases API reports `v1.6.1` as latest, so in-app updates work.
+
 ### Later
 - [ ] **Eyeball the login gate + PDF on a device** (no device or emulator
       attached to this machine): gate collects name/phone → drawer shows the

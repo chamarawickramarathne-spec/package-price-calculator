@@ -831,6 +831,11 @@ Date: 2026-10-20
 - Signed release APK staged at `build/Package-Price-Calculator.apk`
   (versionCode 15, versionName 1.6.1, publisher key `CN=Hire Artist Studio`,
   SHA-256 `F5:C6:C7:3F…93:EC:87`).
+- **Released as v1.6.1**: commit `a32cb2d`, annotated tag `v1.6.1` pushed,
+  GitHub release published with the stable asset name
+  `Package-Price-Calculator.apk`. Anonymous download verified: HTTP 200,
+  `application/vnd.android.package-archive`, 1,864,253 bytes; the GitHub
+  Releases API reports `v1.6.1` as latest, so in-app updates resolve.
 
 ---
 

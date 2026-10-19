@@ -167,7 +167,11 @@ Implementation plan and task tracker for the native Android rewrite
       studio name; new "Business Details" drawer entry.
 - [x] `BusinessProfileTest`; unit tests 32; versionCode 13, versionName 1.5.0.
 - [x] Docs: AGENTS.md Mod 014, `medial_support.txt` regenerated.
-- [ ] Commit + tag v1.5.0 + GitHub release (awaiting user confirmation).
+- [x] Commit `b8edd6b` + tag `v1.5.0` pushed; GitHub release published with
+      `Package-Price-Calculator.apk` (signed with the publisher key, SHA-256
+      `F5:C6:C7:3F…93:EC:87`); anonymous download verified (HTTP 200,
+      `application/vnd.android.package-archive`, 1,864,253 bytes) so in-app
+      updates to 1.5.0 work.
 
 ### Later
 - [ ] **Eyeball the email gate + fixed sync + redesigned PDF on a device**

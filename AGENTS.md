@@ -723,8 +723,12 @@ Date: 2026-10-19
 - Audit (rule 21): no secrets, no network writes, no new permissions; input
   length-capped (name 60, tagline 80, phone 30, email 320 via
   `EmailValidation`, address 100); all files under 300 lines; 32/32 unit
-  tests green; `assembleDebug` green. Release APK not yet built (will be
-  built when the user confirms commit/release).
+  tests green; `assembleDebug` green.
+- **Released as v1.5.0**: commit `b8edd6b`, tag `v1.5.0` pushed, GitHub release
+  published with the stable asset name `Package-Price-Calculator.apk`
+  (signed by the publisher key `CN=Hire Artist Studio`, SHA-256
+  `F5:C6:C7:3F…93:EC:87`). Anonymous download verified: HTTP 200,
+  `application/vnd.android.package-archive`, 1,864,253 bytes. `versionCode` 13.
 
 ---
 

@@ -892,6 +892,11 @@ Date: 2026-10-20
   launcher restarts after the update.
 - No `<monochrome>` layer added (Android 13 themed icons): the art is opaque, so
   a themed icon would render as a solid blob.
+- **Released as v1.6.2**: commit `ae0169a`, annotated tag `v1.6.2` pushed,
+  GitHub release published with the stable asset name
+  `Package-Price-Calculator.apk`. Anonymous download verified: HTTP 200,
+  `application/vnd.android.package-archive`, 1,907,429 bytes; the GitHub
+  Releases API reports `v1.6.2` as latest, so in-app updates resolve.
 
 ---
 

@@ -245,11 +245,11 @@ Implementation plan and task tracker for the native Android rewrite
       (1,907,429 bytes); `medial_support.txt` updated for 1.6.2.
 
 ### Completed (1.6.2 release)
-- [x] **Release 1.6.2**: commit `{COMMIT}`, annotated tag `v1.6.2` pushed,
+- [x] **Release 1.6.2**: commit `ae0169a`, annotated tag `v1.6.2` pushed,
       GitHub release published with the stable asset
       `Package-Price-Calculator.apk`; anonymous download verified (HTTP 200,
-      `application/vnd.android.package-archive`) and the Releases API reports
-      `v1.6.2` as latest, so in-app updates work.
+      `application/vnd.android.package-archive`, 1,907,429 bytes) and the
+      Releases API reports `v1.6.2` as latest, so in-app updates work.
 
 ### Later
 - [ ] **Eyeball the new app icon on a device** (v1.6.2): launcher icon and the

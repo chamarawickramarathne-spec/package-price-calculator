@@ -313,9 +313,10 @@ Implementation plan and task tracker for the native Android rewrite
 - [ ] File the Data Safety form + content declarations.
 - [ ] Upload `app-play-release.aab` to a testing track; enroll in Play App
       Signing (upload key = packcalc-release.jks).
-- [ ] Privacy policy URL live: enable GitHub Pages on the repo and confirm
-      `https://chamarawickramarathne-spec.github.io/package-price-calculator/privacy-policy.html`
-      loads.
+- [x] Privacy policy URL live: GitHub Pages confirmed enabled on the repo
+      (`main` / `/docs`) and both
+      `…/privacy-policy.html` and `…/data-deletion.html` verified HTTP 200
+      after the Mod 020 push.
 - [ ] Personal account only: closed test with 12 testers x 14 days, then
       production access.
 

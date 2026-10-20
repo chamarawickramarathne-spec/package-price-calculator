@@ -1068,10 +1068,10 @@ Date: 2026-10-20
 - No application code changed → **no rebuild, no version bump, no new
   release** (v1.6.3 / versionCode 17 remains current; same rule-4 exemption
   as Mod 018).
-- Both pages rely on GitHub Pages being enabled on the repo
-  (`main` branch, `/docs` folder) — that enablement is still a pending
-  user-side step in AGENTS_PLAN.md. If Pages is off, both the privacy
-  policy and the deletion URL 404.
+- Both pages rely on GitHub Pages on the repo (`main` branch, `/docs` folder);
+  Pages was confirmed enabled during Mod 020 and both URLs verified live
+  (HTTP 200): the privacy policy and
+  `…/package-price-calculator/data-deletion.html`.
 
 ---
 

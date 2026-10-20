@@ -251,6 +251,24 @@ Implementation plan and task tracker for the native Android rewrite
       `application/vnd.android.package-archive`, 1,907,429 bytes) and the
       Releases API reports `v1.6.2` as latest, so in-app updates work.
 
+### Completed — Promo assets (Mod 018): Facebook banners + app screens
+
+- [x] Attempted a real emulator capture first; the Android Emulator hypervisor
+      driver is not installed on this machine (admin + reboot required), so the
+      screens were produced as faithful HTML/CSS recreations of the Compose UI
+      (exact colours from `Color.kt`, exact labels from the screens) and
+      captured with headless Edge at 3x scale - no packages downloaded.
+- [x] `media/images/screens/screen-{login,details,equipment,pricing}.png`
+      (1080x2400 each).
+- [x] `media/promo/facebook-banner-1200x630.png` (link/share),
+      `media/promo/facebook-post-1080x1080.png` (feed),
+      `media/promo/facebook-story-1080x1920.png` (story) - blue v1.6.2 icon,
+      screen shots, mini PDF-quote card, warm red/cream/amber/green palette.
+- [x] Sources committed in `media/promo/src/` (relative asset paths) so both the
+      screens and the banners can be re-rendered from the repo.
+- [x] `medial_support.txt` section 4 lists the ready-made images.
+- [x] No app code changed - no rebuild/re-release (v1.6.2 stays current).
+
 ### Later
 - [ ] **Eyeball the new app icon on a device** (v1.6.2): launcher icon and the
       login-screen logo come from `media/icons/icon-512x512.png`; no

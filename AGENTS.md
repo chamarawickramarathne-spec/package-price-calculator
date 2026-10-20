@@ -900,6 +900,58 @@ Date: 2026-10-20
 
 ---
 
+### Modification 018
+
+Date: 2026-10-20
+
+### Changes
+- **Facebook promotional banner images (marketing assets, v1.6.2).** Three
+  ready-to-post images added under `media/promo/`:
+  - `facebook-banner-1200x630.png` - link / share image
+  - `facebook-post-1080x1080.png` - feed post image
+  - `facebook-story-1080x1920.png` - story / reel cover
+  All three use the current blue/teal app icon (v1.6.2) plus app screenshots and
+  a mini PDF-quote card, in the app's warm red / cream / amber / green palette.
+- **Four app screen PNGs (1080x2400)** added under `media/images/screens/`
+  (`screen-login`, `screen-details`, `screen-equipment`, `screen-pricing`).
+- **How they were made (decision):** an emulator run was attempted first, but the
+  Android Emulator hypervisor driver is not installed on this machine (installing
+  it needs admin rights and a reboot). The screens were therefore produced as
+  **faithful HTML/CSS recreations of the Compose UI** - exact colours from
+  `ui/theme/Color.kt`, exact labels and copy from `LoginScreen`,
+  `CalculatorScreen` (+ tabs) and `CalculatorBottomBar` - captured with headless
+  Edge at 3x device scale. The banners are HTML too, screenshotted at the exact
+  Facebook sizes with headless Edge (system Edge, **no npm packages or downloads**).
+- Editable sources committed under `media/promo/src/` (screen HTML + banner HTML +
+  shared CSS, relative asset paths) so the images can be regenerated:
+  `msedge --headless=new --screenshot=out.png --window-size=WxH [--force-device-scale-factor=3] file:///.../media/promo/src/<name>.html`
+  (screens are captured at `--window-size=360,800 --force-device-scale-factor=3`).
+- `medial_support.txt`: section 4 now lists the ready-made promo images.
+
+### Files / Components
+- `media/promo/facebook-banner-1200x630.png`, `media/promo/facebook-post-1080x1080.png`,
+  `media/promo/facebook-story-1080x1920.png`
+- `media/promo/src/{login,details,equipment,pricing,banner-1200x630,banner-1080x1080,banner-1080x1920}.html`
+  + `base.css` + `banner-base.css`
+- `media/images/screens/screen-{login,details,equipment,pricing}.png`
+- `medial_support.txt`
+
+### Important Notes
+- **No app code changed** - marketing assets only, so no rebuild or re-release
+  was required (rule 4 not triggered); v1.6.2 remains the current release.
+- The screen PNGs are recreations, not on-device captures: labels, colours and
+  layout mirror the real UI, but the font is Segoe UI (Roboto is not installed
+  on this machine) and system chrome (status-bar icons) is approximated. For true
+  device captures later: install the Android Emulator hypervisor driver, boot the
+  existing `VortexTest` AVD (Android 34, 1080x2400 @420dpi), then
+  `adb install` the APK and `adb exec-out screencap -p > screen.png`.
+- Sample identities in the images (Lens Lab Studio, lenslab.lk@gmail.com,
+  +94 77 123 4567, Amila & Nuwan) are fictional placeholders.
+- Audit (rule 21): assets only - no code, permissions, network calls or secrets;
+  nothing personal or sensitive embedded.
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
 - **Eyeball the new app icon on a device** (v1.6.2): launcher icon and the

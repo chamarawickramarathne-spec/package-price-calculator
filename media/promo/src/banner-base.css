@@ -1,0 +1,78 @@
+/* Shared banner styles for PackCalc Facebook promo images. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  color: #221A18;
+  background: #FFFBF9;
+  position: relative;
+  overflow: hidden;
+}
+.glow-red {
+  position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none;
+  background: radial-gradient(circle, rgba(216,72,48,.35), rgba(216,72,48,0) 70%);
+}
+.glow-amber {
+  position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none;
+  background: radial-gradient(circle, rgba(245,158,11,.30), rgba(245,158,11,0) 70%);
+}
+.brand-icon { border-radius: 24%; overflow: hidden; box-shadow: 0 10px 28px rgba(14,79,107,.35); }
+.brand-icon img { display: block; width: 100%; height: 100%; }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #B5371F;
+}
+h1.headline { font-weight: 700; color: #221A18; line-height: 1.08; }
+h1.headline .accent { color: #B5371F; }
+.sub { color: #53433F; line-height: 1.45; }
+
+.pills { display: flex; gap: 10px; flex-wrap: wrap; }
+.pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #FFFFFF; border: 1px solid #D8C2BC; color: #221A18;
+  border-radius: 999px; font-weight: 600;
+}
+.pill .tick { color: #10B981; font-weight: 800; }
+
+.cta {
+  display: inline-flex; align-items: center; gap: 12px;
+  background: #B5371F; color: #fff; border-radius: 999px; font-weight: 700;
+  box-shadow: 0 12px 26px rgba(181,55,31,.35);
+}
+.cta .ver {
+  background: rgba(255,255,255,.22); border-radius: 999px; padding: 4px 12px; font-weight: 700;
+}
+.url { color: #53433F; font-weight: 600; }
+
+/* Phone mockup */
+.phone {
+  background: #14100F; border-radius: 36px; padding: 9px;
+  box-shadow: 0 34px 70px rgba(34,26,24,.38), 0 4px 12px rgba(34,26,24,.25);
+  position: relative;
+}
+.phone img { display: block; border-radius: 28px; }
+
+/* Mini PDF quote card */
+.pdf {
+  background: #FFFFFF; border-radius: 10px;
+  box-shadow: 0 26px 54px rgba(34,26,24,.30);
+  border: 1px solid #EDE4DF; overflow: hidden;
+}
+.pdf .pad { padding: 22px 24px; }
+.pdf .studio { color: #EA580C; font-weight: 800; }
+.pdf .doc-title { color: #D22525; font-weight: 800; }
+.pdf .meta { color: #374151; }
+.pdf .amber {
+  background: #F59E0B; color: #fff; border-radius: 8px; font-weight: 800;
+}
+.pdf .li { display: flex; justify-content: space-between; color: #1F2937; }
+.pdf .li .muted { color: #6B7280; }
+.pdf .total {
+  background: #10B981; color: #fff; border-radius: 8px; font-weight: 800;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.pdf .rule { border-top: 1px solid #E5E7EB; }
+.pdf .note {
+  background: #FFFBF9; border-left: 4px solid #F59E0B; color: #78350F;
+}
+.pdf .note .t { color: #92400E; font-weight: 800; }

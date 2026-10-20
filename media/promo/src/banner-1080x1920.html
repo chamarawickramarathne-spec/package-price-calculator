@@ -1,0 +1,82 @@
+﻿<!doctype html>
+<html>
+<head><meta charset="utf-8"><link rel="stylesheet" href="banner-base.css">
+<style>
+  html, body { width: 1080px; height: 1920px; }
+  .g1 { width: 900px; height: 900px; left: -320px; top: -320px; }
+  .g2 { width: 860px; height: 860px; right: -320px; bottom: 260px; }
+
+  .head { position: absolute; top: 110px; left: 0; width: 1080px; text-align: center; }
+  .brand { display: inline-flex; align-items: center; gap: 20px; }
+  .brand .icon { width: 88px; height: 88px; }
+  .brand .name { font-size: 26px; font-weight: 800; letter-spacing: .06em; text-align: left; }
+  .brand .by { font-size: 18px; color: #53433F; font-weight: 600; text-align: left; }
+  .headline { font-size: 86px; margin-top: 40px; }
+  .sub { font-size: 27px; margin-top: 24px; padding: 0 90px; }
+
+  .stage { position: absolute; top: 690px; left: 0; width: 1080px; height: 900px; }
+  .phone { position: absolute; }
+  .phone-back { width: 360px; left: 96px; top: 90px; transform: rotate(-7deg); z-index: 1; opacity: .96; }
+  .phone-main { width: 400px; left: 360px; top: 0; z-index: 3; }
+  .pdf { position: absolute; width: 300px; right: 52px; top: 560px; z-index: 4; transform: rotate(6deg); }
+
+  .foot { position: absolute; left: 60px; bottom: 84px; width: 960px; text-align: center; }
+  .pills { justify-content: center; }
+  .pill { font-size: 24px; padding: 16px 30px; }
+  .cta { margin-top: 40px; font-size: 30px; padding: 24px 52px; }
+  .url { font-size: 22px; margin-top: 20px; }
+</style></head>
+<body>
+  <div class="glow-red g1"></div>
+  <div class="glow-amber g2"></div>
+
+  <div class="head">
+    <div class="brand">
+      <div class="brand-icon icon"><img src="../../icons/icon-512x512.png"></div>
+      <div>
+        <div class="name">PACKAGE PRICE CALCULATOR</div>
+        <div class="by">by Hire Artist Studio</div>
+      </div>
+    </div>
+    <div class="headline">Quote like a <span class="accent">studio.</span></div>
+    <div class="sub">Gear, event hours, extra costs and profit - the wizard does the maths, then hands you a branded PDF quote to send on WhatsApp.</div>
+  </div>
+
+  <div class="stage">
+    <div class="phone phone-back">
+      <img src="../../images/screens/screen-details.png" style="width:342px">
+    </div>
+    <div class="phone phone-main">
+      <img src="../../images/screens/screen-pricing.png" style="width:382px">
+    </div>
+    <div class="pdf">
+      <div class="pad">
+        <div class="studio" style="font-size:20px">Lens Lab Studio</div>
+        <div class="doc-title" style="font-size:18px; margin-top:10px">Package Details</div>
+        <div class="meta" style="font-size:13px; margin-top:10px; display:flex; justify-content:space-between">
+          <span>Invoice #: INV-0142</span><span>Expires: 21 Nov 2026</span>
+        </div>
+        <div class="amber" style="font-size:16px; margin-top:12px; padding:14px 16px">Wedding Shoot</div>
+        <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px">
+          <div class="li" style="font-size:13px"><span>2 x Sony A7 IV Camera</span><span>30,000.00</span></div>
+          <div class="li" style="font-size:13px"><span>1 x Godox Lighting Kit</span><span>8,500.00</span></div>
+          <div class="li" style="font-size:13px"><span>6 hrs photography coverage</span><span>21,000.00</span></div>
+          <div class="li" style="font-size:13px"><span>Transportation + assistant</span><span>5,800.00</span></div>
+        </div>
+        <div class="rule" style="margin:12px 0"></div>
+        <div class="total" style="font-size:16px; padding:14px 16px"><span>Total Package Price</span><span>LKR 81,400</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="pills">
+      <span class="pill"><span class="tick">&#10003;</span> Your brand on every quote</span>
+      <span class="pill"><span class="tick">&#10003;</span> No password</span>
+      <span class="pill"><span class="tick">&#10003;</span> Works offline</span>
+    </div>
+    <div class="cta">Download free on GitHub <span class="ver">v1.6.2</span></div>
+    <div class="url">github.com/chamarawickramarathne-spec/package-price-calculator</div>
+  </div>
+</body>
+</html>

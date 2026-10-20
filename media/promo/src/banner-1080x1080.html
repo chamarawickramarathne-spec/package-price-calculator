@@ -1,0 +1,85 @@
+﻿<!doctype html>
+<html>
+<head><meta charset="utf-8"><link rel="stylesheet" href="banner-base.css">
+<style>
+  html, body { width: 1080px; height: 1080px; }
+  .g1 { width: 700px; height: 700px; left: -240px; top: -260px; }
+  .g2 { width: 640px; height: 640px; right: -220px; bottom: -260px; }
+
+  .head { position: absolute; top: 56px; left: 0; width: 1080px; text-align: center; }
+  .brand { display: inline-flex; align-items: center; gap: 16px; }
+  .brand .icon { width: 66px; height: 66px; }
+  .brand .name { font-size: 20px; font-weight: 800; letter-spacing: .06em; text-align: left; }
+  .brand .by { font-size: 14px; color: #53433F; font-weight: 600; text-align: left; }
+  .headline { font-size: 66px; margin-top: 26px; }
+  .sub { font-size: 21px; margin-top: 14px; }
+
+  .stage { position: absolute; top: 366px; left: 0; width: 1080px; height: 570px; }
+  .phone { position: absolute; }
+  .phone-main { width: 262px; left: 404px; top: 0; z-index: 3; }
+  .phone-side { width: 216px; left: 150px; top: 60px; transform: rotate(-6deg); z-index: 2; opacity: .98; }
+  .phone-side2 { width: 216px; right: 150px; top: 60px; transform: rotate(6deg); z-index: 2; }
+  .pdf { position: absolute; width: 250px; left: 84px; top: 424px; z-index: 4; transform: rotate(-7deg); }
+
+  .foot { position: absolute; left: 0; bottom: 54px; width: 1080px; text-align: center; }
+  .pills { justify-content: center; }
+  .pill { font-size: 18px; padding: 12px 24px; }
+  .cta { margin-top: 26px; font-size: 22px; padding: 17px 36px; }
+  .url { font-size: 17px; margin-top: 14px; }
+</style></head>
+<body>
+  <div class="glow-red g1"></div>
+  <div class="glow-amber g2"></div>
+
+  <div class="head">
+    <div class="brand">
+      <div class="brand-icon icon"><img src="../../icons/icon-512x512.png"></div>
+      <div>
+        <div class="name">PACKAGE PRICE CALCULATOR</div>
+        <div class="by">by Hire Artist Studio</div>
+      </div>
+    </div>
+    <div class="headline">Price. Quote. <span class="accent">Get booked.</span></div>
+    <div class="sub">Photographers and videographers: price a shoot in minutes and send a professional PDF quote the same day.</div>
+  </div>
+
+  <div class="stage">
+    <div class="phone phone-side">
+      <img src="../../images/screens/screen-equipment.png" style="width:198px">
+    </div>
+    <div class="phone phone-side2">
+      <img src="../../images/screens/screen-login.png" style="width:198px">
+    </div>
+    <div class="phone phone-main">
+      <img src="../../images/screens/screen-pricing.png" style="width:244px">
+    </div>
+    <div class="pdf">
+      <div class="pad">
+        <div class="studio" style="font-size:16px">Lens Lab Studio</div>
+        <div class="doc-title" style="font-size:14px; margin-top:8px">Package Details</div>
+        <div class="meta" style="font-size:10px; margin-top:8px; display:flex; justify-content:space-between">
+          <span>Invoice #: INV-0142</span><span>Client: Amila &amp; Nuwan</span>
+        </div>
+        <div class="amber" style="font-size:12px; margin-top:10px; padding:10px 12px">Wedding Shoot</div>
+        <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px">
+          <div class="li" style="font-size:10px"><span>2 x Sony A7 IV Camera</span><span>30,000.00</span></div>
+          <div class="li" style="font-size:10px"><span>1 x Godox Lighting Kit</span><span>8,500.00</span></div>
+          <div class="li" style="font-size:10px"><span>6 hrs photography coverage</span><span>21,000.00</span></div>
+        </div>
+        <div class="rule" style="margin:10px 0"></div>
+        <div class="total" style="font-size:12px; padding:10px 12px"><span>Total Package Price</span><span>LKR 81,400</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="pills">
+      <span class="pill"><span class="tick">&#10003;</span> Your brand on every quote</span>
+      <span class="pill"><span class="tick">&#10003;</span> Works offline</span>
+      <span class="pill"><span class="tick">&#10003;</span> LKR pricing</span>
+    </div>
+    <div class="cta">Download free <span class="ver">v1.6.2</span></div>
+    <div class="url">github.com/chamarawickramarathne-spec/package-price-calculator</div>
+  </div>
+</body>
+</html>

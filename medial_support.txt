@@ -119,6 +119,13 @@ Download Package Price Calculator and price your next job the easy way.
 
 #PackagePriceCalculator #PhotographerTools #Pricing
 
+Ready-made promotional images (v1.6.2):
+- media/promo/facebook-banner-1200x630.png  - link / share image (1200x630)
+- media/promo/facebook-post-1080x1080.png   - feed post image (1080x1080)
+- media/promo/facebook-story-1080x1920.png  - story / reel cover (1080x1920)
+All three use the current blue/teal app icon and real app screen PNGs
+(1080x2400 in media/images/screens/). Editable HTML sources: media/promo/src/.
+
 --------------------------------------------------------------------------------
 5. SOCIAL MEDIA TAGS
 --------------------------------------------------------------------------------

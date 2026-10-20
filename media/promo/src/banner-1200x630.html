@@ -1,0 +1,83 @@
+﻿<!doctype html>
+<html>
+<head><meta charset="utf-8"><link rel="stylesheet" href="banner-base.css">
+<style>
+  html, body { width: 1200px; height: 630px; }
+  .g1 { width: 620px; height: 620px; left: -180px; top: -220px; }
+  .g2 { width: 520px; height: 520px; right: -160px; bottom: -230px; }
+
+  .left { position: absolute; left: 64px; top: 58px; width: 600px; }
+  .brand { display: flex; align-items: center; gap: 18px; }
+  .brand .icon { width: 74px; height: 74px; }
+  .brand .name { font-size: 22px; font-weight: 800; letter-spacing: .02em; }
+  .brand .by { font-size: 15px; color: #53433F; font-weight: 600; }
+
+  .headline { font-size: 58px; margin-top: 30px; }
+  .sub { font-size: 21px; margin-top: 16px; width: 540px; }
+  .pills { margin-top: 26px; }
+  .pill { font-size: 16px; padding: 11px 20px; }
+  .cta { margin-top: 28px; font-size: 20px; padding: 16px 30px; }
+  .url { font-size: 15px; margin-top: 14px; }
+
+  .right { position: absolute; right: 40px; top: 0; width: 520px; height: 630px; }
+  .phone { position: absolute; }
+  .phone-a { width: 250px; left: 40px; top: 56px; transform: rotate(-4deg); z-index: 2; }
+  .phone-b { width: 250px; left: 236px; top: 96px; transform: rotate(4deg); z-index: 3; }
+  .pdf {
+    position: absolute; width: 218px; right: 4px; top: 392px; z-index: 5;
+    transform: rotate(6deg);
+  }
+</style></head>
+<body>
+  <div class="glow-red g1"></div>
+  <div class="glow-amber g2"></div>
+
+  <div class="left">
+    <div class="brand">
+      <div class="brand-icon icon"><img src="../../icons/icon-512x512.png"></div>
+      <div>
+        <div class="name">PACKAGE PRICE CALCULATOR</div>
+        <div class="by">by Hire Artist Studio</div>
+      </div>
+    </div>
+
+    <div class="headline">Price any shoot.<br><span class="accent">Send the quote today.</span></div>
+    <div class="sub">A guided 4-step wizard for gear, event hours, extra costs and profit - then a branded two-page PDF quote with YOUR studio name on it.</div>
+
+    <div class="pills">
+      <span class="pill"><span class="tick">&#10003;</span> 4-step wizard</span>
+      <span class="pill"><span class="tick">&#10003;</span> Your brand on every PDF</span>
+      <span class="pill"><span class="tick">&#10003;</span> No password</span>
+    </div>
+
+    <div class="cta">Download free <span class="ver">v1.6.2</span></div>
+    <div class="url">github.com/chamarawickramarathne-spec/package-price-calculator</div>
+  </div>
+
+  <div class="right">
+    <div class="phone phone-a">
+      <img src="../../images/screens/screen-details.png" style="width:232px">
+    </div>
+    <div class="phone phone-b">
+      <img src="../../images/screens/screen-pricing.png" style="width:232px">
+    </div>
+    <div class="pdf">
+      <div class="pad">
+        <div class="studio" style="font-size:15px">Lens Lab Studio</div>
+        <div class="doc-title" style="font-size:13px; margin-top:8px">Package Details</div>
+        <div class="meta" style="font-size:9px; margin-top:8px; display:flex; justify-content:space-between">
+          <span>Invoice #: INV-0142</span><span>Expires: 21 Nov 2026</span>
+        </div>
+        <div class="amber" style="font-size:11px; margin-top:10px; padding:9px 12px">Wedding Shoot</div>
+        <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px">
+          <div class="li" style="font-size:9px"><span>2 x Sony A7 IV Camera</span><span>30,000.00</span></div>
+          <div class="li" style="font-size:9px"><span>1 x Godox Lighting Kit</span><span>8,500.00</span></div>
+          <div class="li" style="font-size:9px"><span>6 hrs photography coverage</span><span>21,000.00</span></div>
+        </div>
+        <div class="rule" style="margin:10px 0"></div>
+        <div class="total" style="font-size:11px; padding:10px 12px"><span>Total Package Price</span><span>LKR 81,400</span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

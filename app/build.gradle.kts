@@ -26,14 +26,15 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "lk.hiresmcq.packcalc"
-    compileSdk = 35
+    // API 36 required for new Google Play submissions (since 2026-08-31).
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "lk.hiresmcq.packcalc"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 16
-        versionName = "1.6.2"
+        targetSdk = 36
+        versionCode = 17
+        versionName = "1.6.3"
         vectorDrawables { useSupportLibrary = true }
 
         val supabaseUrl = secretsProperties.getProperty("SUPABASE_URL")
@@ -52,6 +53,23 @@ android {
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
             }
+        }
+    }
+
+    // Two distribution channels. The github flavor keeps the in-app
+    // self-updater (GitHub Releases); the play flavor has it compiled behind
+    // SELF_UPDATE=false and does NOT declare REQUEST_INSTALL_PACKAGES — Play
+    // policy allows that permission only for apps whose core purpose is
+    // installing APKs, and Google Play delivers updates itself.
+    flavorDimensions += "distribution"
+    productFlavors {
+        create("github") {
+            dimension = "distribution"
+            buildConfigField("boolean", "SELF_UPDATE", "true")
+        }
+        create("play") {
+            dimension = "distribution"
+            buildConfigField("boolean", "SELF_UPDATE", "false")
         }
     }
 

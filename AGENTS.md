@@ -39,8 +39,14 @@ log. Kept up to date after every change.
 
 ## Core Development Rules (Local)
 
-- Build command (this machine):
-  `& ".\gradlew.bat" assembleDebug "-Dorg.gradle.java.home=C:\Users\Nwick\.jdks\jdk-17.0.20+8" --console=plain`
+- Build commands (this machine):
+  - All debug variants (both flavors): `& ".\gradlew.bat" assembleDebug "-Dorg.gradle.java.home=C:\Users\Nwick\.jdks\jdk-17.0.20+8" --console=plain`
+  - GitHub channel APK: `assembleGithubRelease` → staged as `build/Package-Price-Calculator.apk`
+  - Google Play bundle: `bundlePlayRelease` → `app/build/outputs/bundle/playRelease/app-play-release.aab`
+- **Two flavors (Mod 019):** `github` (self-updater + `REQUEST_INSTALL_PACKAGES`)
+  and `play` (no updater, no install permission, `BuildConfig.SELF_UPDATE=false`).
+  Never move the install permission back into `app/src/main/AndroidManifest.xml`
+  — it would make the Play build policy-noncompliant.
 - Gradle/CLI output can garble in this shell. Redirect to a file
   (`> build.out 2>&1`) and trust `$LASTEXITCODE` plus a clean re-read of the log.
 - Keep every source file under 300 lines. No shims, no silent fallbacks;
@@ -952,8 +958,89 @@ Date: 2026-10-20
 
 ---
 
+### Modification 019
+
+Date: 2026-10-20
+
+### Changes
+- **Google Play preparation (v1.6.3).** Two blockers found against current Play
+  policy and fixed, plus all submission assets created:
+  1. **`REQUEST_INSTALL_PACKAGES` removed from the Play build.** Play reserves
+     that permission for apps whose core purpose is installing APKs, so a
+     Play build with the self-updater would be rejected. Added a
+     `distribution` flavor dimension: **`github`** (self-updater +
+     permission, current behavior) and **`play`** (no updater, no permission,
+     `BuildConfig.SELF_UPDATE=false`). The permission moved to
+     `app/src/github/AndroidManifest.xml`; `AppNav` only constructs
+     `UpdateViewModel` / renders `UpdateDialog` when `SELF_UPDATE` is true,
+     so the Play build never even calls the GitHub API.
+  2. **targetSdk 35 → 36.** Since 2026-08-31 Google Play requires new apps to
+     target Android 16 (API 36); `compileSdk`/`targetSdk` bumped to 36
+     (platform android-36 + build-tools 36.0.0 were already in the SDK).
+     AGP 8.7.3 builds against 36 with a warning-only notice, silenced with
+     `android.suppressUnsupportedCompileSdk=36` in `gradle.properties`.
+     All variants build; 31/31 unit tests green; merged manifest verified
+     (`playRelease`: targetSdk 36, NO install permission; `githubRelease`:
+     keeps it).
+  3. **Play-compliant screenshots.** Play caps screenshot aspect ratio at
+     2:1; the Mod 018 screens are 1080x2400 (2.22:1) and would be rejected.
+     New presentation captures at **1080x1920 (16:9, 24-bit, no alpha)**:
+     `media/images/play/{login,details,equipment,pricing}.png` — caption +
+     the full screen scaled to fit (nothing cropped). Sources:
+     `media/promo/src/play-*.html`. The 2400-tall screens stay for
+     GitHub/Facebook use (Play's 2:1 rule applies only to Play uploads).
+  4. **Feature graphic 1024x500**: `media/promo/feature-graphic-1024x500.png`
+     (+ `src/feature-graphic-1024x500.html`), 24-bit.
+  5. **Privacy policy** at `docs/privacy-policy.html` (+ `privacy-icon.png`)
+     for GitHub Pages: collects only email + hashed device id, no ads/trackers,
+     deletion requests via the repo's Issues tab.
+  6. **`docs/play-console-checklist.md`** — paste-ready Play Console
+     submission guide: store listing text (title 24/30, short 79/80, full
+     1992/4000 chars, verified), Data Safety form answers, content-rating and
+     target-audience guidance, signing/closed-testing steps, reviewer note
+     (any valid email opens the gate — no password exists).
+  7. Bumped `versionCode` 16 → 17, `versionName` 1.6.2 → **1.6.3**.
+
+### Files / Components
+- `app/build.gradle.kts` (flavors, SDK 36, version), `gradle.properties`
+- `app/src/main/AndroidManifest.xml` (permission removed),
+  `app/src/github/AndroidManifest.xml` (new, permission added)
+- `ui/navigation/AppNav.kt` (updater gated on `BuildConfig.SELF_UPDATE`)
+- `docs/privacy-policy.html`, `docs/privacy-icon.png`, `docs/play-console-checklist.md`
+- `media/promo/feature-graphic-1024x500.png`, `media/promo/src/feature-graphic-1024x500.html`
+- `media/promo/src/play-{login,details,equipment,pricing}.html`
+- `media/images/play/{login,details,equipment,pricing}.png`
+- `media/promo/facebook-*.png` (re-rendered versions from Mod 018 session, valid)
+- `AGENTS.md`, `AGENTS_PLAN.md`, `medial_support.txt`
+
+### Important Notes
+- Artifacts verified: github APK = `lk.hiresmcq.packcalc` v1.6.3 / code 17 /
+  targetSdk 36, signed by the publisher key (`CN=Hire Artist Studio`, SHA-256
+  `F5:C6:C7:3F…93:EC:87`), staged at `build/Package-Price-Calculator.apk`
+  (1,907,437 bytes). Play AAB `app-play-release.aab` (4,240,614 bytes) signed
+  with the same key (becomes the upload key in Play App Signing).
+- The 512x512 store icon keeps its alpha channel — Play's spec explicitly
+  wants a 32-bit PNG **with alpha**; no flattening needed.
+- targetSdk 36 runtime impact is nil here: the app never locked orientation,
+  Compose handles predictive back, and edge-to-edge was already in effect at
+  target 35.
+- Audit (rule 21): the play flavor makes no GitHub network calls and declares
+  no install permission (verified in the merged manifest); no new secrets,
+  no new permissions, no third-party SDKs; store listing texts and Data
+  Safety answers match what the code actually collects (email, hashed device
+  id); all source files remain under 300 lines; 31/31 unit tests green.
+- **Not done here (console-side):** Play Console account steps, Data Safety
+  form entry, AAB upload, Play App Signing enrollment, closed testing —
+  follow `docs/play-console-checklist.md`.
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
+- **Google Play submission (user-side):** follow
+  `docs/play-console-checklist.md` — create app, paste listing text, upload
+  `app-play-release.aab`, Data Safety, content rating, Play App Signing,
+  closed testing (12 testers x 14 days on a personal account), production.
 - **Eyeball the new app icon on a device** (v1.6.2): launcher icon and the
   login-screen logo now come from `media/icons/icon-512x512.png` (blue/teal
   art); no device/emulator was attached to render it.

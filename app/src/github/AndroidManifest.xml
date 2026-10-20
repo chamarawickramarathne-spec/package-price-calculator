@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- GitHub distribution only: the in-app self-updater needs permission to
+         prompt for APK installs. The play flavor's merged manifest must NOT
+         contain this (Google Play policy: REQUEST_INSTALL_PACKAGES is reserved
+         for apps whose core purpose is installing APKs). -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+</manifest>

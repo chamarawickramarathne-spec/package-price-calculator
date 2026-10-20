@@ -17,6 +17,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
+import lk.hiresmcq.packcalc.BuildConfig
 import lk.hiresmcq.packcalc.ui.SimpleVmFactory
 import lk.hiresmcq.packcalc.ui.appContainer
 import lk.hiresmcq.packcalc.ui.calculator.CalculatorMode
@@ -53,12 +54,6 @@ fun AppNav() {
     // email is remembered the app starts straight on the calculator.
     val startDestination =
         if (container.sessionStore.email == null) Dest.LOGIN else Dest.NEW_PACKAGE
-
-    val updateViewModel: UpdateViewModel = viewModel(
-        factory = SimpleVmFactory(container) {
-            UpdateViewModel(it.updateRepository, it.apkDownloader, appContext)
-        },
-    )
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -237,7 +232,18 @@ fun AppNav() {
             }
         }
 
-        UpdateDialog(updateViewModel)
+        // Self-update exists only in the github distribution. The play flavor
+        // (SELF_UPDATE=false) never constructs the UpdateViewModel, so it makes
+        // no GitHub API calls and never needs REQUEST_INSTALL_PACKAGES;
+        // Google Play delivers updates for that channel instead.
+        if (BuildConfig.SELF_UPDATE) {
+            val updateViewModel: UpdateViewModel = viewModel(
+                factory = SimpleVmFactory(container) {
+                    UpdateViewModel(it.updateRepository, it.apkDownloader, appContext)
+                },
+            )
+            UpdateDialog(updateViewModel)
+        }
     }
 }
 

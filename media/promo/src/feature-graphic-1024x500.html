@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><link rel="stylesheet" href="banner-base.css">
+<style>
+  html, body { width: 1024px; height: 500px; }
+  .g1 { width: 560px; height: 560px; left: -200px; top: -230px; }
+  .g2 { width: 520px; height: 520px; right: -160px; bottom: -220px; }
+
+  .left { position: absolute; left: 54px; top: 74px; width: 540px; }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand .icon { width: 54px; height: 54px; border-radius: 24%; overflow: hidden; box-shadow: 0 8px 22px rgba(14,79,107,.35); flex: 0 0 auto; }
+  .brand .icon img { display: block; width: 100%; height: 100%; }
+  .brand .name { font-size: 17px; font-weight: 800; letter-spacing: .08em; }
+  .brand .by { font-size: 12.5px; color: #53433F; font-weight: 600; }
+  .headline { font-size: 50px; margin-top: 24px; font-weight: 800; color: #221A18; line-height: 1.08; }
+  .headline .accent { color: #B5371F; }
+  .sub { font-size: 16px; margin-top: 16px; color: #53433F; line-height: 1.5; width: 505px; }
+  .pills { margin-top: 22px; gap: 8px; }
+  .pill { font-size: 13.5px; padding: 9px 15px; }
+
+  .stage { position: absolute; right: 40px; top: 30px; width: 400px; height: 470px; }
+  .phone { position: absolute; }
+  .phone-back { width: 176px; right: 216px; top: 66px; transform: rotate(-6deg); opacity: .95; z-index: 1; }
+  .phone-main { width: 196px; right: 44px; top: 10px; z-index: 3; }
+  .pdf { position: absolute; width: 206px; left: -10px; bottom: 18px; z-index: 4; transform: rotate(4deg); }
+</style></head>
+<body>
+  <div class="glow-red g1"></div>
+  <div class="glow-amber g2"></div>
+
+  <div class="left">
+    <div class="brand">
+      <div class="icon"><img src="../../icons/icon-512x512.png"></div>
+      <div>
+        <div class="name">PACKAGE PRICE CALCULATOR</div>
+        <div class="by">by Hire Artist Studio</div>
+      </div>
+    </div>
+    <div class="headline">Quote like a <span class="accent">studio.</span></div>
+    <div class="sub">Gear, event hours, extra costs and profit - one wizard does the maths, then hands you a branded PDF quote ready for WhatsApp.</div>
+    <div class="pills">
+      <span class="pill"><span class="tick">&#10003;</span> Pricing wizard</span>
+      <span class="pill"><span class="tick">&#10003;</span> PDF quotes</span>
+      <span class="pill"><span class="tick">&#10003;</span> Works offline</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="phone phone-back">
+      <img src="../../images/screens/screen-details.png" style="width:158px">
+    </div>
+    <div class="phone phone-main">
+      <img src="../../images/screens/screen-pricing.png" style="width:178px">
+    </div>
+    <div class="pdf">
+      <div class="pad">
+        <div class="studio" style="font-size:13px">Lens Lab Studio</div>
+        <div class="doc-title" style="font-size:12px; margin-top:6px">Package Details</div>
+        <div class="amber" style="font-size:11px; margin-top:8px; padding:9px 11px">Wedding Shoot</div>
+        <div style="margin-top:8px; display:flex; flex-direction:column; gap:5px">
+          <div class="li" style="font-size:10px"><span>2 x Sony A7 IV Camera</span><span>30,000.00</span></div>
+          <div class="li" style="font-size:10px"><span>6 hrs photography coverage</span><span>21,000.00</span></div>
+          <div class="li" style="font-size:10px"><span>Transportation + assistant</span><span>5,800.00</span></div>
+        </div>
+        <div class="rule" style="margin:8px 0"></div>
+        <div class="total" style="font-size:11px; padding:9px 11px"><span>Total Package Price</span><span>LKR 81,400</span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

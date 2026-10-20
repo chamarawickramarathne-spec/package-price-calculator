@@ -269,6 +269,43 @@ Implementation plan and task tracker for the native Android rewrite
 - [x] `medial_support.txt` section 4 lists the ready-made images.
 - [x] No app code changed - no rebuild/re-release (v1.6.2 stays current).
 
+### Completed — Google Play preparation 1.6.3 (Mod 019)
+
+- [x] **Flavors:** `distribution` dimension — `github` (self-updater,
+      `REQUEST_INSTALL_PACKAGES` via `app/src/github/AndroidManifest.xml`) and
+      `play` (no permission, `BuildConfig.SELF_UPDATE=false`; `AppNav` never
+      constructs `UpdateViewModel`, so no GitHub API calls either).
+- [x] **targetSdk 35 → 36** (Play requires API 36 for new apps since
+      2026-08-31); `android.suppressUnsupportedCompileSdk=36` added (AGP 8.7.3
+      warning only). All variants build; merged manifests verified.
+- [x] **Privacy policy** `docs/privacy-policy.html` (+ `privacy-icon.png`) —
+      email + hashed device id disclosures, no-ads/no-trackers statement,
+      web-based data deletion via the repo Issues tab.
+- [x] **Play-compliant screenshots** `media/images/play/*.png`
+      (1080x1920, 24-bit, ratio 1.78) because Play rejects >2:1 (the old
+      1080x2400 screens); sources `media/promo/src/play-*.html`.
+- [x] **Feature graphic** `media/promo/feature-graphic-1024x500.png` (24-bit).
+- [x] **Store listing text + Data Safety answers** in
+      `docs/play-console-checklist.md` (title 24/30, short 79/80, full
+      1992/4000 — all verified programmatically).
+- [x] 31/31 unit tests green on all six test variants.
+- [x] versionCode 17, versionName 1.6.3; github APK (1,907,437 bytes) staged
+      at `build/Package-Price-Calculator.apk`; Play AAB
+      `app-play-release.aab` (4,240,614 bytes); both signed with the
+      publisher key (SHA-256 `F5:C6:C7:3F…93:EC:87`).
+
+### Pending — Play Console (user-side, follow docs/play-console-checklist.md)
+
+- [ ] Create the app in Play Console + paste store listing text/assets.
+- [ ] File the Data Safety form + content declarations.
+- [ ] Upload `app-play-release.aab` to a testing track; enroll in Play App
+      Signing (upload key = packcalc-release.jks).
+- [ ] Privacy policy URL live: enable GitHub Pages on the repo and confirm
+      `https://chamarawickramarathne-spec.github.io/package-price-calculator/privacy-policy.html`
+      loads.
+- [ ] Personal account only: closed test with 12 testers x 14 days, then
+      production access.
+
 ### Later
 - [ ] **Eyeball the new app icon on a device** (v1.6.2): launcher icon and the
       login-screen logo come from `media/icons/icon-512x512.png`; no

@@ -1,6 +1,6 @@
 ================================================================================
 MEDIA SUPPORT - Package Price Calculator
-Hire Artist Studio (hiresmcq)  |  Version 1.6.2  |  Generated 2026-10-20
+Hire Artist Studio (hiresmcq)  |  Version 1.6.3  |  Generated 2026-10-20
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -64,8 +64,9 @@ Main features:
 - Equipment catalog: keep your gear - with values, categories and types - in one
   place so your prices always use current rates.
 - Clean LKR currency formatting (Rs. 12,345.00) and precise decimal maths.
-- In-app updates: the app checks for a newer version and can download and
-  install it for you in a couple of taps.
+- In-app updates (GitHub download): the app checks for a newer version and can
+  download and install it for you in a couple of taps. Google Play installs
+  update themselves through Play.
 - Reliable sign-in sync: your email is stored on the device first and pushed to
   our list when a connection is available - duplicates and retries collapse into
   a single record, and your sign-in is never lost.
@@ -119,12 +120,18 @@ Download Package Price Calculator and price your next job the easy way.
 
 #PackagePriceCalculator #PhotographerTools #Pricing
 
-Ready-made promotional images (v1.6.2):
+Ready-made promotional images (v1.6.3):
+- media/promo/feature-graphic-1024x500.png   - Google Play feature graphic
+- media/images/play/{login,details,equipment,pricing}.png - Play store
+  screenshots (1080x1920, Play-compliant 16:9)
 - media/promo/facebook-banner-1200x630.png  - link / share image (1200x630)
 - media/promo/facebook-post-1080x1080.png   - feed post image (1080x1080)
 - media/promo/facebook-story-1080x1920.png  - story / reel cover (1080x1920)
-All three use the current blue/teal app icon and real app screen PNGs
+All use the current blue/teal app icon and real app screen PNGs
 (1080x2400 in media/images/screens/). Editable HTML sources: media/promo/src/.
+
+Google Play store listing text + Data Safety answers: docs/play-console-checklist.md
+Privacy policy: docs/privacy-policy.html (GitHub Pages)
 
 --------------------------------------------------------------------------------
 5. SOCIAL MEDIA TAGS

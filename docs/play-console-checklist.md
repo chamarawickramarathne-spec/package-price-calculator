@@ -134,6 +134,20 @@ Play screenshot rules met: ≥2 shots, sides 320–3840 px, ratio ≤ 2:1, 24-bi
 | Login / account creation? | App asks for a **one-time email, no password, no verification** → answer per console wording "users enter an email address"; then for account/data deletion: point to privacy policy section 7 (web-based deletion instructions): the privacy policy URL above |
 | Content rating questionnaire | All content areas: **None** (no violence, sexual content, language, substances, gambling, user interaction) → expect a rating like **Everyone / 3+** |
 
+### Data deletion ("Delete data URL") — paste into Play Console
+
+```
+https://chamarawickramarathne-spec.github.io/package-price-calculator/data-deletion.html
+```
+
+(Served from `docs/data-deletion.html`. It names the app/developer, lists
+numbered request steps with a prefilled GitHub Issue link, and states what is
+deleted (email + usage records, no retention) vs what stays on-device only —
+all three Play requirements. Cross-linked from privacy policy section 7.)
+
+When asked "Do you provide a way for users to request that some or all of their
+data is deleted…?" → **Yes** (this URL).
+
 ### Reviewer note (demo access)
 Play requires a way to test the app. **Any syntactically valid email opens the
 gate** (e.g. `reviewer@example.com`) — no password or email verification exists.
@@ -148,8 +162,8 @@ apps' purposes.
 
 | Data type | Collected | Shared | Sold | Why (purposes) | Deletion |
 |---|---|---|---|---|---|
-| **Email addresses** (sign-in gate) | Yes | No | No | App functionality; Developer communications (studio may email users about its apps) | Yes — request via the privacy policy URL (section 7) |
-| **Device identifiers** (salted SHA-256 hash of Android ID; not the raw ID) | Yes | No | No | Analytics (usage events: app open, PDF export); App functionality | Yes — request via the privacy policy URL (section 7) |
+| **Email addresses** (sign-in gate) | Yes | No | No | App functionality; Developer communications (studio may email users about its apps) | Yes — see the data deletion page URL below |
+| **Device identifiers** (salted SHA-256 hash of Android ID; not the raw ID) | Yes | No | No | Analytics (usage events: app open, PDF export); App functionality | Yes — see the data deletion page URL below |
 | App activity / package & pricing data | **No** — stays on device (Room/SQLite) | — | — | — | Uninstall / clear storage |
 
 Also declare when asked:

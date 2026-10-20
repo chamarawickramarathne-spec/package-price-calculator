@@ -1035,6 +1035,46 @@ Date: 2026-10-20
 
 ---
 
+### Modification 020
+
+Date: 2026-10-20
+
+### Changes
+- **Play "Delete data URL" page (docs-only, no app code, no rebuild).**
+  Google Play requires a dedicated, prominent URL where users can request
+  data deletion. Created `docs/data-deletion.html` (served by GitHub Pages
+  from `docs/`) which satisfies all three Play requirements: it names the
+  app + developer, gives numbered request steps with a **prefilled GitHub
+  Issue link** (`issues/new?title=Privacy data request — delete my data`),
+  and spells out what is deleted (sign-in email + usage records; **no
+  retention** after the 30-day window) versus what is device-local only
+  (quotes/catalog/business details → Settings → Clear storage or uninstall).
+  A public-Issues privacy caveat points users to the email channel for
+  private requests.
+- `docs/privacy-policy.html`: section 7 now cross-links the deletion page;
+  section 1c dropped the stale "tagline… address" wording (those fields
+  were removed from the app in Mod 015 / v1.6.0).
+- `docs/play-console-checklist.md`: new "Data deletion" block with the
+  paste-ready URL
+  (`https://chamarawickramarathne-spec.github.io/package-price-calculator/data-deletion.html`),
+  the "Yes" answer for the deletion-functionality question, and the Data
+  Safety table's deletion column now points at the deletion page.
+
+### Files / Components
+- `docs/data-deletion.html` (new)
+- `docs/privacy-policy.html`, `docs/play-console-checklist.md`
+
+### Important Notes
+- No application code changed → **no rebuild, no version bump, no new
+  release** (v1.6.3 / versionCode 17 remains current; same rule-4 exemption
+  as Mod 018).
+- Both pages rely on GitHub Pages being enabled on the repo
+  (`main` branch, `/docs` folder) — that enablement is still a pending
+  user-side step in AGENTS_PLAN.md. If Pages is off, both the privacy
+  policy and the deletion URL 404.
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
 - **Google Play submission (user-side):** follow

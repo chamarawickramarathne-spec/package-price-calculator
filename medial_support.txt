@@ -132,6 +132,7 @@ All use the current blue/teal app icon and real app screen PNGs
 
 Google Play store listing text + Data Safety answers: docs/play-console-checklist.md
 Privacy policy: docs/privacy-policy.html (GitHub Pages)
+Data deletion requests: docs/data-deletion.html (GitHub Pages)
 
 --------------------------------------------------------------------------------
 5. SOCIAL MEDIA TAGS

@@ -294,6 +294,19 @@ Implementation plan and task tracker for the native Android rewrite
       `app-play-release.aab` (4,240,614 bytes); both signed with the
       publisher key (SHA-256 `F5:C6:C7:3F…93:EC:87`).
 
+### Completed — Play data-deletion page (Mod 020)
+
+- [x] `docs/data-deletion.html` (new) — Play "Delete data URL" target: names
+      app + developer, numbered request steps with a prefilled GitHub Issue
+      link, deleted-vs-kept table (email + usage records deleted, no retention;
+      app content is device-local), 30-day response, email alternative,
+      cross-links the privacy policy.
+- [x] `docs/privacy-policy.html` — section 7 cross-links the deletion page;
+      section 1c fixed (dropped tagline/address removed in v1.6.0).
+- [x] `docs/play-console-checklist.md` — paste-ready Delete data URL, the
+      "Yes" deletion answer, Data Safety deletion column updated.
+- [x] Docs-only change — **no rebuild, no release**; v1.6.3 stays current.
+
 ### Pending — Play Console (user-side, follow docs/play-console-checklist.md)
 
 - [ ] Create the app in Play Console + paste store listing text/assets.

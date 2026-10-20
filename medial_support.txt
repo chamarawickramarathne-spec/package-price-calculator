@@ -1,6 +1,6 @@
 ================================================================================
 MEDIA SUPPORT - Package Price Calculator
-Hire Artist Studio (hiresmcq)  |  Version 1.6.1  |  Generated 2026-10-20
+Hire Artist Studio (hiresmcq)  |  Version 1.6.2  |  Generated 2026-10-20
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -157,10 +157,10 @@ Download Package Price Calculator and price your next job the easy way.
    price badge and green tick marks, candid documentary style, warm
    golden-hour light.
 
-4. A friendly app-icon style illustration: a camera lens merging with a rupee
-   price tag and a small stamped letterhead document, flat vector design, warm
-   red-orange, amber banner and emerald green accents on a cream background,
-   rounded shapes, clean background, suitable for a social media avatar.
+4. A friendly app-icon style illustration: a rounded square tile with a deep
+   navy-to-teal diagonal gradient and a clean white geometric camera-inspired
+   mark at its centre, flat vector design, soft edge glow, subtle depth,
+   uncluttered background, suitable for a social media avatar.
 
 5. A minimal business-setup screen concept: a phone showing three short fields
    (email address, business name and phone) with a large orange save button,

@@ -839,8 +839,67 @@ Date: 2026-10-20
 
 ---
 
+### Modification 017
+
+Date: 2026-10-20
+
+### Changes
+- **App icon now matches the `media/` icon (v1.6.2).** The launcher icon was a
+  red `#D84830` square with a white Material camera glyph, while
+  `media/icons/icon-512x512.png` (inherited from the old Expo app) was a
+  completely different blue/teal tile. Per decision the **blue media artwork is
+  now the app's icon**:
+  - Added `app/src/main/res/drawable-nodpi/ic_launcher_art.png` (byte-for-byte
+    copy of `media/icons/icon-512x512.png`, 512×512) as the single art source.
+  - `mipmap-anydpi-v26/ic_launcher.xml` + `ic_launcher_round.xml`:
+    `android:foreground` → `@drawable/ic_launcher_art` (full-bleed, so it
+    renders correctly whether the platform bounds the layer to the 108dp canvas
+    or to the intrinsic size; the launcher mask crops a clean gradient circle
+    with the white mark inside the safe zone).
+  - Deleted the now-unused `drawable/ic_launcher_foreground.xml` (white camera
+    vector).
+  - `values/colors.xml`: `ic_launcher_background` `#D84830` → **`#0E4F6B`**
+    (sampled from the art's own edge colour, so it only shows under mask/parallax
+    edges). `brand_red` and the whole UI accent stay warm red-orange by decision.
+- **Login logo follows the icon.** `LoginScreen.LoginLogo()` no longer draws a
+  red circle + white camera; it renders `ic_launcher_art` at 96dp clipped to a
+  circle. Removed the `Box` / `background` / `requiredSize` imports it used.
+- Bumped `versionCode` 15 → 16 and `versionName` 1.6.1 → **1.6.2**.
+
+### Files / Components
+- `app/src/main/res/drawable-nodpi/ic_launcher_art.png` (new)
+- `app/src/main/res/mipmap-anydpi-v26/{ic_launcher,ic_launcher_round}.xml`
+- `app/src/main/res/drawable/ic_launcher_foreground.xml` (deleted)
+- `app/src/main/res/values/colors.xml`
+- `app/src/main/java/lk/hiresmcq/packcalc/ui/login/LoginScreen.kt`
+- `app/build.gradle.kts`, `medial_support.txt`, `AGENTS_PLAN.md`
+
+### Important Notes
+- `media/` was **not** modified - it is the source of truth and already carries
+  the required 512x512 + 114x114 sizes.
+- Verified in the built APKs (`aapt2 dump`): `color/ic_launcher_background` =
+  `#ff0e4f6b`, `drawable/ic_launcher_art` = nodpi 512x512 PNG, both adaptive
+  icon XMLs point at background `0x7f020005` / foreground `0x7f040006`, no
+  `ic_launcher_foreground` entry remains, `versionCode='16' versionName='1.6.2'`.
+- Release APK signed by the publisher key (`CN=Hire Artist Studio`, SHA-256
+  `F5:C6:C7:3F…93:EC:87`) - same key as v1.0.0-v1.6.1, so in-app updates
+  install cleanly.
+- Unit tests 31/31 green; `assembleDebug` + `assembleRelease` green; all source
+  files remain under 300 lines.
+- **Not rendered on a device** (no device/emulator attached): the icon geometry
+  was verified analytically and from the APK's compiled resources only - still
+  to be eyeballed by the user. Some launchers cache the old icon until the
+  launcher restarts after the update.
+- No `<monochrome>` layer added (Android 13 themed icons): the art is opaque, so
+  a themed icon would render as a solid blob.
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
+- **Eyeball the new app icon on a device** (v1.6.2): launcher icon and the
+  login-screen logo now come from `media/icons/icon-512x512.png` (blue/teal
+  art); no device/emulator was attached to render it.
 - **Eyeball the login gate + PDF on a device** (no device or emulator attached
   to this machine): gate collects name/phone → drawer shows the name, PDF
   footer shows phone • email; sign-in row lands in `user_emails` (airplane-mode

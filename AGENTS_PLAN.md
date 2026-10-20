@@ -224,7 +224,38 @@ Implementation plan and task tracker for the native Android rewrite
       `application/vnd.android.package-archive`, 1,864,253 bytes) and the
       Releases API reports `v1.6.1` as latest, so in-app updates work.
 
+### Completed — Icon fix 1.6.2 (Mod 017): app icon matches `media/` again
+
+- [x] The launcher icon (red square + white Material camera) was replaced by
+      the blue/teal art that already lives in `media/icons/icon-512x512.png`:
+      `drawable-nodpi/ic_launcher_art.png` added and referenced as the
+      adaptive-icon **foreground** in both `ic_launcher.xml` and
+      `ic_launcher_round.xml` (full-bleed).
+- [x] `drawable/ic_launcher_foreground.xml` (white camera vector) deleted.
+- [x] `ic_launcher_background` `#D84830` → `#0E4F6B` (sampled from the art's
+      edge). UI accent stays warm red-orange by decision.
+- [x] `LoginScreen.LoginLogo()` now draws `ic_launcher_art` (96dp, circle
+      clipped) instead of a red circle + camera.
+- [x] versionCode 16, versionName 1.6.2; 31/31 unit tests green;
+      `assembleDebug` + `assembleRelease` green.
+- [x] APK verified with `aapt2 dump`: background `#ff0e4f6b`, art nodpi 512x512,
+      both adaptive XMLs wired to it, old vector gone; signed by the publisher
+      key (SHA-256 `F5:C6:C7:3F…93:EC:87`).
+- [x] Signed APK staged at `build/Package-Price-Calculator.apk`
+      (1,907,429 bytes); `medial_support.txt` updated for 1.6.2.
+
+### Completed (1.6.2 release)
+- [x] **Release 1.6.2**: commit `{COMMIT}`, annotated tag `v1.6.2` pushed,
+      GitHub release published with the stable asset
+      `Package-Price-Calculator.apk`; anonymous download verified (HTTP 200,
+      `application/vnd.android.package-archive`) and the Releases API reports
+      `v1.6.2` as latest, so in-app updates work.
+
 ### Later
+- [ ] **Eyeball the new app icon on a device** (v1.6.2): launcher icon and the
+      login-screen logo come from `media/icons/icon-512x512.png`; no
+      device/emulator was attached to render it. Some launchers cache the old
+      icon until the launcher restarts.
 - [ ] **Eyeball the login gate + PDF on a device** (no device or emulator
       attached to this machine): gate collects name/phone → drawer shows the
       name, PDF footer shows phone • email; the sign-in row lands in

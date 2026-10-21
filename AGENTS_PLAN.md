@@ -338,10 +338,15 @@ Implementation plan and task tracker for the native Android rewrite
 - [x] versionCode 18, versionName 1.6.4. GitHub APK (1,907,429 bytes) signed
       with the publisher key (SHA-256 `F5:C6:C7:3F…93:EC:87`) and staged at
       `build/Package-Price-Calculator.apk`; Play AAB
-      `app-play-release.aab` (4,252,400 bytes) + sideloadable
+      `app-play-release.aab` (4,252,449 bytes) + sideloadable
       `app-play-release.apk`. Verified in the AAB dex: `last_crash.txt`,
       `startup.log`, "crash handler armed", "startup complete" all present
       after R8; the AAB manifest has no `REQUEST_INSTALL_PACKAGES`.
+- [x] **Release 1.6.4**: commit `96a593c`, annotated tag `v1.6.4` pushed,
+      GitHub release published with the stable asset
+      `Package-Price-Calculator.apk`; anonymous download verified (HTTP 200,
+      `application/vnd.android.package-archive`, 1,907,429 bytes) and the
+      Releases API reports `v1.6.4` as latest, so in-app updates work.
 
 ### Pending — Play Console (user-side, follow docs/play-console-checklist.md)
 

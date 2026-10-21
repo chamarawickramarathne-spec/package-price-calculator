@@ -1159,6 +1159,13 @@ Date: 2026-10-22
   `REQUEST_INSTALL_PACKAGES`. The GitHub APK is signed with the publisher
   key (`CN=Hire Artist Studio`, SHA-256 `F5:C6:C7:3F…93:EC:87`), the same
   key as v1.0.0–v1.6.3, so in-app updates install cleanly.
+- **Released as v1.6.4**: commit `96a593c`, annotated tag `v1.6.4` pushed,
+  GitHub release published with the stable asset name
+  `Package-Price-Calculator.apk`. Anonymous download verified: HTTP 200,
+  `application/vnd.android.package-archive`, 1,907,429 bytes; the GitHub
+  Releases API reports `v1.6.4` as latest, so in-app updates resolve.
+  The Play AAB (`app/build/outputs/bundle/playRelease/app-play-release.aab`,
+  4,252,449 bytes) is ready for the console upload.
 
 ---
 

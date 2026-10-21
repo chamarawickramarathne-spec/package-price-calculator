@@ -1075,12 +1075,105 @@ Date: 2026-10-20
 
 ---
 
+### Modification 021
+
+Date: 2026-10-22
+
+### Changes
+- **On-device crash reporting (v1.6.4)** — the Google Play build was reported
+  to close instantly on launch while the GitHub APK worked. No root cause
+  could be proven from the build side (see the notes below), and there is no
+  Play Console access and no attached device on this machine, so the fix is
+  to make the crash **visible and reportable**:
+  - `domain/CrashReport.kt` (new, pure) — a captured crash as data
+    (`timestamp`, `threadName`, `exceptionClass`, `message`, `stackTrace`) plus
+    `summary` and `asReportText(appVersion, channel, startupTrail)`. The
+    report carries the **app version, the distribution channel
+    (`BuildConfig.FLAVOR`), the thread, the full stack trace and the last
+    startup steps**.
+  - `util/CrashReporter.kt` (new) — installs a global
+    `Thread.setDefaultUncaughtExceptionHandler` as the **first** statement of
+    `Application.onCreate`. It writes the report to
+    `filesDir/last_crash.txt` *synchronously* and then hands the throwable
+    back to the previous (platform) handler, so the process still dies the
+    way Android expects — the crash is never swallowed. Also exposes
+    `pendingReportText()` / `clearPendingReport()` / `capture(throwable)`.
+  - `util/StartupLog.kt` (new) — a trimmed, timestamped breadcrumb trail at
+    `filesDir/startup.log` ("app.onCreate", "crash handler armed", "container
+    ready", "activity.onCreate", "startup complete", …). It answers *where*
+    the app died, which a stack trace cannot.
+  - `ui/components/CrashSurface.kt` (new) — the report on screen: title,
+    "Copy details" (clipboard) and "Carry on". `onContinue` is nullable so a
+    start-up failure can be shown without offering a way forward.
+  - `PackCalcApp` — arms the crash handler first, then builds `AppContainer`
+    inside `runCatching`; every startup step (usage log, email sync, business
+    backfill) is individually guarded so a failing background step can never
+    stop the app. A container failure is kept in `startupFailure` instead of
+    being swallowed.
+  - `MainActivity` — on start it shows the stored report (or the
+    `startupFailure`) on `CrashSurface` instead of opening the app; when the
+    container itself failed, no "Carry on" is offered (there is nothing to
+    carry on to).
+  - Bumped `versionCode` 17 → 18 and `versionName` 1.6.3 → **1.6.4**.
+
+### Files / Components
+- `domain/CrashReport.kt` (new), `util/CrashReporter.kt` (new),
+  `util/StartupLog.kt` (new), `ui/components/CrashSurface.kt` (new)
+- `PackCalcApp.kt`, `MainActivity.kt`
+- `app/src/test/java/lk/hiresmcq/packcalc/domain/CrashReportTest.kt` (new)
+- `app/build.gradle.kts`, `medial_support.txt`, `AGENTS.md`, `AGENTS_PLAN.md`,
+  `docs/play-console-checklist.md`
+
+### Important Notes
+- **Why not a "degraded container"?** The plan originally allowed a fallback
+  container when `AppContainer` cannot be built. It was dropped on purpose:
+  a half-working app hides the real error, whereas `startupFailure` +
+  `CrashSurface` shows the exact exception. Nothing is silently swallowed.
+- **A crash dialog inside the handler is not possible** — the main looper is
+  not running while the uncaught handler executes, so a dialog shown there
+  would never be drawn. The report is therefore written to disk and displayed
+  on the **next** launch, which is the standard approach and the only
+  reliable one.
+- **What was ruled out (build side):** the `play` and `github` release builds
+  are functionally identical — the merged manifests differ only by
+  `REQUEST_INSTALL_PACKAGES` (github-only, intentional); the R8 class sets
+  differ only by the self-update classes that the play flavor does not use;
+  resources are identical; `minSdk 26` / `targetSdk 36` /
+  `versionCode 17` in both. The 16 KB page-size requirement is met (every
+  `PT_LOAD` segment of `libandroidx.graphics.path.so` has `p_align = 0x4000`)
+  and that native library is not loaded at start-up (emoji2 1.3.0 never
+  references `androidx.graphics.path`).
+- **Audit (rule 21):** the report is written to **app-private** storage only
+  (`filesDir`, `allowBackup=false`), contains no client data, no prices and
+  no personal data beyond the app version and the crash text; it is never
+  uploaded anywhere. No new permission, no new network call, no secret.
+  `StartupLog` holds step labels only.
+- 36/36 unit tests green (5 new `CrashReportTest`); `assembleGithubDebug`,
+  `assemblePlayDebug`, `assembleGithubRelease`, `assemblePlayRelease` and
+  `bundlePlayRelease` all green; every source file is still under 300 lines.
+- Verified in the built artifacts: `app-play-release.apk` = versionCode 18 /
+  1.6.4, **no** `REQUEST_INSTALL_PACKAGES`; the AAB's `base/dex/classes.dex`
+  contains the new string literals (`last_crash.txt`, `startup.log`,
+  "crash handler armed", "startup complete"), so the crash layer really is
+  in the Play bundle even after R8; the AAB manifest has no
+  `REQUEST_INSTALL_PACKAGES`. The GitHub APK is signed with the publisher
+  key (`CN=Hire Artist Studio`, SHA-256 `F5:C6:C7:3F…93:EC:87`), the same
+  key as v1.0.0–v1.6.3, so in-app updates install cleanly.
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
 - **Google Play submission (user-side):** follow
   `docs/play-console-checklist.md` — create app, paste listing text, upload
   `app-play-release.aab`, Data Safety, content rating, Play App Signing,
   closed testing (12 testers x 14 days on a personal account), production.
+- **Install-test the exact Play artifact before uploading it** (new in
+  v1.6.4): `app/build/outputs/apk/play/release/app-play-release.apk` is the
+  same code the AAB ships — sideload it once and confirm it opens. If the
+  Play build still closes on launch, the next launch now shows the crash
+  report on screen (version, channel, stack trace, startup trail) — copy it
+  and send it in.
 - **Eyeball the new app icon on a device** (v1.6.2): launcher icon and the
   login-screen logo now come from `media/icons/icon-512x512.png` (blue/teal
   art); no device/emulator was attached to render it.

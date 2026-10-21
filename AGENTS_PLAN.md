@@ -307,6 +307,42 @@ Implementation plan and task tracker for the native Android rewrite
       "Yes" deletion answer, Data Safety deletion column updated.
 - [x] Docs-only change — **no rebuild, no release**; v1.6.3 stays current.
 
+### Completed — Crash diagnostics 1.6.4 (Mod 021)
+
+- [x] **Reported symptom:** the Google Play build closes instantly on launch
+      while the GitHub APK works. No root cause could be proven from the build
+      side and there is no Play Console access and no attached device here, so
+      the fix is to make the crash **visible on the phone**.
+- [x] `domain/CrashReport.kt` (new, pure) — a captured crash as data plus
+      `summary` / `asReportText(appVersion, channel, startupTrail)`.
+      `CrashReportTest` (5 tests) covers the format.
+- [x] `util/CrashReporter.kt` (new) — global
+      `Thread.setDefaultUncaughtExceptionHandler`, armed as the first
+      statement of `Application.onCreate`; writes the report synchronously to
+      `filesDir/last_crash.txt` and then hands the throwable back to the
+      platform handler (the crash is never swallowed).
+- [x] `util/StartupLog.kt` (new) — trimmed, timestamped breadcrumb trail at
+      `filesDir/startup.log` (app.onCreate → crash handler armed → container
+      ready → activity.onCreate → startup complete).
+- [x] `ui/components/CrashSurface.kt` (new) — the report on screen with
+      "Copy details" and "Carry on"; the carry-on button is optional so a
+      failed start-up shows no way forward.
+- [x] `PackCalcApp` — crash handler armed first, `AppContainer` built inside
+      `runCatching` (failure kept in `startupFailure`), every startup step
+      individually guarded.
+- [x] `MainActivity` — shows the stored report (or the start-up failure)
+      instead of opening the app.
+- [x] 36/36 unit tests green; `assembleGithubDebug`, `assemblePlayDebug`,
+      `assembleGithubRelease`, `assemblePlayRelease`, `bundlePlayRelease` all
+      green; every source file under 300 lines.
+- [x] versionCode 18, versionName 1.6.4. GitHub APK (1,907,429 bytes) signed
+      with the publisher key (SHA-256 `F5:C6:C7:3F…93:EC:87`) and staged at
+      `build/Package-Price-Calculator.apk`; Play AAB
+      `app-play-release.aab` (4,252,400 bytes) + sideloadable
+      `app-play-release.apk`. Verified in the AAB dex: `last_crash.txt`,
+      `startup.log`, "crash handler armed", "startup complete" all present
+      after R8; the AAB manifest has no `REQUEST_INSTALL_PACKAGES`.
+
 ### Pending — Play Console (user-side, follow docs/play-console-checklist.md)
 
 - [ ] Create the app in Play Console + paste store listing text/assets.
@@ -321,6 +357,11 @@ Implementation plan and task tracker for the native Android rewrite
       production access.
 
 ### Later
+- [ ] **Sideload the exact Play artifact once before uploading it** (new in
+      v1.6.4): `app/build/outputs/apk/play/release/app-play-release.apk` ships
+      the same code as the AAB. If it still closes on launch, the next launch
+      shows the crash report on screen (version, channel, stack trace, startup
+      trail) — copy it and send it in.
 - [ ] **Eyeball the new app icon on a device** (v1.6.2): launcher icon and the
       login-screen logo come from `media/icons/icon-512x512.png`; no
       device/emulator was attached to render it. Some launchers cache the old

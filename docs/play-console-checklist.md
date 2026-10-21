@@ -1,7 +1,27 @@
-# Google Play Console — Submission Checklist (v1.6.3)
+# Google Play Console — Submission Checklist (v1.6.4)
 
 Everything you need to paste into Play Console, in console order.
-Built version: `versionCode 17` / `versionName 1.6.3` / `targetSdk 36` / `minSdk 26`.
+Built version: `versionCode 18` / `versionName 1.6.4` / `targetSdk 36` / `minSdk 26`.
+
+---
+
+## 0. Verify the artifact on a phone FIRST (do not skip)
+
+The Play build was reported closing instantly on launch, so test the exact
+Play artifact before uploading it:
+
+```
+& ".\gradlew.bat" assemblePlayRelease "-Dorg.gradle.java.home=C:\Users\Nwick\.jdks\jdk-17.0.20+8"
+```
+
+Output: `app\build\outputs\apk\play\release\app-play-release.apk` — the same
+code the AAB ships. Sideload it (`adb install -r <file>`) and confirm the app
+opens and shows the sign-in gate.
+
+If it still closes on launch, **open it once more**: v1.6.4 records the crash
+and shows the report on screen (app version, channel, thread, stack trace and
+the last startup steps) with a **Copy details** button. Send that text in —
+it is the missing evidence.
 
 ---
 
@@ -177,7 +197,7 @@ Also declare when asked:
 
 1. **Testing → Internal testing (or Closed testing) → Create new release →
    Upload** `app-play-release.aab`.
-2. Release name: `1.6.3` — Release notes: paste the GitHub release notes.
+2. Release name: `1.6.4` — Release notes: paste the GitHub release notes.
 3. When prompted for **Play App Signing**: enroll (required for new apps).
    - Upload key = your existing `packcalc-release.jks` (the AAB is already
      signed with it).
@@ -199,7 +219,8 @@ Also declare when asked:
 
 - [ ] targetSdk = 36 (checked in `app/build.gradle.kts`; verified in merged manifest)
 - [ ] Play merged manifest has **no** `REQUEST_INSTALL_PACKAGES` (verified for playRelease)
-- [ ] versionCode 17 > 0 and unique on Play
+- [ ] versionCode 18 > 0 and unique on Play
+- [ ] The **Play APK was sideloaded and opened** at least once (section 0)
 - [ ] Privacy policy URL loads over HTTPS (verified after Pages enable)
 - [ ] Data safety matches this checklist
 - [ ] Feature graphic + 4 screenshots + icon uploaded

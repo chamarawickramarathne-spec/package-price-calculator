@@ -1,6 +1,6 @@
 ================================================================================
 MEDIA SUPPORT - Package Price Calculator
-Hire Artist Studio (hiresmcq)  |  Version 1.6.3  |  Generated 2026-10-20
+Hire Artist Studio (hiresmcq)  |  Version 1.6.4  |  Generated 2026-10-22
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -70,6 +70,9 @@ Main features:
 - Reliable sign-in sync: your email is stored on the device first and pushed to
   our list when a connection is available - duplicates and retries collapse into
   a single record, and your sign-in is never lost.
+- Self-diagnosing: if the app ever closes unexpectedly, the next launch shows
+  the error on screen with a one-tap "Copy details" button - no developer tools,
+  no guesswork about what went wrong.
 
 Main benefits:
 - Quote a client before you leave the venue.
@@ -80,6 +83,7 @@ Main benefits:
 - Keep every price consistent - no mental arithmetic, no forgotten items.
 - Set up once at start-up and forget about it - no password to create.
 - Works offline: plan and price on location, sync when you are back online.
+- Built to tell you when something goes wrong, instead of silently closing.
 
 Problem it solves: pricing a shoot is repetitive and error-prone, and turning a
 price into something you can send a client is usually another chore. This app
@@ -120,7 +124,7 @@ Download Package Price Calculator and price your next job the easy way.
 
 #PackagePriceCalculator #PhotographerTools #Pricing
 
-Ready-made promotional images (v1.6.3):
+Ready-made promotional images (v1.6.4):
 - media/promo/feature-graphic-1024x500.png   - Google Play feature graphic
 - media/images/play/{login,details,equipment,pricing}.png - Play store
   screenshots (1080x1920, Play-compliant 16:9)
@@ -152,6 +156,7 @@ Data deletion requests: docs/data-deletion.html (GitHub Pages)
 #NoPasswordLogin #PhotographerPricing
 #OfflineFirst #ShootQuoting
 #YourBrandYourQuote #StudioBranding #CustomInvoice
+#ReliableApp #SelfDiagnosing #CrashReport
 
 --------------------------------------------------------------------------------
 6. AI IMAGE PROMPTS (5)
@@ -163,8 +168,11 @@ Data deletion requests: docs/data-deletion.html (GitHub Pages)
 
 2. Overhead flat-lay of camera gear (DSLR, lenses, tripod, drone) neatly
    arranged beside a phone displaying an itemised package price breakdown with
-   travel and assistant costs and a branded invoice footer with phone/email,
-   minimal desk, bright natural light, top-down commercial photography.
+   travel and assistant costs, next to a printed two-page quote - page one a
+   clean client summary with a green total badge, page two the itemised studio
+   copy - branded with the photographer's own studio name and phone/email in
+   the footer, minimal desk, bright natural light, top-down commercial
+   photography.
 
 3. A wedding photographer at a venue sharing a professional PDF quote from
    their phone to a happy couple, the phone screen showing a document with the

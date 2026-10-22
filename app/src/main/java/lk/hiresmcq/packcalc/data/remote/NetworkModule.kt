@@ -17,6 +17,16 @@ object NetworkModule {
         coerceInputValues = true
     }
 
+    /**
+     * Builds the Supabase (PostgREST) client.
+     *
+     * The created service is stored in a typed field by the caller: R8 full
+     * mode sees no subtypes of a Retrofit service interface (the service is a
+     * dynamic proxy), so a `create()` result that nobody uses is treated as
+     * null and the following `check-cast` can never succeed - R8 replaces it
+     * with an unconditional `throw ClassCastException()`. Keeping the value
+     * alive in a typed field prevents that.
+     */
     fun createApi(baseUrl: String, apiKey: String, debugLogging: Boolean): SupabaseApi {
         val normalizedBase = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
 
@@ -50,43 +60,5 @@ object NetworkModule {
             .build()
 
         return retrofit.create(SupabaseApi::class.java)
-    }
-
-    fun createGitHubApi(debugLogging: Boolean): GitHubApi {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.github.com/")
-            .client(buildUpdateClient(debugLogging))
-            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-            .build()
-
-        return retrofit.create(GitHubApi::class.java)
-    }
-
-    fun createUpdateClient(debugLogging: Boolean): OkHttpClient = buildUpdateClient(debugLogging)
-
-    private fun buildUpdateClient(debugLogging: Boolean): OkHttpClient {
-        val headers = okhttp3.Interceptor { chain ->
-            chain.proceed(
-                chain.request().newBuilder()
-                    .addHeader("Accept", "application/vnd.github+json")
-                    .addHeader("User-Agent", "PackagePriceCalculator-Android")
-                    .build(),
-            )
-        }
-
-        val clientBuilder = OkHttpClient.Builder()
-            .addInterceptor(headers)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
-
-        if (debugLogging) {
-            val logging = HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BASIC
-            }
-            clientBuilder.addInterceptor(logging)
-        }
-
-        return clientBuilder.build()
     }
 }

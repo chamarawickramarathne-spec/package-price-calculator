@@ -17,7 +17,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
-import lk.hiresmcq.packcalc.BuildConfig
 import lk.hiresmcq.packcalc.ui.SimpleVmFactory
 import lk.hiresmcq.packcalc.ui.appContainer
 import lk.hiresmcq.packcalc.ui.calculator.CalculatorMode
@@ -39,8 +38,7 @@ import lk.hiresmcq.packcalc.ui.templates.TemplateEditorScreen
 import lk.hiresmcq.packcalc.ui.templates.TemplateEditorViewModel
 import lk.hiresmcq.packcalc.ui.templates.TemplateListViewModel
 import lk.hiresmcq.packcalc.ui.templates.TemplatesScreen
-import lk.hiresmcq.packcalc.ui.update.UpdateDialog
-import lk.hiresmcq.packcalc.ui.update.UpdateViewModel
+import lk.hiresmcq.packcalc.ui.update.UpdateHost
 
 @Composable
 fun AppNav() {
@@ -233,17 +231,10 @@ fun AppNav() {
         }
 
         // Self-update exists only in the github distribution. The play flavor
-        // (SELF_UPDATE=false) never constructs the UpdateViewModel, so it makes
-        // no GitHub API calls and never needs REQUEST_INSTALL_PACKAGES;
-        // Google Play delivers updates for that channel instead.
-        if (BuildConfig.SELF_UPDATE) {
-            val updateViewModel: UpdateViewModel = viewModel(
-                factory = SimpleVmFactory(container) {
-                    UpdateViewModel(it.updateRepository, it.apkDownloader, appContext)
-                },
-            )
-            UpdateDialog(updateViewModel)
-        }
+        // wires no updater (see SelfUpdateWiring), so it makes no GitHub API
+        // calls and never needs REQUEST_INSTALL_PACKAGES; Google Play
+        // delivers updates for that channel instead.
+        UpdateHost(container, appContext)
     }
 }
 

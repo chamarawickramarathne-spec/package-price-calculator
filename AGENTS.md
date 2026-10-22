@@ -1169,12 +1169,155 @@ Date: 2026-10-22
 
 ---
 
+### Modification 022
+
+Date: 2026-10-22
+
+### Changes
+- **Play upload artifact staged and verified (no app code change).** The
+  Play Console AAB was rebuilt from scratch and copied to a stable location
+  next to the GitHub APK so a Gradle clean can never wipe the upload file:
+  - Rebuilt with `bundlePlayRelease` → **BUILD SUCCESSFUL** (exit 0), artifact
+    byte-identical to the Mod 021 build (4,252,449 bytes).
+  - Staged copy: **`build/Package-Price-Calculator.aab`** (SHA-256
+    `794446BBEFD112C6B0E9864C6A7F21AC96003B799EBD020622565B942DA46863`,
+    verified identical to the Gradle output).
+- **Verification performed (read-only) on the AAB:**
+  - `jarsigner -verify` → `jar verified.`; signer `CN=Hire Artist Studio,
+    OU=PackCalc, O=Hire Artist Studio, L=Colombo, ST=Western, C=LK`
+    (self-signed, valid 2026-10-16 → 2054-03-03) — this is the **upload key**
+    for Play App Signing enrollment.
+  - AAB structure valid: `BundleConfig.pb`, `base/manifest/AndroidManifest.xml`
+    (proto), `base/dex/classes.dex`, `base/resources.pb`,
+    `BUNDLE-METADATA/*`.
+  - Merged manifest of the matching `playRelease` APK: `lk.hiresmcq.packcalc`,
+    versionCode **18**, versionName **1.6.4**, minSdk 26, targetSdk 36,
+    compileSdk 36.
+  - Permissions in the AAB manifest: `android.permission.INTERNET` only (plus
+    androidx's auto-generated `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`);
+    **no** `REQUEST_INSTALL_PACKAGES`, no storage/`QUERY_ALL_PACKAGES`/
+    `MANAGE_EXTERNAL_STORAGE`/`POST_NOTIFICATIONS`.
+- **`docs/play-console-checklist.md`:** section 1 now documents the staged
+  upload path plus a verification table (size, SHA-256, package/version, SDK
+  levels, permissions, signature); section 7 points the upload step at
+  `build\Package-Price-Calculator.aab`.
+- Git working tree was clean before the change and the only commits after
+  v1.6.4 are documentation ones, so the AAB matches `HEAD` exactly.
+
+### Files / Components
+- `build/Package-Price-Calculator.aab` (new staged artifact; gitignored via
+  `build/` and `*.aab`)
+- `docs/play-console-checklist.md`, `AGENTS.md`, `AGENTS_PLAN.md`
+
+### Important Notes
+- **No app code changed** → no version bump, no rebuild of the GitHub channel,
+  no new release (rule 4 exemption, same as Mod 018 / Mod 020).
+- `medial_support.txt` was **not** regenerated: no feature, description, tag
+  or prompt changed in this modification (the file already describes v1.6.4).
+- Audit (rule 21): build/staging only — no source edit, no new dependency, no
+  permission, no network call, no secret. The staged file is a byte copy of an
+  already-verified artifact and is ignored by git (`build/`, `*.aab`).
+- Play App Signing note (unchanged): the upload key is the publisher key
+  `packcalc-release.jks`. Google then holds the app-signing key, so a device
+  that installed the GitHub APK must uninstall before installing from Play
+  (different signer) — accepted trade-off.
+- **Still user-side:** the Play Console upload itself
+  (Testing → Internal/Closed testing → Create new release → Upload), the Data
+  Safety form, content rating, and — on a personal account — a closed test
+  with 12 testers for 14 days before production access.
+
+---
+
+### Modification 023
+
+Date: 2026-10-22
+
+### Changes
+- **Fixed the Google Play launch crash (v1.6.5).** The v1.6.4 Play build threw
+  `java.lang.ClassCastException` inside `Application.onCreate` and closed
+  instantly. The root cause was **found and proven** (not guessed):
+  `NetworkModule.createGitHubApi` called `retrofit.create(GitHubApi::class.java)`,
+  and in the Play flavor that result was **unused** (R8 removed the
+  `githubApi` / `updateRepository` / `apkDownloader` fields because
+  `BuildConfig.SELF_UPDATE=false`). R8 full mode sees **no subtypes** of a
+  Retrofit service interface (the service is a dynamic proxy), so it replaced
+  the Kotlin `check-cast` with an unconditional
+  `new ClassCastException(); throw` — every Play launch died inside
+  `AppContainer.<init>`.
+  - **Fix:** the updater's network layer now lives only in the `github`
+    flavor source set, so the Play build never creates a GitHub service at
+    all. No R8 keep-rule, no `-dontwarn` trick, no behaviour change for the
+    GitHub channel.
+  - `app/src/github/java/lk/hiresmcq/packcalc/data/remote/UpdateNetwork.kt`
+    (new) — `createGitHubApi` / `createUpdateClient` (moved out of the shared
+    `NetworkModule`).
+  - `app/src/github/java/lk/hiresmcq/packcalc/di/SelfUpdateWiring.kt` (new) —
+    builds the GitHub service and keeps it in a typed field (which is what
+    stops R8 from folding the cast away).
+  - `app/src/play/java/lk/hiresmcq/packcalc/di/SelfUpdateWiring.kt` (new) —
+    no service, no updater: `repository` / `downloader` are `null`.
+  - `data/remote/NetworkModule.kt` — GitHub code removed; documents why the
+    Supabase service result must stay in a typed field.
+  - `di/AppContainer.kt` — `updateRepository` / `apkDownloader` are now
+    nullable and sourced from `SelfUpdateWiring`.
+  - `ui/update/UpdateHost.kt` (new) — hosts the updater; renders nothing when
+    it is absent (play flavor).
+  - `ui/navigation/AppNav.kt` — the `BuildConfig.SELF_UPDATE` block replaced by
+    `UpdateHost(container, appContext)` (273 lines).
+  - Bumped `versionCode` 18 → 19 and `versionName` 1.6.4 → **1.6.5**.
+
+### Files / Components
+- `app/src/github/java/lk/hiresmcq/packcalc/data/remote/UpdateNetwork.kt` (new)
+- `app/src/github/java/lk/hiresmcq/packcalc/di/SelfUpdateWiring.kt` (new)
+- `app/src/play/java/lk/hiresmcq/packcalc/di/SelfUpdateWiring.kt` (new)
+- `app/src/main/java/lk/hiresmcq/packcalc/ui/update/UpdateHost.kt` (new)
+- `app/src/main/java/lk/hiresmcq/packcalc/{data/remote/NetworkModule,di/AppContainer,ui/navigation/AppNav}.kt`
+- `app/build.gradle.kts`, `AGENTS_PLAN.md`, `medial_support.txt`,
+  `docs/play-console-checklist.md`
+
+### Important Notes
+- **Proof in bytecode** (`dexdump` on the shipped APKs, not inference):
+  - v1.6.4 **play** (broken): `const-class v2, Lt2/a;` (GitHubApi) → create →
+    `new-instance ClassCastException` → `throw v1` at 0x03a3.
+  - v1.6.4 **github** (worked): `const-class v2, Lt2/b;` → create → **real**
+    `check-cast v1, Lt2/b;` → stored in the typed field.
+  - v1.6.5 **play** (fixed): `GitHubApi` is **absent from the entire build**
+    (not in the R8 mapping); `AppContainer.<init>` keeps a **real**
+    `check-cast v4, Lt2/c;` (SupabaseApi) that stores into the typed field
+    `Lv2/a;.a`; no unconditional cast-failure throw remains.
+  - v1.6.5 **github**: `SelfUpdateWiring.<clinit>` keeps a **real**
+    `check-cast v0, Lt2/b;` → the in-app updater still works.
+  - The two `ClassCastException` instructions still present inside
+    `AppContainer.<init>` are byte-identical to the ones in the known-good
+    GitHub build → pre-existing and benign.
+- **Audit (rule 21):** the change adds no permission, no network call, no
+  secret and no new dependency. The Play build now makes **no** GitHub API
+  call at all and still declares only `INTERNET` (verified in the merged
+  manifest of `app-play-release.apk`); the GitHub build keeps
+  `REQUEST_INSTALL_PACKAGES`. The crash-reporting layer from Mod 021 is
+  untouched and stays in both flavors, so any future start-up failure is still
+  visible on screen on the next launch.
+- 36/36 unit tests green on both flavors; `assemblePlayDebug`,
+  `assembleGithubDebug`, `assemblePlayRelease`, `assembleGithubRelease` and
+  `bundlePlayRelease` all green; every source file is still under 300 lines.
+- Artifacts: GitHub APK (1,907,429 bytes) signed with the publisher key
+  (`CN=Hire Artist Studio`, SHA-256 `F5:C6:C7:3F…93:EC:87` — the same key as
+  v1.0.0–v1.6.4, so in-app updates install cleanly), staged at
+  `build/Package-Price-Calculator.apk`; Play AAB (4,250,380 bytes, SHA-256
+  `DAC8896DEF09E9DA67C151FE3AF6FA1641C45243803F48BD34FC5C020719F566`) staged
+  at `build/Package-Price-Calculator.aab`.
+- **Still user-side:** sideload `app-play-release.apk` once as a smoke test,
+  then upload the AAB to Play Console (see `docs/play-console-checklist.md`).
+
+---
+
 ## Remaining Work (Tracked in AGENTS_PLAN.md)
 
 - **Google Play submission (user-side):** follow
   `docs/play-console-checklist.md` — create app, paste listing text, upload
-  `app-play-release.aab`, Data Safety, content rating, Play App Signing,
-  closed testing (12 testers x 14 days on a personal account), production.
+  `build/Package-Price-Calculator.aab`, Data Safety, content rating, Play App
+  Signing, closed testing (12 testers x 14 days on a personal account),
+  production.
 - **Install-test the exact Play artifact before uploading it** (new in
   v1.6.4): `app/build/outputs/apk/play/release/app-play-release.apk` is the
   same code the AAB ships — sideload it once and confirm it opens. If the

@@ -1,14 +1,18 @@
-# Google Play Console — Submission Checklist (v1.6.4)
+# Google Play Console — Submission Checklist (v1.6.5)
 
 Everything you need to paste into Play Console, in console order.
-Built version: `versionCode 18` / `versionName 1.6.4` / `targetSdk 36` / `minSdk 26`.
+Built version: `versionCode 19` / `versionName 1.6.5` / `targetSdk 36` / `minSdk 26`.
 
 ---
 
 ## 0. Verify the artifact on a phone FIRST (do not skip)
 
-The Play build was reported closing instantly on launch, so test the exact
-Play artifact before uploading it:
+The v1.6.4 Play build closed instantly on launch. That crash is **fixed and
+root-caused** (v1.6.5: R8 replaced the `check-cast` to the unused Retrofit
+`GitHubApi` service with an unconditional `throw ClassCastException`; the
+updater's network layer now lives only in the `github` flavor). This step is
+now a smoke test, but still do it — the Play build must be verified on a real
+device before it goes to Google:
 
 ```
 & ".\gradlew.bat" assemblePlayRelease "-Dorg.gradle.java.home=C:\Users\Nwick\.jdks\jdk-17.0.20+8"
@@ -18,7 +22,7 @@ Output: `app\build\outputs\apk\play\release\app-play-release.apk` — the same
 code the AAB ships. Sideload it (`adb install -r <file>`) and confirm the app
 opens and shows the sign-in gate.
 
-If it still closes on launch, **open it once more**: v1.6.4 records the crash
+If it still closes on launch, **open it once more**: the app records the crash
 and shows the report on screen (app version, channel, thread, stack trace and
 the last startup steps) with a **Copy details** button. Send that text in —
 it is the missing evidence.
@@ -33,6 +37,22 @@ it is the missing evidence.
 
 Output: `app\build\outputs\bundle\playRelease\app-play-release.aab`
 (signed with `keystore\packcalc-release.jks` — this becomes your **upload key**).
+
+A stable copy is staged next to the GitHub APK so the upload file survives a
+Gradle clean:
+
+```
+build\Package-Price-Calculator.aab
+```
+
+| Property | Value |
+|---|---|
+| Size | 4,250,380 bytes |
+| SHA-256 | `DAC8896DEF09E9DA67C151FE3AF6FA1641C45243803F48BD34FC5C020719F566` |
+| Package / version | `lk.hiresmcq.packcalc` · versionCode 19 · versionName 1.6.5 |
+| minSdk / targetSdk | 26 / 36 |
+| Permissions | `INTERNET` only (+ androidx's own receiver permission) — **no** `REQUEST_INSTALL_PACKAGES` |
+| Signature | JAR-signed, `CN=Hire Artist Studio` (self-signed, valid to 2054) |
 
 The GitHub-channel APK is `assembleGithubRelease` and is NOT uploaded to Play.
 
@@ -196,7 +216,8 @@ Also declare when asked:
 ## 7. Upload & signing (Production setup)
 
 1. **Testing → Internal testing (or Closed testing) → Create new release →
-   Upload** `app-play-release.aab`.
+   Upload** `build\Package-Price-Calculator.aab`
+   (same bytes as `app\build\outputs\bundle\playRelease\app-play-release.aab`).
 2. Release name: `1.6.4` — Release notes: paste the GitHub release notes.
 3. When prompted for **Play App Signing**: enroll (required for new apps).
    - Upload key = your existing `packcalc-release.jks` (the AAB is already

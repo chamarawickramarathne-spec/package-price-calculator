@@ -348,12 +348,83 @@ Implementation plan and task tracker for the native Android rewrite
       `application/vnd.android.package-archive`, 1,907,429 bytes) and the
       Releases API reports `v1.6.4` as latest, so in-app updates work.
 
+### Completed — Play upload artifact staged (Mod 022)
+
+- [x] `bundlePlayRelease` re-run from scratch → BUILD SUCCESSFUL (exit 0);
+      artifact byte-identical to the Mod 021 build (4,252,449 bytes), so the
+      build is reproducible.
+- [x] Stable copy staged at **`build/Package-Price-Calculator.aab`** (SHA-256
+      `794446BBEFD112C6B0E9864C6A7F21AC96003B799EBD020622565B942DA46863`,
+      byte-identical to the Gradle output) — survives a Gradle clean.
+- [x] Verified (read-only): `jarsigner -verify` → `jar verified.`, signer
+      `CN=Hire Artist Studio` (self-signed, valid to 2054) = the **upload key**
+      for Play App Signing; AAB structure valid (`BundleConfig.pb`,
+      `base/manifest/AndroidManifest.xml`, `base/dex/classes.dex`,
+      `base/resources.pb`); package `lk.hiresmcq.packcalc`, versionCode 18 /
+      versionName 1.6.4, minSdk 26 / targetSdk 36; permissions = `INTERNET`
+      only, **no** `REQUEST_INSTALL_PACKAGES`.
+- [x] `docs/play-console-checklist.md` updated: section 1 now lists the staged
+      path + verification table, section 7 points the upload at it.
+- [x] No app code changed → no version bump, no new release (v1.6.4 stays
+      current); the staged file is gitignored (`build/`, `*.aab`).
+
+### Completed — Play launch crash fixed 1.6.5 (Mod 023)
+
+- [x] **Root cause proven** (not guessed): the v1.6.4 Play build threw
+      `java.lang.ClassCastException` inside `AppContainer.<init>`. The R8
+      mapping (`app/build/outputs/mapping/playRelease/mapping.txt`) pointed at
+      `NetworkModule.createGitHubApi` → `retrofit.create(GitHubApi::class.java)`.
+      In the Play flavor that result was **unused** (R8 deleted the
+      `githubApi` / `updateRepository` / `apkDownloader` fields because
+      `BuildConfig.SELF_UPDATE=false`), and R8 full mode treats a Retrofit
+      service interface as having **no subtypes** (it is a dynamic proxy) — so
+      it replaced the Kotlin `check-cast` with an unconditional
+      `new ClassCastException(); throw`. Every Play launch died in
+      `Application.onCreate`.
+- [x] **Proved in bytecode** (`dexdump` on the shipped APKs):
+      - v1.6.4 play: `const-class v2, Lt2/a;` (GitHubApi) → create →
+        `new ClassCastException` → `throw` at 0x03a3.
+      - v1.6.4 github: `const-class v2, Lt2/b;` → create → **real**
+        `check-cast v1, Lt2/b;` → stored in the typed field.
+- [x] **Fix: flavor source sets.** The updater's network layer now lives only
+      in the `github` flavor, so the Play build never creates a GitHub service
+      at all:
+      - `app/src/github/java/.../data/remote/UpdateNetwork.kt` (new) —
+        `createGitHubApi` / `createUpdateClient`.
+      - `app/src/github/java/.../di/SelfUpdateWiring.kt` (new) — builds the
+        service and keeps it in a typed field.
+      - `app/src/play/java/.../di/SelfUpdateWiring.kt` (new) — no service, no
+        updater (repository/downloader are `null`).
+      - `NetworkModule` no longer knows about GitHub; `AppContainer` exposes
+        `updateRepository` / `apkDownloader` as nullable; `ui/update/UpdateHost.kt`
+        (new) hosts the updater and renders nothing when it is absent.
+- [x] **Verified in the built artifacts:**
+      - Play release: `GitHubApi` is **absent from the whole build** (not in the
+        R8 mapping); `AppContainer.<init>` keeps a **real** `check-cast v4,
+        Lt2/c;` (SupabaseApi) that stores into the typed field `Lv2/a;.a`; no
+        unconditional cast-failure throw remains.
+      - GitHub release: `SelfUpdateWiring.<clinit>` keeps a **real**
+        `check-cast v0, Lt2/b;` for the GitHub service — the in-app updater
+        still works.
+      - The two remaining `ClassCastException` instructions inside
+        `AppContainer.<init>` are byte-identical to the ones in the known-good
+        GitHub build → pre-existing and benign.
+- [x] 36/36 unit tests green on both flavors; `assemblePlayDebug`,
+      `assembleGithubDebug`, `assemblePlayRelease`, `assembleGithubRelease`,
+      `bundlePlayRelease` all green; every source file under 300 lines.
+- [x] versionCode 19, versionName 1.6.5. GitHub APK (1,907,429 bytes) signed
+      with the publisher key (SHA-256 `F5:C6:C7:3F…93:EC:87`) and staged at
+      `build/Package-Price-Calculator.apk`; Play AAB (4,250,380 bytes) staged
+      at `build/Package-Price-Calculator.aab` (SHA-256
+      `DAC8896DEF09E9DA67C151FE3AF6FA1641C45243803F48BD34FC5C020719F566`).
+      Play APK manifest: `INTERNET` only — **no** `REQUEST_INSTALL_PACKAGES`.
+
 ### Pending — Play Console (user-side, follow docs/play-console-checklist.md)
 
 - [ ] Create the app in Play Console + paste store listing text/assets.
 - [ ] File the Data Safety form + content declarations.
-- [ ] Upload `app-play-release.aab` to a testing track; enroll in Play App
-      Signing (upload key = packcalc-release.jks).
+- [ ] Upload `build/Package-Price-Calculator.aab` to a testing track; enroll in
+      Play App Signing (upload key = packcalc-release.jks).
 - [x] Privacy policy URL live: GitHub Pages confirmed enabled on the repo
       (`main` / `/docs`) and both
       `…/privacy-policy.html` and `…/data-deletion.html` verified HTTP 200
@@ -363,10 +434,10 @@ Implementation plan and task tracker for the native Android rewrite
 
 ### Later
 - [ ] **Sideload the exact Play artifact once before uploading it** (new in
-      v1.6.4): `app/build/outputs/apk/play/release/app-play-release.apk` ships
-      the same code as the AAB. If it still closes on launch, the next launch
-      shows the crash report on screen (version, channel, stack trace, startup
-      trail) — copy it and send it in.
+      v1.6.4, re-staged in v1.6.5): `app/build/outputs/apk/play/release/app-play-release.apk`
+      ships the same code as the AAB. The v1.6.4 launch crash is **fixed and
+      root-caused** (Mod 023), so this is now a smoke test rather than a
+      debug hunt — confirm it opens, then upload the AAB.
 - [ ] **Eyeball the new app icon on a device** (v1.6.2): launcher icon and the
       login-screen logo come from `media/icons/icon-512x512.png`; no
       device/emulator was attached to render it. Some launchers cache the old

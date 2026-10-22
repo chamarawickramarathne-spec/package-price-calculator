@@ -1,6 +1,6 @@
 ================================================================================
 MEDIA SUPPORT - Package Price Calculator
-Hire Artist Studio (hiresmcq)  |  Version 1.6.4  |  Generated 2026-10-22
+Hire Artist Studio (hiresmcq)  |  Version 1.6.5  |  Generated 2026-10-22
 ================================================================================
 
 --------------------------------------------------------------------------------
@@ -66,13 +66,17 @@ Main features:
 - Clean LKR currency formatting (Rs. 12,345.00) and precise decimal maths.
 - In-app updates (GitHub download): the app checks for a newer version and can
   download and install it for you in a couple of taps. Google Play installs
-  update themselves through Play.
+  update themselves through Play - the Play build is store-ready and carries no
+  extra permissions at all.
 - Reliable sign-in sync: your email is stored on the device first and pushed to
   our list when a connection is available - duplicates and retries collapse into
   a single record, and your sign-in is never lost.
 - Self-diagnosing: if the app ever closes unexpectedly, the next launch shows
   the error on screen with a one-tap "Copy details" button - no developer tools,
   no guesswork about what went wrong.
+- Fixed start-up on every channel: the Play build no longer creates the
+  updater's network layer at all, so it launches instantly and never fails on
+  start-up.
 
 Main benefits:
 - Quote a client before you leave the venue.
@@ -124,7 +128,7 @@ Download Package Price Calculator and price your next job the easy way.
 
 #PackagePriceCalculator #PhotographerTools #Pricing
 
-Ready-made promotional images (v1.6.4):
+Ready-made promotional images (v1.6.5):
 - media/promo/feature-graphic-1024x500.png   - Google Play feature graphic
 - media/images/play/{login,details,equipment,pricing}.png - Play store
   screenshots (1080x1920, Play-compliant 16:9)

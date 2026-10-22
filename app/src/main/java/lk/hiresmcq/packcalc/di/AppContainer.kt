@@ -34,9 +34,15 @@ class AppContainer(context: Context) {
     val usageLogRepository = UsageLogRepository(api, appContext)
     val userEmailRepository = UserEmailRepository(api, sessionStore, appContext)
 
-    private val githubApi = NetworkModule.createGitHubApi(debugLogging = BuildConfig.DEBUG)
-    val updateRepository = UpdateRepository(githubApi)
-    val apkDownloader = ApkDownloader(NetworkModule.createUpdateClient(debugLogging = BuildConfig.DEBUG))
+    /**
+     * The in-app updater exists only in the github distribution channel. The
+     * play flavor wires no updater (see SelfUpdateWiring in the flavor source
+     * sets), so it never builds the GitHub Releases service, makes no GitHub
+     * API calls and never needs REQUEST_INSTALL_PACKAGES - Google Play
+     * delivers updates for that channel instead.
+     */
+    val updateRepository: UpdateRepository? = SelfUpdateWiring.repository
+    val apkDownloader: ApkDownloader? = SelfUpdateWiring.downloader
 
     /**
      * One-time local migration for installs that completed the email gate
